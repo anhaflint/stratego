@@ -2,9 +2,9 @@ Je suis globalement d'accord avec votre organisation. Je pense qu'il faudra just
 
 Le truc, c'est qu'il faudrait faire en sorte de pouvoir fournir un Terrain cachant les pièces de l'ennemi à fournir à l'API de stratégie (on ne va pas donner un tableau contenant les pions de chaque joueur à l'IA).
 
-Aussi, rajouter un tableau contenant les pièces éliminés pour chaque joueur pourrait être un plus (dans la structure Joueur donc).
+Aussi, rajouter un tableau contenant les pièces éliminées pour chaque joueur pourrait être un plus.
 
-Concernant l'API pour dialoguer entre l'exécutable et la librairie de stratégie, je pensais faire des fonctions et des structures de ce type
+Concernant l'API pour dialoguer entre l'exécutable et la librairie de stratégie, je pensais faire des fonctions de ce type :
 
 void initIA(IA ordinateur); // Fonction d'initialisation et d'allocation mémoire pour l'IA
 
