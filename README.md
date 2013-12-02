@@ -1,0 +1,4 @@
+stratego
+========
+
+Stratego's Creed !
