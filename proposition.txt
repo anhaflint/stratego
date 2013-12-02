@@ -6,6 +6,10 @@ Aussi, rajouter un tableau contenant les pièces éliminées pour chaque joueur 
 
 Concernant l'API pour dialoguer entre l'exécutable et la librairie de stratégie, je pensais faire des fonctions de ce type :
 
+typedef struct IA{
+	// Les variables internes à votre IA
+};
+
 void initIA(IA ordinateur); // Fonction d'initialisation et d'allocation mémoire pour l'IA
 
 void freeIA(IA ordinateur); // Libération de l'IA en mémoire
