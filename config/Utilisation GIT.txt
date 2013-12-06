@@ -1,0 +1,48 @@
+--------------
+Installation
+-------------
+sudo apt-get install git
+
+---------------
+Config
+---------------
+git config --global color.diff (diff OR status / branch) auto
+git config --global user.name "pseudo"
+git config --global user.email moi@sfhio.com
+
+-------------
+Clonage
+-------------
+git clone https://github.com/deminyx/stratego.git
+
+-------------
+Opérations sur fichiers
+-------------
+git status : Vérif Statuts fichiers
+git diff : Différence des fichiers ( affichage coloré )
+
+------------
+COMMIT
+------------
+git add nomfic1 nomfic2 : Ajout fichiers à la liste courante ( NOUVEAU ! )
+git commit -a : commit tout fichiers déjà présent et qui sont modif.
+git commit nomfic1 nomfic2 : commit fichiers précis
+git commit : ajout des dernières modifs à la liste des modifs
+git log : aff. log
+git log -p : Log + Details des dernières modif dans les fichiers.
+
+CORRECTION DE COMMIT :
+git commit --amend : modifie le message passé avec le dernier commit
+git reset HEAD^ : annule le dernier commit MAIS NE CHANGE PAS FICHIERS LOCAUX !
+git reset --hard HEAD^ : annule commit ET restore fichiers locaux
+git checkout nomfic : restore un fichier suivant dernier commit
+git reset HEAD -- nomfic : vire un fichier
+
+
+---------
+UPDATE
+---------
+git pull : met à jour les fichiers locaux suivant commit
+git push : envoie de commit sur serveur  /!\ : git log -p avant ! 
+
+git revert numducommit :virer un truc en ligne (num? => git log)
