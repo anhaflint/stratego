@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
-
+                                        // Forme d'Appel ./game 1 libtrobi1.so
+                                        // Compil gcc -Wall main.c -lSDL -o main
 void pause();
 
 int main(int argc, char *argv[])
 {
 
-	if (SDL_Init(SDL_INIT_VIDEO) == -1) // Démarrage de la SDL. Si erreur :
+    if (SDL_Init(SDL_INIT_VIDEO) == -1) // Démarrage de la SDL. Si erreur :
     {
         fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
         exit(EXIT_FAILURE); // On quitte le programme
@@ -29,8 +30,8 @@ int main(int argc, char *argv[])
 
     pause();
 
-	SDL_Quit();
-	return EXIT_SUCCESS;
+    SDL_Quit();
+    return EXIT_SUCCESS;
 }
 
 void pause()
