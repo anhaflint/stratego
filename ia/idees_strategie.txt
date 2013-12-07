@@ -1,0 +1,56 @@
+======== REFLEXION DE L'IA AU PLACEMENT DES PIECES ========
+
+- Drapeau en dernière ligne, soit au coin avec 2 bombes, soit ailleurs avec 3 bombes.
+- Mettre un 4 à côté des bombes pour protéger en cas d'attaque d'un démineur
+- Espion à côté du 9, pour le protéger en cas d'attaque du maréchal ennemi
+- Placement de deux bombes pour boucher une entrée ?
+- Eviter d'entourer une pièce bougeable dans des bombes, ou bien adopter une stratégie où un 4 serait caché de même sorte que le drapeau :
+
+X X X B X X X B X X
+X X B 4 B X B D B X
+
+- Faire en sorte qu'à chaque jeu, génération d'un placement semi-aléatoire (pas le même à chaque fois)
+- Faire en sorte que les démineurs ne soient pas trop loin
+
+======== PHASES PRINCIPALES DE REFLEXION DE L'IA POUR UN TOUR DE JEU ========
+
+Première phase : Mise à jour des données internes avec le tableau donné par l'arbitre, puis maj des spéculations. 
+
+Deuxième phase : Analyse du plateau, avec détermination de tous les pions déplaçables.
+
+Troisième phase : Parmi les déplacements possibles, détermination des déplacements sans risque...
+	- Cas 1 : Au moins un déplacement sans risque a été trouvé : analyse des deplacements possibles, attribution d'un score (?) à chacun de ces déplacements, en fonction de sa ligne (si un pion proche des lignes adverse peut bouger sans risque, il est prioritaire), de la puissance de la pièce en fonction des pièces restantes chez l'ennemi, du fait qu'il permet de sauver un allié ou pas, qu'il peut piquer un pion ennemi ou pas(A), si éclaireur alors est-ce que suicide (?), si démineur à côté d'une bombe,...
+	- Cas 2 : aucun déplacement sans risque, regarder le moins risqué(B) et l'essayer
+
+- Quatrième phase : Envoi du déplacement à l'arbitre
+
+(A) Réflexion pour attaque d'un ennemi
+- Ne pas attaquer si bombe potentielle (calcul de proba)
+- Ne pas attaquer si pièce plus forte potentielle (calcul de proba)
+- Attaquer tout de suite si pièce la plus forte dans le jeu
+
+(B) Classement des manoeuvres risquées, du plus risqué au moins risqué :
+- Piquer un pion avec le maréchal, en sachant qu'un pion adverse est à proximité et que l'espion peut être à proximité
+- Bouger le maréchal à côté d'un pion dont on ne connait pas la force
+
+(C) Placements à éviter :
+
+X X
+O <- Maréchal, une chance sur deux de se faire peut-être piéger..
+O O 
+
+(D) Faire en sorte de ne pas bouger certains pions pour éviter que le placement du drapeau soit obvious ?
+
+======== VARIABLES INTERNES A L'IA ========
+
+Structure comprenant :
+	- Pion
+	- isVisible (pour savoir si allié/ennemi découvert par l'autre)
+	- isBomb (pour savoir si bombe potentielle)
+
+- Tableau[10][10] comprenant Pions de la structure : 
+	- Positions des ennemis découverts (grâce à un combat, ou alors déplacement > 1 ==> Eclaireur)
+	- Positions des alliés découverts par l'ennemi (à cause de la même chose)
+	- Positions des bombes potentielles
+
+- Position potentielle des bombes et du drapeau (probabilités, spéculations)
