@@ -29,11 +29,13 @@ int main(int argc, char *argv[])
     //---------TUILES
     int i,j; // Compteur pour boucles
     
-    for (i=0;i<10;i++){				// POUR UNE LIGNE : 0----------------9
-    	for (j=0;j<4;j++){			// POUR UNE COLONNE : 0---3
-    plateauaff[i][j].x = 155+50*i;
-    plateauaff[i][j].y = 355+50*j;
-    }
+    for (i=0;i<10;i++)
+    {				// POUR UNE LIGNE : 0----------------9
+    	for (j=0;j<4;j++)
+	{			// POUR UNE COLONNE : 0---3
+    		plateauaff[i][j].x = 155+50*i;
+    		plateauaff[i][j].y = 355+50*j;
+    	}
     }
     tuileA = SDL_LoadBMP("images/tuileA.bmp"); // Charge image d'une tuileA
     
