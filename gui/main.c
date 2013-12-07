@@ -14,17 +14,55 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE); // On quitte le programme
     }
 
-    SDL_Surface *ecran = NULL, *imageDeFond = NULL;
-    SDL_Rect positionFond;
+    SDL_Surface *ecran = NULL, *imageDeFond = NULL, *tuileA= NULL, *tuileT=NULL; // Surface ( images )
+    SDL_Rect positionFond, plateauaff[10][10];							// Position relative des images
  
     positionFond.x = 0;
     positionFond.y = 0;
 
     ecran=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     SDL_WM_SetCaption("Stratego's Creed", "SC");
-    imageDeFond = SDL_LoadBMP("images/venice.bmp");
-
+    imageDeFond = SDL_LoadBMP("images/venice2.bmp"); // test affichage du fond cadrié
     SDL_BlitSurface(imageDeFond, NULL, ecran, &positionFond);
+    
+    
+    //---------TUILES
+    int i,j; // Compteur pour boucles
+    
+    for (i=0;i<10;i++){				// POUR UNE LIGNE : 0----------------9
+    	for (j=0;j<4;j++){			// POUR UNE COLONNE : 0---3
+    plateauaff[i][j].x = 155+50*i;
+    plateauaff[i][j].y = 355+50*j;
+    }
+    }
+    tuileA = SDL_LoadBMP("images/tuileA.bmp"); // Charge image d'une tuileA
+    
+    
+    for (i=0;i<10;i++){				// POUR UNE LIGNE : 0---------------9
+    	for (j=9;j>5;j--){			// POUR UNE COLONNE : 9-----5
+    plateauaff[i][j].x = 155+50*i;		
+    plateauaff[i][j].y = 55+50*(9-j);		// 9-j = 0 1 2 3
+    }
+    }
+    tuileT = SDL_LoadBMP("images/tuileT.bmp"); // Charge image d'une tuileT
+    
+    for (i=0;i<10;i++){
+    	for (j=0;j<4;j++){
+    SDL_BlitSurface(tuileA, NULL, ecran, &plateauaff[i][j]); 	// Aff tuileA
+    }
+    }
+    
+     for (i=0;i<10;i++){
+    	for (j=9;j>5;j--){
+    SDL_BlitSurface(tuileT, NULL, ecran, &plateauaff[i][j]);	// Aff tuileT
+    }
+    }
+    
+    //-------------
+
+    
+    
+    
     SDL_Flip(ecran);
 
     pause();
