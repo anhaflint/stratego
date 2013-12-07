@@ -40,24 +40,30 @@ int main(int argc, char *argv[])
     tuileA = SDL_LoadBMP("images/tuileA.bmp"); // Charge image d'une tuileA
     
     
-    for (i=0;i<10;i++){				// POUR UNE LIGNE : 0---------------9
-    	for (j=9;j>5;j--){			// POUR UNE COLONNE : 9-----5
-    plateauaff[i][j].x = 155+50*i;		
-    plateauaff[i][j].y = 55+50*(9-j);		// 9-j = 0 1 2 3
-    }
+    for (i=0;i<10;i++)
+    {				// POUR UNE LIGNE : 0---------------9
+    	for (j=9;j>5;j--)
+	{			// POUR UNE COLONNE : 9-----5
+    		plateauaff[i][j].x = 155+50*i;		
+    		plateauaff[i][j].y = 55+50*(9-j);		// 9-j = 0 1 2 3
+    	}
     }
     tuileT = SDL_LoadBMP("images/tuileT.bmp"); // Charge image d'une tuileT
     
-    for (i=0;i<10;i++){
-    	for (j=0;j<4;j++){
-    SDL_BlitSurface(tuileA, NULL, ecran, &plateauaff[i][j]); 	// Aff tuileA
-    }
+    for (i=0;i<10;i++)
+    {
+    	for (j=0;j<4;j++)
+	{
+    		SDL_BlitSurface(tuileA, NULL, ecran, &plateauaff[i][j]); 	// Aff tuileA
+    	}
     }
     
-     for (i=0;i<10;i++){
-    	for (j=9;j>5;j--){
-    SDL_BlitSurface(tuileT, NULL, ecran, &plateauaff[i][j]);	// Aff tuileT
-    }
+     for (i=0;i<10;i++)
+     {
+    	for (j=9;j>5;j--)
+	{
+   		 SDL_BlitSurface(tuileT, NULL, ecran, &plateauaff[i][j]);	// Aff tuileT
+    	}
     }
     
     //-------------
