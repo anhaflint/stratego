@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
                                         // Forme d'Appel ./game 1 libtrobi1.so
                                         // Compil gcc -Wall main.c -lSDL -o main
 void pause();
@@ -23,7 +22,7 @@ int main(int argc, char *argv[])
 
     ecran=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     SDL_WM_SetCaption("Stratego's Creed", "SC");
-    imageDeFond = SDL_LoadBMP("venice.bmp");
+    imageDeFond = SDL_LoadBMP("images/venice.bmp");
 
     SDL_BlitSurface(imageDeFond, NULL, ecran, &positionFond);
     SDL_Flip(ecran);
