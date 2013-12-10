@@ -14,13 +14,13 @@ X X B 4 B X B D B X
 
 ======== PHASES PRINCIPALES DE REFLEXION DE L'IA POUR UN TOUR DE JEU ========
 
-Première phase : Mise à jour des données internes avec le tableau donné par l'arbitre, puis maj des spéculations. 
+Première phase : Si il y a eu combat, enregistrement de l'adversaire. Mise à jour des données internes avec le terrain donné par l'arbitre, puis maj des spéculations. 
 
 Deuxième phase : Analyse du plateau, avec détermination de tous les pions déplaçables.
 
-Troisième phase : Parmi les déplacements possibles, détermination des déplacements sans risque...
+Troisième phase : Parmi les déplacements possibles, détermination des déplacements sans risque... (trois types de déplacements : déplacements "sauveurs", déplacements "agressifs", et autres)
 	- Cas 1 : Au moins un déplacement sans risque a été trouvé : analyse des deplacements possibles, attribution d'un score (?) à chacun de ces déplacements, en fonction de sa ligne (si un pion proche des lignes adverse peut bouger sans risque, il est prioritaire), de la puissance de la pièce en fonction des pièces restantes chez l'ennemi, du fait qu'il permet de sauver un allié ou pas, qu'il peut piquer un pion ennemi ou pas(A), si éclaireur alors est-ce que suicide (?), si démineur à côté d'une bombe,...
-	- Cas 2 : aucun déplacement sans risque, regarder le moins risqué(B) et l'essayer
+	- Cas 2 : aucun déplacement sans risque, regarder le moins risqué(B) en fonction du score et l'essayer
 
 - Quatrième phase : Envoi du déplacement à l'arbitre
 
@@ -37,20 +37,47 @@ Troisième phase : Parmi les déplacements possibles, détermination des déplac
 
 X X
 O <- Maréchal, une chance sur deux de se faire peut-être piéger..
-O O 
+O O
 
 (D) Faire en sorte de ne pas bouger certains pions pour éviter que le placement du drapeau soit obvious ?
 
 ======== VARIABLES INTERNES A L'IA ========
 
+Booléen m_fight étant vrai s'il y a eu fight au tour précédent
+SPos m_armyPos, m_enemyPos;
+SPiece m_armyPiece, m_enemyPiece;
+SMove m_movements[172];
+InfoPiece m_pieces[10][10];
+
+
 Structure comprenant :
-	- Pion
-	- isVisible (pour savoir si allié/ennemi découvert par l'autre)
+	- Piece avec type SBox
+	- isVisible (pour savoir si ennemi a découvert une pièce allié)
 	- isBomb (pour savoir si bombe potentielle)
 
-- Tableau[10][10] comprenant Pions de la structure : 
-	- Positions des ennemis découverts (grâce à un combat, ou alors déplacement > 1 ==> Eclaireur)
-	- Positions des alliés découverts par l'ennemi (à cause de la même chose)
-	- Positions des bombes potentielles
+typedef struct{
+	SBox piece;
+	bool isVisible;
+	bool isBomb;
+}InfoPiece;
 
 - Position potentielle des bombes et du drapeau (probabilités, spéculations)
+
+======== FONCTIONS A IMPLEMENTER ========
+
+void StartGame(const EColor color,EPiece boardInit[4][10]); // Initialisation des pièces
+
+SMove NextMove(SGameState*  gameState){
+	void updateData(gameState); // Première phase, mise à jour des données internes
+	void analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles
+	SMove decideMove(gameState); // Décision du mouvement à faire
+	void checkMove(); // Vérification du mouvement avec notre propre arbitre interne à l'IA
+	return du mouvement à la fin
+}
+
+==========================================
+
+		info[i][j].piece = board[i][j];
+
+
+
