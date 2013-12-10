@@ -47,7 +47,7 @@ Booléen m_fight étant vrai s'il y a eu fight au tour précédent
 SPos m_armyPos, m_enemyPos;
 SPiece m_armyPiece, m_enemyPiece;
 SMove m_movements[172];
-InfoPiece m_pieces[10][10];
+InfoPiece m_board[10][10];
 
 
 Structure comprenant :
@@ -56,7 +56,7 @@ Structure comprenant :
 	- isBomb (pour savoir si bombe potentielle)
 
 typedef struct{
-	SBox piece;
+	SBox box;
 	bool isVisible;
 	bool isBomb;
 }InfoPiece;

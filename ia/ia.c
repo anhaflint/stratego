@@ -1,13 +1,20 @@
 #include "../stratego.h"
 #include "ia.h"
+#include <stdbool.h>
 
 typedef Enum{
 	offensive=0;
-	defensive=0;
-	malisious;
+	defensive;
+	malicious;
 }Strategy;
 
-SPos m_ArmyPos;
+bool m_fight; // Booléen indiquant s'il y a eu un combat lors de la manche précédente
+EColor m_color; // Couleur des pièces de l'IA
+SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
+SPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces avant un combat
+SMove m_movements[172]; // Tableau contenant les mouvements possibles à chaque tour
+int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvements
+InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
 Strategy m_strategy;
 
 void InitLibrary(char name[50])
@@ -77,4 +84,72 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 void void Penalty()
 {
 	printf("Penalty\n");
+}
+
+//--- Fonctions personnelles ---//
+
+// Première phase, mise à jour des données internes
+void updateData(gameState)
+{
+	
+}
+
+// Analyse du plateau => Mise à jour des déplacements possibles
+void analyzeBoard()
+{
+	unsigned int i, j, compteur = 0;
+	SPos start, end;
+
+	for (i=0; i<10; i++)
+	{
+		for (j=0; j<10; j++)
+		{
+			/* Si la pièce est une pièce appartenant à l'IA et qu'elle est
+			déplaçable, on regarde les cases aux alentours */
+			if ((m_board[i][j].box.color = m_color) && (m_board[i][j].box.piece != EPbomb) && (m_board[i][j].box.piece != EPflag))
+			{
+				// Si on n'est pas sur la ligne du bas et qu'on peut bouger sur la case du dessous, rajout du mouvement
+				if ((i != 0) && (m_board[i-1][j].box.color != EClake) && (m_board[i-1][j].box.color != m_color)) 
+				{
+					start.line = i; start.col = j;
+					end.line = i-1; end.col = j;
+					m_movements[compteur].start = start;
+					m_movements[compteur].end = end;
+					compteur++;
+				}
+			
+				// Si on n'est pas sur la ligne du dessus et qu'on peut bouger sur la case du dessus, rajout du mouvement
+				if ((i != 9) && (m_board[i+1][j].box.color != EClake) && (m_board[i+1][j].box.color != m_color)) 
+				{
+					start.line = i; start.col = j;
+					end.line = i+1; end.col = j;
+					m_movements[compteur].start = start;
+					m_movements[compteur].end = end;
+					compteur++;
+				}
+				
+				// Si on n'est pas sur la ligne de gauche et qu'on peut bouger sur la case de gauche, rajout du mouvement
+				if ((j != 0) && (m_board[i][j-1].box.color != EClake) && (m_board[i][j-1].box.color != m_color))
+				{
+					start.line = i; start.col = j;
+					end.line = i; end.col = j-1;
+					m_movements[compteur].start = start;
+					m_movements[compteur].end = end;
+					compteur++;
+				} 
+
+				// Si on n'est pas sur la ligne de droite et qu'on peut bouger sur la case de droite, rajout du mouvement
+				if ((j != 9) && (m_board[i][j+1].box.color != EClake) && (m_board[i][j+1].box.color != m_color))
+				{
+					start.line = i; start.col = j;
+					end.line = i; end.col = j+1;
+					m_movements[compteur].start = start;
+					m_movements[compteur].end = end;
+					compteur++;
+				}
+			}
+		}
+	}
+
+	m_nbMove = compteur;
 }

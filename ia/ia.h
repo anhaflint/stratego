@@ -1,3 +1,9 @@
+typedef struct{
+	SBox box;
+	bool isVisible;
+	bool isBomb;
+}InfoPiece;
+
 /**
  * Initialiser la librairie
  * @param char name[50]
@@ -58,3 +64,7 @@ void Penalty();
 
 //--- Fonctions personnelles ---//
 
+void updateData(gameState); // Première phase, mise à jour des données internes
+void analyzeBoard(); // Analyse du plateau => Mise à jour des déplacements possibles
+SMove decideMove(gameState); // Décision du mouvement à faire
+void checkMove(); // Vérification du mouvement avec l'arbitre interne à l'IA
