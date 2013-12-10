@@ -31,32 +31,33 @@ void StartMatch(const EColor color)
 void StartGame(EPiece boardInit[4][10]){
 	/* Initialisation du tableau de l'IA avec positionement de pions*/
 	printf("StartGame\n");
-	swich(m_strategy){
-		case defensive:{
+	switch(m_strategy){
+
+		case defensive:
 			/* placement du drapeau */
-			boardInit[0][0]=EPflag;
+			boardInit[0][0] = EPflag;
 			/* placement des bombes */
-			boardInit[1][0]=boardInit[0][1]=boardInit[0][4]=boardInit[1][5]=boardInit[0][6]= EPbomb;
+			boardInit[1][0] = boardInit[0][1] = boardInit[0][4] = boardInit[1][5] = boardInit[0][6] =  EPbomb;
 			/* placement des sergants */
-			boardInit[2][0]=boardInit[2][6]=boardInit[0][5]=boardInit[0][7]=EPsergeant;
+			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;
 			/* placements des scouts */
-			boardInit[1][2]=boardInit[1][3]=boardInit[1][6]=boardInit[1][7]=boardInit[0][3]=EPscout;
+			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPscout;
 			/*placement des espions */
-			boardInit[3][0]=boardInit[3][1]=boardInit[3][4]=boardInit[3][5]=boardInit[3][8]=EPspy;
-			boardInit[2][5]=boardInit[1][9]=boardInit[0][9]=EPspy;
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = EPspy;
+			boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPspy;
 			/* placement des lieutenants */
-			boardInit[3][9]=boardInit[1][4]=boardInit[1][8]=boardInit[0][8]=EPlieutenant;
+			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
 			/* placement des capitaines */
-			boardInit[2][1]=boardInit[2][2]=boardInit[2][4]=boardInit[2][7]=EPcaptain;
+			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
 			/* placement des majors */
-			boardInit[3][2]=boardInit[3][7]=boardInit[1][1]=EPmajor;
+			boardInit[3][2] = boardInit[3][7] = boardInit[1][1] = EPmajor;
 			/* placement des colonels */
-			boardInit[2][9]=boardInit[0][2]=EPcolonel;
+			boardInit[2][9] = boardInit[0][2] = EPcolonel;
 			/* placements du général */
-			boardInit[3][3]=EPgeneral;
+			boardInit[3][3] = EPgeneral;
 			/* placement du maréchal */
-			boardInit[3][6]=EPmarshal;
-		}
+			boardInit[3][6] = EPmarshal;
+		break;
 	}
 }
 
