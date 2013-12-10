@@ -1,3 +1,4 @@
+
 Stratego's Creed
 ========
 
