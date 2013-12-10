@@ -1,0 +1,19 @@
+/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// *
+ * /////////////////////////////////////////* Liens utiles pour la SDL *///////////////////////////////////////////// * 
+ * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// *
+ * 														      														  *
+ * -------------------------- installation de la SDL - Creation de fenêtres et de surface -------------------------   *
+ * http://fr.openclassrooms.com/informatique/cours/apprenez-a-programmer-en-c/creation-d-une-fenetre-et-de-surfaces   *
+ *														      														  *
+ * -------------------------- Apprendre à programmer en C : contient un bon tuto SDL à la fin----------------------   *
+ * http://fr.openclassrooms.com/informatique/cours/apprenez-a-programmer-en-c 					      * 
+ *														      														  *
+ * ----------------------------------------Simplifier les events avec SDL------------------------------------------   *
+ * http://fr.openclassrooms.com/informatique/cours/simplifier-les-events-avec-sdl				      *
+ *														      														  *
+ * --------------------------------------------- Utiliser la SDL---------------------------------------------------   * 
+ * http://fr.openclassrooms.com/informatique/cours/programmez-sur-votre-wii/utiliser-la-sdl			      * 
+ * 														      														  *
+ * ----------------------------------------Creation de jeux 2D en SDL----------------------------------------------   *
+ * http://fr.openclassrooms.com/informatique/cours/apprenez-a-programmer-en-c/creation-de-jeux-2d-en-sdl	      *
+ */
