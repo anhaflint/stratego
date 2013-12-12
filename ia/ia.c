@@ -100,6 +100,12 @@ void analyzeBoard()
 {
 	unsigned int i, j, compteur = 0;
 	SPos start, end;
+	EColor enemyColor;
+
+	if (m_color == ECred)
+		enemyColor = ECblue;
+	else
+		enemyColor = ECred;
 
 	for (i=0; i<10; i++)
 	{
@@ -107,8 +113,8 @@ void analyzeBoard()
 		{
 			/* Si la pièce est une pièce appartenant à l'IA et qu'elle est
 			déplaçable, on regarde les cases aux alentours */
-			if ((m_board[i][j].box.color = m_color) && (m_board[i][j].box.piece != EPbomb) && (m_board[i][j].box.piece != EPflag))
-			{
+			if ((m_board[i][j].box.color == m_color) && (m_board[i][j].box.piece != EPbomb) && (m_board[i][j].box.piece != EPflag))
+			{				
 				// Si on n'est pas sur la ligne du bas et qu'on peut bouger sur la case du dessous, rajout du mouvement
 				if ((i != 0) && (m_board[i-1][j].box.color != EClake) && (m_board[i-1][j].box.color != m_color)) 
 				{
@@ -117,6 +123,21 @@ void analyzeBoard()
 					m_movements[compteur].start = start;
 					m_movements[compteur].end = end;
 					compteur++;
+
+					/* Si la pièce étudiée est un éclaireur, on regarde tous les déplacements possibles en ligne */
+					if (m_board[i][j].box.piece == EPscout)
+					{
+						/* On rajoute une condition suplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
+						while ((i != 0) && (m_board[i-1][j].box.color != EClake) && (m_board[i-1][j].box.color != m_color) && (m_board[i][j].box.color != enemyColor))
+						{
+							start.line = i; start.col = j;
+							end.line = i-1; end.col = j;
+							m_movements[compteur].start = start;
+							m_movements[compteur].end = end;
+							compteur++;
+							i++;
+						}
+					}							
 				}
 			
 				// Si on n'est pas sur la ligne du dessus et qu'on peut bouger sur la case du dessus, rajout du mouvement
