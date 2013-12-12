@@ -98,7 +98,7 @@ void updateData(gameState)
 // Analyse du plateau => Mise à jour des déplacements possibles
 void analyzeBoard()
 {
-	unsigned int i, j, compteur = 0;
+	unsigned int i, j, temp, compteur = 0;
 	SPos start, end;
 	EColor enemyColor;
 
@@ -127,15 +127,16 @@ void analyzeBoard()
 					/* Si la pièce étudiée est un éclaireur, on regarde tous les déplacements possibles en ligne */
 					if (m_board[i][j].box.piece == EPscout)
 					{
+						temp = i;
 						/* On rajoute une condition suplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
-						while ((i != 0) && (m_board[i-1][j].box.color != EClake) && (m_board[i-1][j].box.color != m_color) && (m_board[i][j].box.color != enemyColor))
+						while ((temp != 0) && (m_board[temp-1][j].box.color != EClake) && (m_board[temp-1][j].box.color != m_color) && (m_board[temp][j].box.color != enemyColor))
 						{
-							start.line = i; start.col = j;
-							end.line = i-1; end.col = j;
+							start.line = temp; start.col = j;
+							end.line = temp-1; end.col = j;
 							m_movements[compteur].start = start;
 							m_movements[compteur].end = end;
 							compteur++;
-							i++;
+							temp++;
 						}
 					}							
 				}
