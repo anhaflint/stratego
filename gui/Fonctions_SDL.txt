@@ -1,0 +1,41 @@
+// Fonctions de la SDL
+
+//=========================================SDL MANAGAMENT AND FIRST INITIALIZATIONS============================================
+
+/* SDL SET VIDEO MODE -------------------------*/
+SDL_Surface* SDL_SetVideoMode(int width,
+			      int height,
+			      int bitsperpixel,
+			      Uint32 flags);
+//SDL_SetVideoMode -- Set up a video mode with the specified width, height and bits-per-pixel. 
+// http://sdl.beuc.net/sdl.wiki/SDL_SetVideoMode
+
+
+/* SDL QUIT -----------------------------------*/
+void SDL_Quit(void)
+//Use this function to clean up all initialized subsystems. You should call it upon all exit conditions. 
+// http://wiki.libsdl.org/SDL_Quit
+
+
+/* SDL FLIP -----------------------------------*/
+int SDL_Flip(SDL_Surface* screen);
+//SDL_Flip -- swaps screen buffers 
+// http://sdl.beuc.net/sdl.wiki/SDL_Flip
+
+//====================================================SURFACES MANAGEMENT========================================================
+/* SDL LOAD BMP -------------------------------*/
+SDL_Surface* SDL_LoadBMP(const char* file);
+// Use this function to load a surface from a BMP file. 
+// http://wiki.libsdl.org/SDL_LoadBMP
+
+
+/* SDL BLIT SURFACE -------------------------- */
+int SDL_BlitSurface(SDL_Surface*    src,
+                    const SDL_Rect* srcrect,
+                    SDL_Surface*    dst,
+                    SDL_Rect*       dstrect);
+//Use this function to perform a fast surface copy to a destination surface. 
+//Returns 0 if the blit is successful or a negative error code on failure; call SDL_GetError() for more information. 
+// http://wiki.libsdl.org/SDL_BlitSurface-------------------------
+
+
