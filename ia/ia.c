@@ -128,7 +128,7 @@ void analyzeBoard()
 					if (m_board[i][j].box.piece == EPscout)
 					{
 						temp = i;
-						/* On rajoute une condition suplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
+						/* On rajoute une condition supplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
 						while ((temp != 0) && (m_board[temp-1][j].box.color != EClake) && (m_board[temp-1][j].box.color != m_color) && (m_board[temp][j].box.color != enemyColor))
 						{
 							start.line = temp; start.col = j;
@@ -149,6 +149,22 @@ void analyzeBoard()
 					m_movements[compteur].start = start;
 					m_movements[compteur].end = end;
 					compteur++;
+
+					/* Si la pièce étudiée est un éclaireur, on regarde tous les déplacements possibles en ligne */
+					if (m_board[i][j].box.piece == EPscout)
+					{
+						temp = i;
+						/* On rajoute une condition supplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
+						while ((temp != 0) && (m_board[temp+1][j].box.color != EClake) && (m_board[temp+1][j].box.color != m_color) && (m_board[temp][j].box.color != enemyColor))
+						{
+							start.line = temp; start.col = j;
+							end.line = temp+1; end.col = j;
+							m_movements[compteur].start = start;
+							m_movements[compteur].end = end;
+							compteur++;
+							temp++;
+						}
+					}	
 				}
 				
 				// Si on n'est pas sur la ligne de gauche et qu'on peut bouger sur la case de gauche, rajout du mouvement
@@ -159,6 +175,22 @@ void analyzeBoard()
 					m_movements[compteur].start = start;
 					m_movements[compteur].end = end;
 					compteur++;
+
+					/* Si la pièce étudiée est un éclaireur, on regarde tous les déplacements possibles en ligne */
+					if (m_board[i][j].box.piece == EPscout)
+					{
+						temp = j;
+						/* On rajoute une condition supplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
+						while ((temp != 0) && (m_board[i][temp-1].box.color != EClake) && (m_board[i][temp-1].box.color != m_color) && (m_board[i][temp].box.color != enemyColor))
+						{
+							start.line = temp; start.col = j;
+							end.line = i; end.col = temp-1;
+							m_movements[compteur].start = start;
+							m_movements[compteur].end = end;
+							compteur++;
+							temp++;
+						}
+					}
 				} 
 
 				// Si on n'est pas sur la ligne de droite et qu'on peut bouger sur la case de droite, rajout du mouvement
@@ -169,6 +201,22 @@ void analyzeBoard()
 					m_movements[compteur].start = start;
 					m_movements[compteur].end = end;
 					compteur++;
+
+					/* Si la pièce étudiée est un éclaireur, on regarde tous les déplacements possibles en ligne */
+					if (m_board[i][j].box.piece == EPscout)
+					{
+						temp = j;
+						/* On rajoute une condition supplémentaire : on s'arrête dès qu'on tombe sur une case contenant un ennemi */
+						while ((temp != 0) && (m_board[i][temp+1].box.color != EClake) && (m_board[i][temp+1].box.color != m_color) && (m_board[i][temp].box.color != enemyColor))
+						{
+							start.line = temp; start.col = j;
+							end.line = i; end.col = temp+1;
+							m_movements[compteur].start = start;
+							m_movements[compteur].end = end;
+							compteur++;
+							temp++;
+						}
+					}
 				}
 			}
 		}
