@@ -14,7 +14,8 @@
  * @param SDL_Surface* window 
  *		surface sur laquelle on va blitter les éléments dans la fonction
  */
-void Display_Init(SDL_Surface* window); 	// Affichage du départ : image de fond, tuiles sur les cotes
+void Display_Init(SDL_Surface* window, SDL_Surface *background, SDL_Surface *TuileA, SDL_Surface *TuileB); 	
+										// Affichage du départ : image de fond, tuiles sur les cotes
 									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour permettre au joueur de placer 
 										// ses pieces : il n'y a pas besoin de creer de tableaux en mémoire je crois.
 										// on ne peut pas utiliser les tab redOut et blueOut pour le début car il faudrait pouvoir tester
@@ -26,7 +27,7 @@ void Display_Init(SDL_Surface* window); 	// Affichage du départ : image de fond
  * @param SGameState gamestate
  * 		état du jeu à afficher
  */
-void Display_Board(SDL_Surface* window, SGameState gamestate);
+void Display_Board(SDL_Surface* window, SGameState gamestate, SDL_Surface *TuileA, SDL_Surface *TuileB);
 
 void Display_Fight(SDL_Surface* piece);
 /**
@@ -66,7 +67,7 @@ typedef struct
 
 /* fonction de detection du mode de jeu
  * @param int NbJoueur
- *			nombre de joueurs humains detectés via argv[i] i={0,1,2}
+ *			nombre de joueurs humains detectés via argv[1]=j j={0,1,2}
  *			si argv[1]==0 : IA vs IA
  *			si argv[1]==1 : P vs IA
  *			si argv[1]==2 : PVP
@@ -84,7 +85,7 @@ void Game_InitPlayer();
  * @param SGameStae* gamestate
  *			pointeur vers l'etat du jeu
  */
-void Game_InitGameState(SGameState* gamestate)
+void Game_InitGameState(SGameState* gamestate);
 
 
 /* fonction pour vérifier si la pièce de départ est bien placée 
