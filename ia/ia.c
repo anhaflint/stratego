@@ -13,6 +13,7 @@ EColor m_color; // Couleur des pièces de l'IA
 SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
 SPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces avant un combat
 SMove m_movements[172]; // Tableau contenant les mouvements possibles à chaque tour
+SMove m_decidedMove; // Mouvement décidé après une réflexion par l'IA
 int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvements
 InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
 Strategy m_strategy;

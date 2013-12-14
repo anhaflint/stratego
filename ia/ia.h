@@ -1,8 +1,12 @@
+//------------------------------- Structures --------------------------------//
+
 typedef struct{
 	SBox box;
 	bool isVisible;
 	bool isBomb;
 }InfoPiece;
+
+//-------------------------- Fonctions de l'API IA --------------------------//
 
 /**
  * Initialiser la librairie
@@ -62,9 +66,30 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
  */
 void Penalty();
 
-//--- Fonctions personnelles ---//
+//------------------------ Fonctions internes à l'IA -------------------------//
 
-void updateData(gameState); // Première phase, mise à jour des données internes
-void analyzeBoard(); // Analyse du plateau => Mise à jour des déplacements possibles
-SMove decideMove(gameState); // Décision du mouvement à faire
-void checkMove(); // Vérification du mouvement avec l'arbitre interne à l'IA
+/**
+* Met à jour les données internes avec les nouvelles données fournies par l'arbitre
+*@param SGameState gameState
+*        l'état du jeu courant
+*/
+void updateData(gameState);
+
+/**
+* Analyse des mouvements possibles sur le plateau par l'IA, stockage en interne
+*/
+void analyzeBoard();
+
+/**
+* Renvoie le mouvement à faire qui a été décidé par l'IA
+*@param SGameState gameState
+*        l'état du jeu courant
+*@return SMove
+*        mouvement à faire, décidé par l'IA
+*/
+SMove decideMove(gameState);
+
+/**
+* Vérification du mouvement décidé par l'IA
+*/
+void checkMove();
