@@ -1,106 +1,123 @@
-/*#include "../stratego.h"*/
-#include "ia.h"
+#include <stdio.h>
 #include <stdbool.h>
 
-typedef Enum{
-	offensive=0;
-	defensive;
-	malicious;
-}Strategy;
-
-bool m_fight; // Booléen indiquant s'il y a eu un combat lors de la manche précédente
-EColor m_color; // Couleur des pièces de l'IA
-SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
-SPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces avant un combat
-SMove m_movements[172]; // Tableau contenant les mouvements possibles à chaque tour
-SMove m_decidedMove; // Mouvement décidé après une réflexion par l'IA
-int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvements
-InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
-Strategy m_strategy;
-
-void InitLibrary(char name[50])
+typedef enum
 {
-	printf("InitLibrary\n");
-	strcpy(name,"Fabien Picarougne");
+	ECnone,
+	EClake,
+	ECred,
+	ECblue
+} EColor;
+
+typedef enum
+{
+	EPbomb=0,
+	EPspy,
+	EPscout,
+	EPminer,
+	EPsergeant,
+	EPlieutenant,
+	EPcaptain,
+	EPmajor,
+	EPcolonel,
+	EPgeneral,
+	EPmarshal,
+	EPflag,
+	EPnone,
+} EPiece;
+
+typedef struct
+{
+	EColor content;
+	EPiece piece;
+} SBox;
+
+// Structure de représentation d'une position
+typedef struct
+{
+	int line;
+	int col;
+} SPos;
+
+// Structure de représentation d'un mouvement
+typedef struct
+{
+	SPos start;
+	SPos end;
+} SMove;
+
+// Structure qui sera interne à l'ia
+typedef struct{
+	SBox box;
+	bool isVisible;
+	bool isBomb;
+}InfoPiece;
+
+void initBoard(InfoPiece m_board[10][10]);
+void drawBoard(InfoPiece board[10][10]);
+void drawMoves(SMove moves[170], int m_nbMove);
+void analyzeBoard(InfoPiece m_board[10][10]);
+
+int main(int argc, char* argv[])
+{
+	InfoPiece m_board[10][10];	// Tableau du jeu de 10 cases par 10. dim1=ligne dim2=colonne
+	initBoard(m_board);
+	drawBoard(m_board);
+	analyzeBoard(m_board);
+	return 0;
 }
 
-void StartMatch(const EColor color)
+void initBoard(InfoPiece board[10][10])
 {
-	printf("StartMatch\n");
+	int i,j;
+
+	for (i=0; i<10; i++)
+	{
+		for (j=0; j<10; j++)
+		{
+			if (j < 4)
+			{
+				board[i][j].box.content = ECblue;
+				board[i][j].box.piece = EPscout;
+			}				
+			else if (j > 5)
+			{
+				board[i][j].box.content = ECred;
+				board[i][j].box.piece = EPscout;				
+			}
+			else
+			{
+				board[i][j].box.content = ECnone;
+				board[i][j].box.piece = EPnone;
+			}				
+		}
+	}	
 }
 
-void StartGame(EPiece boardInit[4][10]){
-	/* Initialisation du tableau de l'IA avec positionement de pions*/
-	printf("StartGame\n");
-	switch(m_strategy){
-
-		case defensive:
-			/* placement du drapeau */
-			boardInit[0][0] = EPflag;
-			/* placement des bombes */
-			boardInit[1][0] = boardInit[0][1] = boardInit[0][4] = boardInit[1][5] = boardInit[0][6] =  EPbomb;
-			/* placement des sergants */
-			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;
-			/* placements des scouts */
-			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPscout;
-			/*placement des espions */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = EPspy;
-			boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPspy;
-			/* placement des lieutenants */
-			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
-			/* placement des majors */
-			boardInit[3][2] = boardInit[3][7] = boardInit[1][1] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][9] = boardInit[0][2] = EPcolonel;
-			/* placements du général */
-			boardInit[3][3] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[3][6] = EPmarshal;
-		break;
+void drawBoard(InfoPiece board[10][10])
+{
+	int i, j;
+	printf("  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n");
+	printf("-------------------------------------------\n");
+	for (i=0; i<10; i++)
+	{
+		printf("%d |", i);
+		for (j = 0; j < 10; ++j)
+		{
+			printf(" %d |", board[i][j].box.piece);
+		}
+		printf("\n-------------------------------------------\n");
 	}
 }
 
-void EndGame()
-{
-	printf("EndGame\n");
-}
-
-void EndMatch()
-{
-	printf("EndMatch\n");
-}
-
-void NextMove(const SGameState * const gameState, SMove *move)
-{
-	printf("NextMove\n");
-}
-
-void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
-{
-	m_armyPos = armyPos;
-	printf("AttackResult\n");
-}
-
-void void Penalty()
-{
-	printf("Penalty\n");
-}
-
-//--- Fonctions personnelles ---//
-
-// Première phase, mise à jour des données internes
-void updateData(gameState)
-{
-	
-}
-
 // Analyse du plateau => Mise à jour des déplacements possibles
-void analyzeBoard()
+void analyzeBoard(InfoPiece m_board[10][10])
 {
+	int m_nbMove;
 	unsigned int i, j, temp, compteur = 0;
 	SPos start, end;
+	SMove m_movements[172];
+	EColor m_color = ECblue;
 	EColor enemyColor;
 
 	if (m_color == ECred)
@@ -224,4 +241,16 @@ void analyzeBoard()
 	}
 
 	m_nbMove = compteur;
+	printf("Nombre de mouvements trouvés : %d\n", m_nbMove);
+	drawMoves(m_movements, m_nbMove);
+}
+
+void drawMoves(SMove moves[170], int m_nbMove)
+{
+	int i;
+
+	for (i = 0; i < m_nbMove; i++)
+	{
+		printf("( %d,%d ) -> ( %d,%d )\n", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
+	}
 }
