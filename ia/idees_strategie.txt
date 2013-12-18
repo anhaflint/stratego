@@ -75,9 +75,23 @@ SMove NextMove(SGameState*  gameState){
 	return du mouvement à la fin
 }
 
+void decideMove()
+{
+	SMove riskedMoves[170];
+	SMove normalMoves[170];
+	evaluateMoves(riskedMoves, normalMoves);
+
+	if (m_caution > 5)
+		chooseMove(riskedMoves);
+	else
+		chooseMove(normalMoves);
+}
+
+Liste des risques :
+
+- Piquer un pion avec le maréchal, en sachant qu'un pion adverse est à proximité et que l'espion peut être à proximité
+- Bouger le maréchal à côté d'un pion dont on ne connait pas la force
+- Un peu risqué : une pièce ennemie se place à côté d'une pièce allié, ne rien faire
+- Plus risqué : dans le même cas, attaquer la pièce
+
 ==========================================
-
-		info[i][j].piece = board[i][j];
-
-
-

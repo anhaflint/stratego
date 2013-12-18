@@ -81,6 +81,26 @@ void updateData(gameState);
 void analyzeBoard();
 
 /**
+* Analyse le mouvement de (i,j) à (new_i, new_j), vérifiant si c'est en ligne
+*@param int i
+*        Ligne sur laquelle est la pièce dont le mouvement est à analyser
+*@param int j
+*        Colonne sur laquelle est la pièce dont le mouvement est à analyser
+*@param int new_i
+*        Ligne sur laquelle est la case sur laquelle on veut tester le mouvement
+*@param int new_j
+*        Colonne sur laquelle est la case sur laquelle on veut tester le mouvement
+*@param int is_i
+*        Vaut 1 si le déplacement à analyser est vertical, 0 sinon
+*@param int lim
+*        Limite de déplacement sur le plateau dans la direction du mouvement (0 ou 9)
+*@param int* compteur
+*        Compteur du nombre de mouvements possibles au total
+*/
+void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, int* compteur);
+
+
+/**
 * Renvoie le mouvement à faire qui a été décidé par l'IA
 *@param SGameState gameState
 *        l'état du jeu courant
