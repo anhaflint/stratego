@@ -3,9 +3,10 @@
 #include <stdbool.h>
 
 typedef Enum{
-	offensive=0;
-	defensive;
-	malicious;
+	defaut=0,
+	offensive,
+	defensive,
+	malicious
 }Strategy;
 
 bool m_fight; // Booléen indiquant s'il y a eu un combat lors de la manche précédente
@@ -16,7 +17,8 @@ SMove m_movements[172]; // Tableau contenant les mouvements possibles à chaque 
 SMove m_decidedMove; // Mouvement décidé après une réflexion par l'IA
 int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvements
 InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
-Strategy m_strategy;
+Strategy m_strategy; // Stratégie choisie
+int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
 
 void InitLibrary(char name[50])
 {
@@ -24,28 +26,34 @@ void InitLibrary(char name[50])
 	strcpy(name,"Fabien Picarougne");
 }
 
-void StartMatch(const EColor color)
-{
+void StartMatch()
+{	
 	printf("StartMatch\n");
 }
 
-void StartGame(EPiece boardInit[4][10]){
+void StartGame(const EColor color, EPiece boardInit[4][10]){
 	/* Initialisation du tableau de l'IA avec positionement de pions*/
 	printf("StartGame\n");
+	m_color = color;
+	m_fight = false;
+	m_strategy = defaut;
+	m_caution = 5;
+
 	switch(m_strategy){
 
 		case defensive:
 			/* placement du drapeau */
 			boardInit[0][0] = EPflag;
 			/* placement des bombes */
-			boardInit[1][0] = boardInit[0][1] = boardInit[0][4] = boardInit[1][5] = boardInit[0][6] =  EPbomb;
-			/* placement des sergants */
-			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;
-			/* placements des scouts */
-			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPscout;
-			/*placement des espions */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = EPspy;
-			boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPspy;
+			boardInit[1][0] = boardInit[0][1] = boardInit[0][4] = boardInit[1][5] = boardInit[0][6] = boardInit[2][8] = EPbomb;
+			/* placement de l'espion */
+			boardInit[2][3] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPscout;
+			/* placements des démineurs */
+			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPminer;
+			/* placement des sergents */
+			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;			
 			/* placement des lieutenants */
 			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
 			/* placement des capitaines */
@@ -69,18 +77,28 @@ void EndGame()
 
 void EndMatch()
 {
+	// Désallocation
 	printf("EndMatch\n");
 }
 
 void NextMove(const SGameState * const gameState, SMove *move)
 {
 	printf("NextMove\n");
+	updateData(gameState); // Première phase, mise à jour des données internes
+	analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles
+	decideMove(gameState); // Décision du mouvement à faire
+	checkMove(); // Vérification du mouvement avec notre propre arbitre interne à l'IA
+	*move = m_decidedMove; // On retourne le mouvement à l'arbitre
 }
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 {
-	m_armyPos = armyPos;
 	printf("AttackResult\n");
+	m_armyPos = armyPos;
+	m_armyPiece = armyPiece;
+	m_enemyPos = enemyPos;
+	m_enemyPiece = enemyPiece;
+	m_fight = true;	
 }
 
 void void Penalty()
@@ -93,7 +111,7 @@ void void Penalty()
 // Première phase, mise à jour des données internes
 void updateData(gameState)
 {
-	
+	m_nbMove = 0;
 }
 
 // Analyse du plateau => Mise à jour des déplacements possibles

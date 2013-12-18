@@ -66,6 +66,7 @@ int main(int argc, char* argv[])
 	initBoard(m_board);
 	drawBoard(m_board);
 	analyzeBoard(m_board);
+
 	return 0;
 }
 
@@ -85,7 +86,7 @@ void initBoard(InfoPiece board[10][10])
 			else if (i < 4)
 			{
 				board[i][j].box.content = ECblue;
-				board[i][j].box.piece = EPspy;
+				board[i][j].box.piece = EPscout;
 			}				
 			else if (i > 5)
 			{

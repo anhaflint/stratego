@@ -91,7 +91,7 @@ void analyzeBoard();
 *@param int new_j
 *        Colonne sur laquelle est la case sur laquelle on veut tester le mouvement
 *@param int is_i
-*        Vaut 1 si le déplacement à analyser est en colonne, 0 sinon
+*        Vaut 1 si le déplacement à analyser est vertical, 0 sinon
 *@param int lim
 *        Limite de déplacement sur le plateau dans la direction du mouvement (0 ou 9)
 *@param int* compteur
