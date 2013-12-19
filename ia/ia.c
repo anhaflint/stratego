@@ -9,7 +9,6 @@ typedef Enum{
 	malicious
 }Strategy;
 
-bool m_fight; // Booléen indiquant s'il y a eu un combat lors de la manche précédente
 EColor m_color; // Couleur des pièces de l'IA
 SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
 SPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces avant un combat
@@ -19,7 +18,8 @@ int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvement
 InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
 Strategy m_strategy; // Stratégie choisie
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
-bool m_hasAttacked; // Variable pour savoir si on a attaqué l'ennemi ce tour-ci (sert pour AttackResult)
+bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
+bool m_hisMove; // Variable pour connaître le mouvement que l'ennemi a fait au tour précédent : false = mouvement normal et true = attaque
 
 void InitLibrary(char name[50])
 {
@@ -103,13 +103,13 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	m_armyPiece = armyPiece;
 	m_enemyPos = enemyPos;
 	m_enemyPiece = enemyPiece;
-	m_fight = true;
-
-	if (armyPiece != enemyPiece)
+	
+	/* On ne traite les données que dans le cas où on a attaqué */
+	if (m_myMove)
 	{
-		/* Dans le cas où on a déclenché une attaque */
-		if (m_attacked)
+		if (armyPiece != enemyPiece) // Si les deux pièces sont différentes, on analyse le fight
 		{
+			/* Dans le cas où on a déclenché une attaque, on traite les données maintenant */
 			winner = winner(armyPiece, enemyPiece);
 
 			/* Dans tous les cas, la case d'où vient notre pièce devient vide */
@@ -120,29 +120,27 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 			{
 				/* On place notre pièce sur la case où était l'ennemi */
 				m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
-				m_board[enemyPos.line][enemyPos.col].box.piece = m_color;
+				m_board[enemyPos.line][enemyPos.col].box.content = m_color;
 			}
 			else // Si on a perdu, on enregistre contre quelle pièce on a perdu
-			{
+			{	
 				m_board[enemyPos.line][enemyPos.col].box.piece = enemyPiece;
-			}
-			m_attacked = false;
-		}			
-		else
-		{		
-			winner = winner(armyPiece, enemyPiece);		
-			// A completer
+			}		
+		}
+		else // Si les deux pièces sont identiques, les deux pièces sont éliminées
+		{
+			/* Plus rien dans la case de notre pièce */
+			m_board[armyPos.line][armyPos.col].box.piece = EPnone;
+			m_board[armyPos.line][armyPos.col].box.content = ECnone;
+
+			/* Plus rien dans la case où était l'ennemi */
+			m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
+			m_board[enemyPos.line][enemyPos.col].box.content = m_color;
 		}		
 	}
-	else // Si les deux pièces sont identiques, les deux pièces sont éliminées
+	else
 	{
-		/* Plus rien dans la case de notre pièce */
-		m_board[armyPos.line][armyPos.col].box.piece = EPnone;
-		m_board[armyPos.line][armyPos.col].box.content = ECnone;
-
-		/* Plus rien dans la case où était l'ennemi */
-		m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
-		m_board[enemyPos.line][enemyPos.col].box.piece = m_color;
+		m_hisMove = true;
 	}
 }	
 
@@ -153,14 +151,7 @@ void void Penalty()
 
 //--- Fonctions personnelles ---//
 
-// Première phase, mise à jour des données internes
-void updateData(gameState)
-{
-	m_nbMove = 0;
-
-	// Voir les changements qu'il y a eu
-}
-
+// Fonction interne à AttackResult
 SPiece winner(SPiece A, SPiece B)
 {
 	/* Si la pièce visée est le drapeau,
@@ -197,6 +188,28 @@ SPiece winner(SPiece A, SPiece B)
 		else
 			return A;
 	}
+}
+
+// Première phase, mise à jour des données internes
+void updateData(gameState)
+{
+	m_nbMove = 0;
+
+	/* On analyse les changements qu'il y a eu depuis notre dernier tour */
+
+	/* On regarde les actions qui se sont déroulées depuis notre dernier tour */
+	
+	if (m_myMove) // Si on a attaqué, on a besoin de traiter le mouvement de l'ennemi seulement
+	{
+		if (m_hisMove) // Si l'ennemi a attaqué aussi,
+		{
+
+		}
+	}
+	// Réinitialisation des valeurs
+
+	m_myMove = false;
+	m_hisMove = false;
 }
 
 // Analyse du plateau => Mise à jour des déplacements possibles

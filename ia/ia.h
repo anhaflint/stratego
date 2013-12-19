@@ -69,13 +69,6 @@ void Penalty();
 //------------------------ Fonctions internes à l'IA -------------------------//
 
 /**
-* Met à jour les données internes avec les nouvelles données fournies par l'arbitre
-*@param SGameState gameState
-*        l'état du jeu courant
-*/
-void updateData(gameState);
-
-/**
 *  Renvoie le gagnant du combat dans lequel la pièce A attaque la pièce B (A != B)
 * @param SPiece A
 *  Pièce attaquante
@@ -85,6 +78,13 @@ void updateData(gameState);
 *  Pièce gagnante du combat
 */
 SPiece winner(SPiece A, SPiece B);
+
+/**
+* Met à jour les données internes avec les nouvelles données fournies par l'arbitre
+*@param SGameState gameState
+*        l'état du jeu courant
+*/
+void updateData(gameState);
 
 /**
 * Analyse des mouvements possibles sur le plateau par l'IA, stockage en interne

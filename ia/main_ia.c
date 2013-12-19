@@ -78,25 +78,25 @@ void initBoard(InfoPiece board[10][10])
 	{
 		for (j=0; j<10; j++) // Colonnes
 		{
-			if ((9-i) > 3 && (9-i) < 6 && ((j > 1 && j < 4)||(j > 5 && j < 8)))
+			if (i > 3 && i < 6 && ((j > 1 && j < 4)||(j > 5 && j < 8)))
 			{
-				board[9-i][j].box.content = EClake;
-				board[9-i][j].box.piece = EPnone;
+				board[i][j].box.content = EClake;
+				board[i][j].box.piece = EPnone;
 			}
-			else if ((9-i) < 4)
+			else if (i < 4)
 			{
-				board[9-i][j].box.content = ECblue;
-				board[9-i][j].box.piece = EPscout;
+				board[i][j].box.content = ECblue;
+				board[i][j].box.piece = EPscout;
 			}				
-			else if ((9-i) > 5)
+			else if (i > 5)
 			{
-				board[9-i][j].box.content = ECred;
-				board[9-i][j].box.piece = EPscout;				
+				board[i][j].box.content = ECred;
+				board[i][j].box.piece = EPscout;				
 			}
 			else
 			{
-				board[9-i][j].box.content = ECnone;
-				board[9-i][j].box.piece = EPnone;
+				board[i][j].box.content = ECnone;
+				board[i][j].box.piece = EPnone;
 			}				
 		}
 	}	
@@ -113,17 +113,17 @@ void drawBoard(InfoPiece board[10][10])
 		for (j = 0; j < 10; ++j)
 		{
 
-			if (board[i-][j].box.content == ECred)
+			if (board[9-i][j].box.content == ECred)
 				couleur("31");			
-			if (board[i][j].box.content == ECblue)
+			if (board[9-i][j].box.content == ECblue)
 				couleur("36");
-			if (board[i][j].box.content == EClake)
+			if (board[9-i][j].box.content == EClake)
 				couleur("30");
 
-			if (board[i][j].box.piece > 10)
-				printf(" %d", board[i][j].box.piece);		
+			if (board[9-i][j].box.piece > 10)
+				printf(" %d", board[9-i][j].box.piece);		
 			else
-				printf(" %d ", board[i][j].box.piece);
+				printf(" %d ", board[9-i][j].box.piece);
 
 			couleur("0");
 			printf(" |");
@@ -199,8 +199,8 @@ void addAnalyzedMove(InfoPiece m_board[10][10], EColor m_color, SMove m_movement
 
 	if ((val != lim) && (m_board[new_i][new_j].box.content != EClake) && (m_board[new_i][new_j].box.content != m_color)) 
 	{
-		start.line = 9-i; start.col = j;
-		end.line = 9-new_i; end.col = new_j;
+		start.line = i; start.col = j;
+		end.line = new_i; end.col = new_j;
 		m_movements[*compteur].start = start;
 		m_movements[*compteur].end = end;
 		(*compteur)++;
@@ -212,8 +212,8 @@ void addAnalyzedMove(InfoPiece m_board[10][10], EColor m_color, SMove m_movement
 			
 			while ((temp != lim) && (m_board[new_i+dirLine][new_j+dirCol].box.content != EClake) && (m_board[new_i+dirLine][new_j+dirCol].box.content != m_color) && (m_board[new_i][new_j].box.content != enemyColor))
 			{
-				start.line = 9-i; start.col = j;
-				end.line = 9-(new_i+dirLine); end.col = new_j+dirCol;
+				start.line = i; start.col = j;
+				end.line = (new_i+dirLine); end.col = new_j+dirCol;
 				m_movements[*compteur].start = start;
 				m_movements[*compteur].end = end;
 				(*compteur)++;
