@@ -1,3 +1,16 @@
+
+
+
+
+typedef struct
+{
+SDL_Rect     position;
+SDL_Surface     cellaff;  		//Position relative d'une case ainsi que sa surface "image" associé NULL => Backgroung
+								//																	tuileA ou tuileT
+								// Cette stucture est utile pour connaître la position de chaque des cases ainsi que l'image qui la remplit
+}Cell;
+
+
 typedef struct _BoardLayout
 {
 	SDL_Rect PiecesLayout[26];

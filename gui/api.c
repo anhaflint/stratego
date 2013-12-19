@@ -11,13 +11,22 @@
 //Affichages du plateau au differentes phases du jeu
 //------------------
 
+typedef struct
+{
+SDL_Rect     position;
+SDL_Surface     cellaff;  		//Position relative d'une case ainsi que sa surface "image" associé NULL => Backgroung
+								//																	tuileA ou tuileT
+								// Cette stucture est utile pour connaître la position de chaque des cases ainsi que l'image qui la remplit
+}Cell;
+
+
 typedef struct _BoardLayout
 {
 	SDL_Rect PiecesLayout[26];
 	SDL_Surface *Background;    //image de fond
 	SDL_Surface *Screen;		//surface de l'ecran
 	SDL_Surface *Fight; 		//image affichee lors d'un combat si jamais on en met une
-	SDL_Rect DisplayTab[10][10];//tableau contenant les positions des pions à afficher
+	Cell DisplayTab[10][10];//tableau contenant les positions des pions à afficher
 	SDL_Surface *AllPieces;
 }BoardLayout;
 
