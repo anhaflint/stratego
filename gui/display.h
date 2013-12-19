@@ -17,7 +17,7 @@ typedef struct _BoardLayout
 	SDL_Surface *Background;    //image de fond
 	SDL_Surface *Screen;		//surface de l'ecran
 	SDL_Surface *Fight; 		//image affichee lors d'un combat si jamais on en met une
-	SDL_Rect DisplayTab[10][10];//tableau contenant les positions des pions à afficher
+	Cell DisplayTab[10][10];//tableau contenant les positions des pions à afficher
 }BoardLayout;
 
 
