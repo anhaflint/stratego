@@ -78,25 +78,25 @@ void initBoard(InfoPiece board[10][10])
 	{
 		for (j=0; j<10; j++) // Colonnes
 		{
-			if (i > 3 && i < 6 && ((j > 1 && j < 4)||(j > 5 && j < 8)))
+			if ((9-i) > 3 && (9-i) < 6 && ((j > 1 && j < 4)||(j > 5 && j < 8)))
 			{
-				board[i][j].box.content = EClake;
-				board[i][j].box.piece = EPnone;
+				board[9-i][j].box.content = EClake;
+				board[9-i][j].box.piece = EPnone;
 			}
-			else if (i < 4)
+			else if ((9-i) < 4)
 			{
-				board[i][j].box.content = ECblue;
-				board[i][j].box.piece = EPscout;
+				board[9-i][j].box.content = ECblue;
+				board[9-i][j].box.piece = EPscout;
 			}				
-			else if (i > 5)
+			else if ((9-i) > 5)
 			{
-				board[i][j].box.content = ECred;
-				board[i][j].box.piece = EPscout;				
+				board[9-i][j].box.content = ECred;
+				board[9-i][j].box.piece = EPscout;				
 			}
 			else
 			{
-				board[i][j].box.content = ECnone;
-				board[i][j].box.piece = EPnone;
+				board[9-i][j].box.content = ECnone;
+				board[9-i][j].box.piece = EPnone;
 			}				
 		}
 	}	
@@ -113,7 +113,7 @@ void drawBoard(InfoPiece board[10][10])
 		for (j = 0; j < 10; ++j)
 		{
 
-			if (board[i][j].box.content == ECred)
+			if (board[i-][j].box.content == ECred)
 				couleur("31");			
 			if (board[i][j].box.content == ECblue)
 				couleur("36");

@@ -19,6 +19,7 @@ int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvement
 InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
 Strategy m_strategy; // Stratégie choisie
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
+bool m_hasAttacked; // Variable pour savoir si on a attaqué l'ennemi ce tour-ci (sert pour AttackResult)
 
 void InitLibrary(char name[50])
 {
@@ -93,13 +94,57 @@ void NextMove(const SGameState * const gameState, SMove *move)
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 {
+	/* Déclaration des variables internes à la fonction */
+	SPiece winner;
+
+	/* Enregistrement des données fournies par l'arbitre */
 	printf("AttackResult\n");
 	m_armyPos = armyPos;
 	m_armyPiece = armyPiece;
 	m_enemyPos = enemyPos;
 	m_enemyPiece = enemyPiece;
-	m_fight = true;	
-}
+	m_fight = true;
+
+	if (armyPiece != enemyPiece)
+	{
+		/* Dans le cas où on a déclenché une attaque */
+		if (m_attacked)
+		{
+			winner = winner(armyPiece, enemyPiece);
+
+			/* Dans tous les cas, la case d'où vient notre pièce devient vide */
+			m_board[armyPos.line][armyPos.col].box.piece = EPnone;
+			m_board[armyPos.line][armyPos.col].box.content = ECnone;
+
+			if (winner == armyPiece) // Si on a attaqué et gagné, on remplace la pièce visée
+			{
+				/* On place notre pièce sur la case où était l'ennemi */
+				m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
+				m_board[enemyPos.line][enemyPos.col].box.piece = m_color;
+			}
+			else // Si on a perdu, on enregistre contre quelle pièce on a perdu
+			{
+				m_board[enemyPos.line][enemyPos.col].box.piece = enemyPiece;
+			}
+			m_attacked = false;
+		}			
+		else
+		{		
+			winner = winner(armyPiece, enemyPiece);		
+			// A completer
+		}		
+	}
+	else // Si les deux pièces sont identiques, les deux pièces sont éliminées
+	{
+		/* Plus rien dans la case de notre pièce */
+		m_board[armyPos.line][armyPos.col].box.piece = EPnone;
+		m_board[armyPos.line][armyPos.col].box.content = ECnone;
+
+		/* Plus rien dans la case où était l'ennemi */
+		m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
+		m_board[enemyPos.line][enemyPos.col].box.piece = m_color;
+	}
+}	
 
 void void Penalty()
 {
@@ -112,6 +157,46 @@ void void Penalty()
 void updateData(gameState)
 {
 	m_nbMove = 0;
+
+	// Voir les changements qu'il y a eu
+}
+
+SPiece winner(SPiece A, SPiece B)
+{
+	/* Si la pièce visée est le drapeau,
+	la pièce attaquante gagne d'office */
+	if (B == EPflag)
+		return A;
+	/* Si l'attaquant est un espion */
+	else if (A == EPspy)
+	{
+		/* Il gagne seulement si la pièce 
+		cible est le maréchal */
+		if (B == EPmarshal)
+			return A;
+		else
+			return B;
+	}
+	/* Sinon si l'attaquant est un démineur */
+	else if (A == EPminer)
+	{
+		/* Il gagne si la pièce attaquée est une 
+		bombe, un espion ou un éclaireur */
+		if (B < EPminer)
+			return A;
+		else
+			return B;
+	}
+	/* Sinon, dans tous les autres cas */
+	else
+	{
+		/* Si la pièce attaquée est une bombe ou si sa 
+		puissance est supérieure à l'attaquant, elle gagne */
+		if ((B == EPbomb) || (B > A))
+			return B;
+		else
+			return A;
+	}
 }
 
 // Analyse du plateau => Mise à jour des déplacements possibles
