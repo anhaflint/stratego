@@ -80,11 +80,25 @@ void Penalty();
 SPiece winner(SPiece A, SPiece B);
 
 /**
+* Calcule et fais les remplacements sur le plateau selon le 
+* résultat de Piece A qui attaque Piece B
+* @param SPiece PieceA
+*	Pièce attaquante
+* @param SPiece Piece B
+*   Pièce attaquée
+* @param SPos APos
+*	Position de la pièce qui attaque
+* @param Spos BPos
+* 	Position de la pièce attaquée
+*/
+void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos);
+
+/**
 * Met à jour les données internes avec les nouvelles données fournies par l'arbitre
-*@param SGameState gameState
+*@param const SGameState * const gameState
 *        l'état du jeu courant
 */
-void updateData(gameState);
+void updateData(const SGameState * const gameState);
 
 /**
 * Analyse des mouvements possibles sur le plateau par l'IA, stockage en interne
