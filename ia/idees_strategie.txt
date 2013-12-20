@@ -68,11 +68,13 @@ typedef struct{
 void StartGame(const EColor color,EPiece boardInit[4][10]); // Initialisation des pièces
 
 SMove NextMove(SGameState*  gameState){
-	void updateData(gameState); // Première phase, mise à jour des données internes
-	void analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles
-	SMove decideMove(gameState); // Décision du mouvement à faire
-	void checkMove(); // Vérification du mouvement avec notre propre arbitre interne à l'IA
-	return du mouvement à la fin
+	void updateData(gameState); // Première phase, mise à jour des données internes ==> Codé
+	void analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles ==> Codé et testé
+	SMove decideMove(gameState); // Décision du mouvement à faire ==> A faire...
+	void checkMove(); // Vérification du mouvement avec notre propre arbitre interne à l'IA ==> Inutile
+	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
+		saveMove(); ==> Codé
+	return m_decidedMove;
 }
 
 void decideMove()

@@ -56,6 +56,7 @@ typedef struct{
 
 void initBoard(InfoPiece m_board[10][10]);
 void drawBoard(InfoPiece board[10][10]);
+void drawBoxBoard(SBox board[10][10]);
 void analyzeBoard(InfoPiece m_board[10][10]);
 void addAnalyzedMove(InfoPiece m_board[10][10], EColor m_color, SMove m_movements[172], int i, int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur);
 void drawMoves(SMove moves[170], int m_nbMove);

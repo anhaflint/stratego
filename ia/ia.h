@@ -127,10 +127,10 @@ void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, int*
 
 /**
 * Renvoie le mouvement à faire qui a été décidé par l'IA
-*@param SGameState gameState
-*        l'état du jeu courant
-*@return SMove
-*        mouvement à faire, décidé par l'IA
+* @param SGameState gameState
+* 	l'état du jeu courant
+* @return SMove
+* 	mouvement à faire, décidé par l'IA
 */
 SMove decideMove(gameState);
 
@@ -138,3 +138,8 @@ SMove decideMove(gameState);
 * Vérification du mouvement décidé par l'IA
 */
 void checkMove();
+
+/**
+* Enregistre le plateau si on a fait un déplacement simple
+*/
+void saveMove();

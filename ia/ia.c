@@ -1,6 +1,6 @@
-/*#include "../stratego.h"*/
-#include "ia.h"
 #include <stdbool.h>
+#include "structures.h"
+#include "ia.h"
 
 typedef enum{
 	defaut=0,
@@ -27,6 +27,7 @@ Strategy m_strategy; // Stratégie choisie
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
 bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
 bool m_hisMove; // Variable pour connaître le mouvement que l'ennemi a fait au tour précédent : false = mouvement normal et true = attaque
+
 
 void InitLibrary(char name[50])
 {
@@ -120,7 +121,7 @@ void Penalty()
 	printf("Penalty\n");
 }
 
-//--- Fonctions personnelles ---//
+//---------------- Fonctions personnelles ---------------//
 
 // Fonction interne à AttackResult
 SPiece winner(SPiece A, SPiece B)
@@ -202,10 +203,9 @@ void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos, )
 void updateData(const SGameState * const gameState)
 {
 	/* Variables internes à la fonction */
-	int i, j, k=0, l=0; // Variables pour les boucles
+	int i, j; // Variables pour les boucles
 	int diff[10][10]; // Tableau sauvegardant les différences sur la plateau depuis les changements
-	SPos negative[2], positive[2]; // Tableaux contenant les positions qui ont changé depuis le dernier mouvement
-	SPos temp; // Position pour stocker des valeurs temporaires
+	SPos negative, positive; // Tableaux contenant les positions qui ont changé depuis le dernier mouvement
 
 	m_nbMove = 0; // A déplacer dans la fonction précédant l'envoi de mouvement
 
@@ -219,62 +219,21 @@ void updateData(const SGameState * const gameState)
 
 			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
 			if ((m_board[i][j].box.piece - gameState->board[i][j].piece) < 0)
-			{
 				temp.line = i; temp.col = j;
-				negative[k] = temp;
-				k++;
-			}
+
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
 			else if ((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)
-			{
-				temp.line = i; temp.col = j;
-				positive[l] = temp;
-				l++;
-			}
+				positive.line = i; positive.col = j;
 		}
 	}
 
-	/* Si quelque chose a changé depuis le dernier mouvement */
-	if (k > 0 || l > 0)
-	{
-		/* Si on a fait un déplacement ou deux 
-		déplacements normaux ont été effectués
-		sur des cases différentes */
-		if (k == l) 
-		{					
-			/* S'il y a correspondance entre negative[0] et positive[0] */
-			if (diff[positive[0].line][positive[0].col] + diff[negative[0].col][negative[0].col] == 0)
-			{
-				/* Mise à jour du plateau interne */
-				m_board[positive[0].line][positive[0].col].box.piece = gameState->board[negative[0].col][negative[0].col].piece;
-				m_board[negative[0].col][negative[0].col].box.piece = gameState->board[positive[0].line][positive[0].col].piece;
+	/* Mise à jour du plateau interne */
+	m_board[positive.line][positive.col].box.piece = gameState->board[negative.line][negative.col].piece;	
+	m_board[positive.line][positive.col].box.content = gameState->board[negative.line][negative.col].content;
 
-				if (k > 0)
-				{
-					m_board[positive[1].line][positive[1].col].box.piece = gameState->board[negative[1].col][negative[1].col].piece;
-					m_board[negative[1].col][negative[1].col].box.piece = gameState->board[positive[1].line][positive[1].col].piece;
-				}
-			}
-			else // Sinon, il y en a forcément entre negative[0] et positive[1]
-			{
-				/* Mise à jour du plateau interne */
-				m_board[positive[0].line][positive[0].col].box.piece = gameState->board[negative[1].col][negative[1].col].piece;
-				m_board[negative[0].col][negative[0].col].box.piece = gameState->board[positive[1].line][positive[1].col].piece;
+	m_board[negative.line][negative.col].box.piece = EPnone;
+	m_board[negative.line][negative.col].box.content = ECNone;
 
-				if (k > 0)
-				{
-					m_board[positive[1].line][positive[1].col].box.piece = gameState->board[negative[0].col][negative[0].col].piece;
-					m_board[negative[1].col][negative[1].col].box.piece = gameState->board[positive[0].line][positive[0].col].piece;
-				}
-			}							
-		}
-		/* Sinon, si il y a eu deux déplacements modifiant 3 cases, ou un déplacement puis une attaque, analyse... */
-		else
-		{
-			// A faire
-		}
-	}	
-	
 	/* Réinitialisation des valeurs */
 	m_myMove = false;
 	m_hisMove = false;
@@ -389,5 +348,21 @@ void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, unsi
 	}
 }
 
+// Décision du mouvement à effectuer
+SMove decideMove(const SGameState * const gameState)
+{
+	// Décision du mouvemennt
+	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
+}
 
-// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
+// Enregistrement du plateau si déplacement simple
+void saveMove()
+{
+	// On vide la case d'où vient la pièce
+	m_board[m_myMove.start.line][m_myMove.start.col].box.piece = EPnone;
+	m_board[m_myMove.start.line][m_myMove.start.col].box.content = ECnone;
+
+	// On met la nouvelle pièce dans sa nouvelle case
+	m_board[m_myMove.end.line][m_myMove.end.col].box.piece = gameState.board[m_myMove.start.line][m_myMove.start.col].piece;
+	m_board[m_myMove.end.line][m_myMove.end.col].box.content = m_color;
+}
