@@ -1,0 +1,24 @@
+jouerJ1
+{
+	if IA 
+		j1NextMove
+	else
+		playerNextMove(gameState, J1)
+}
+
+jouerJ2
+{
+	if IA 
+		j2NextMove
+	else
+		playerNextMove(gameState, J2)
+}
+
+
+--------------------
+
+
+jouerJ1()
+AttackResult()
+jouerJ2()
+AttackResult()
