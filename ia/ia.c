@@ -88,7 +88,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[3][6] = EPmarshal;
 		break;
 
-		case defaut:
+		case defaut://deja fait
 			/* placement du drapeau */
 			boardInit[0][6] = EPflag;
 			/* placement des bombes */
