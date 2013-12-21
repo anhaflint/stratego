@@ -143,3 +143,22 @@ void checkMove();
 * Enregistre le plateau si on a fait un déplacement simple
 */
 void saveMove();
+
+/**
+* Classe les mouvements possibles en fonction du risque encouru
+* @param riskedMoves est le tableau qui contient tous les movements courants risqués
+* @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
+*/
+void evaluateMoves(SMove riskedMoves[], SMove normalMoves[]);
+
+/**
+* permet de savoir si pour une pièce à une position donnée,
+* si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
+* @param position 
+	est la position qui déplacée dans la direction piecedirection est evaluée pour savoir si oui ou non on sort du tableau
+* @param piecedirection 
+	est la direction qu'on donne à une pièce initialement à la Position position 
+	pour évaluer si à la nouvelle position obtenue reste dans le tableau
+	exemple: position + left = position.col -1 , la nouvelle position à evaluer
+*/
+bool limiteUnachieved(SPos position, Direction piecedirection)

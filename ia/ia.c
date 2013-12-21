@@ -9,6 +9,13 @@ typedef enum{
 	malicious
 }Strategy;
 
+typedef enum{
+	left=0,
+	right,
+	top,
+	bottom,
+}Direction;
+
 // Structure qui sera interne à l'ia
 typedef struct{
 	SBox box;
@@ -365,4 +372,89 @@ void saveMove()
 	// On met la nouvelle pièce dans sa nouvelle case
 	m_board[m_myMove.end.line][m_myMove.end.col].box.piece = gameState.board[m_myMove.start.line][m_myMove.start.col].piece;
 	m_board[m_myMove.end.line][m_myMove.end.col].box.content = m_color;
+}
+// procedure interne a decideMoves
+// Classement des mouvements en fonction du risque encouru
+void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
+{
+	/* Declaration des variables internes a la procedure*/
+	int i = r = n = 0;
+	EColor enemyColor;
+
+	/* Initialisation de la couleur ennemie */
+	if (m_color == ECred)
+		enemyColor = ECblue;
+	else
+		enemyColor = ECred;
+	
+	while(i<m_nbMove){
+		/* si en effectuant le mouvement je peux directement  etre attaqué en haut */
+		if( limiteUnachived(m_movements[i].end.line,top) &&  m_board[ m_movements[i].end.line + 1 ][m_movements[i].end.col].content != enemyColor)
+		{
+			riskedMoves[r] = m_movements[i];
+			r++;
+		}
+		else 
+		{
+			/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
+			if(limiteUnachived(m_movements[i].end.line,bottom) &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
+			{
+				riskedMoves[r] = m_movements[i];
+				r++;
+			}
+			else
+			{	
+				/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
+				if (limiteUnachived(m_movements[i].end.line,right) &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
+				{
+					riskedMoves[r] = m_movements[i];
+					r++;
+				}
+				else
+				{	
+					/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
+					if (limiteUnachived(m_movements[i].end.line,left) &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
+					{
+						riskedMoves[r] = m_movements[i];
+						r++;
+					}
+					/* si en effectuant le mouvement je ne risque rien */
+					else
+					{
+						normalMoves[n] = m_movements[i];
+						n++;
+					}
+
+				}
+			}
+		}
+	}
+
+}
+
+// permet de savoir si pour une pièce à une position donnée,si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
+bool limiteUnachieved(SPos position, Direction piecedirection)
+{
+	switch(piecedirection){
+		case left: 
+			if(SPos.col - 1 < 0)
+				return false;
+			else return true;
+			break;
+		case right:
+			if(SPos.col + 1 > 9) 
+				return false;
+			else return true;
+			break;
+		case top:
+			if(SPos.line + 1 > 9) 
+				return false;
+			else return true;
+			break;
+		case bottom:
+			if(SPos.line - 1 < 0) 
+				return false;
+			else return true;
+			break;
+	}
 }
