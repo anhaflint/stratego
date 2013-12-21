@@ -56,16 +56,12 @@ typedef struct
 	SPos end;
 } SMove;
 
-typedef enum
-{
-	RED = 0,
-	BLUE,
-}EPlayerColor;
 
 typedef struct {
 	unsigned int NbPenalty;	// nombre de pénalités du joueur
-	EPlayerColor Color;		// couleur du joueur (const pour éviter la triche)
-}EPlayer;
+	const EColor Color;		// couleur du joueur (const pour éviter la triche)
+}Player;
+
 
 typedef enum
 {
@@ -80,7 +76,7 @@ typedef struct
 	char Player1Name[16];
 	char Player2Name[16];
 	SGameMode Mode; 
-	EPlayerColor ColorPlayer1;
+	const EColor ColorPlayer1;
 }SGameConfig;
 
 

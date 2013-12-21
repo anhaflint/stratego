@@ -16,8 +16,8 @@
 SGameMode DetectGameMode(int argc, char* argv[])
 {
 	SGameMode gamemode = ERROR;
-	if (argc == 1)
-		printf("le nombre d'arguments est insuffisant\n");
+	if (argc == 1 || argc >4)
+		printf("le nombre d'arguments est incorrect\n");
 	if (*argv[1] == '1')
 		gamemode = IA_HUMAN;
 	else if (*argv[1] == '2')

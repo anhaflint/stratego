@@ -1,13 +1,27 @@
-/*#include "../stratego.h"*/
-#include "ia.h"
 #include <stdbool.h>
+#include "structures.h"
+#include "ia.h"
 
-typedef Enum{
+typedef enum{
 	defaut=0,
 	offensive,
 	defensive,
 	malicious
 }Strategy;
+
+typedef enum{
+	left=0,
+	right,
+	top,
+	bottom,
+}Direction;
+
+// Structure qui sera interne à l'ia
+typedef struct{
+	SBox box;
+	bool isVisible;
+	bool isBomb;
+}InfoPiece;
 
 EColor m_color; // Couleur des pièces de l'IA
 SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
@@ -20,6 +34,7 @@ Strategy m_strategy; // Stratégie choisie
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
 bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
 bool m_hisMove; // Variable pour connaître le mouvement que l'ennemi a fait au tour précédent : false = mouvement normal et true = attaque
+
 
 void InitLibrary(char name[50])
 {
@@ -93,63 +108,27 @@ void NextMove(const SGameState * const gameState, SMove *move)
 }
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
-{
-	/* Déclaration des variables internes à la fonction */
-	SPiece winner;
-
-	/* Enregistrement des données fournies par l'arbitre */
-	printf("AttackResult\n");
-	m_armyPos = armyPos;
-	m_armyPiece = armyPiece;
-	m_enemyPos = enemyPos;
-	m_enemyPiece = enemyPiece;
+{	
+	printf("AttackResult\n");	
 	
-	/* On ne traite les données que dans le cas où on a attaqué */
+	/* Si c'est nous qui avons engagé l'attaque */
 	if (m_myMove)
 	{
-		if (armyPiece != enemyPiece) // Si les deux pièces sont différentes, on analyse le fight
-		{
-			/* Dans le cas où on a déclenché une attaque, on traite les données maintenant */
-			winner = winner(armyPiece, enemyPiece);
-
-			/* Dans tous les cas, la case d'où vient notre pièce devient vide */
-			m_board[armyPos.line][armyPos.col].box.piece = EPnone;
-			m_board[armyPos.line][armyPos.col].box.content = ECnone;
-
-			if (winner == armyPiece) // Si on a attaqué et gagné, on remplace la pièce visée
-			{
-				/* On place notre pièce sur la case où était l'ennemi */
-				m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
-				m_board[enemyPos.line][enemyPos.col].box.content = m_color;
-			}
-			else // Si on a perdu, on enregistre contre quelle pièce on a perdu
-			{	
-				m_board[enemyPos.line][enemyPos.col].box.piece = enemyPiece;
-			}		
-		}
-		else // Si les deux pièces sont identiques, les deux pièces sont éliminées
-		{
-			/* Plus rien dans la case de notre pièce */
-			m_board[armyPos.line][armyPos.col].box.piece = EPnone;
-			m_board[armyPos.line][armyPos.col].box.content = ECnone;
-
-			/* Plus rien dans la case où était l'ennemi */
-			m_board[enemyPos.line][enemyPos.col].box.piece = armyPiece;
-			m_board[enemyPos.line][enemyPos.col].box.content = m_color;
-		}		
+		analyseFight(armyPiece, enemyPiece, armyPos, enemyPos);
 	}
 	else
 	{
 		m_hisMove = true;
+		analyseFight(enemyPiece, armyPiece, enemyPos, armyPos);
 	}
-}	
+}
 
-void void Penalty()
+void Penalty()
 {
 	printf("Penalty\n");
 }
 
-//--- Fonctions personnelles ---//
+//---------------- Fonctions personnelles ---------------//
 
 // Fonction interne à AttackResult
 SPiece winner(SPiece A, SPiece B)
@@ -190,24 +169,79 @@ SPiece winner(SPiece A, SPiece B)
 	}
 }
 
-// Première phase, mise à jour des données internes
-void updateData(gameState)
+// Fonction interne à AttackResult
+void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos, )
 {
-	m_nbMove = 0;
+	SPiece winner;
 
-	/* On analyse les changements qu'il y a eu depuis notre dernier tour */
-
-	/* On regarde les actions qui se sont déroulées depuis notre dernier tour */
-	
-	if (m_myMove) // Si on a attaqué, on a besoin de traiter le mouvement de l'ennemi seulement
+	if (PieceA != PieceB) // Si les deux pièces sont différentes, on analyse le fight
 	{
-		if (m_hisMove) // Si l'ennemi a attaqué aussi,
-		{
+		// On détermine le gagnant du combat		
+		winner = winner(PieceA, PieceB);
 
+		if (winner == PieceA) // Si la pièce A a attaqué et gagné, on remplace la pièce B
+		{
+			/* On place la pièce A sur la case où était la pièce B */
+			m_board[BPos.line][BPos.col].box.piece = PieceA;
+			m_board[BPos.line][BPos.col].box.content = m_board[APos.line][APos.col].box.content;
+		}
+		else // Si la pièce A a perdu, on sauvegarde ce qu'est la pièce B
+		{	
+			m_board[BPos.line][BPos.col].box.piece = PieceB;
+		}		
+
+		/* Dans tous les cas, la case d'où vient la pièce A devient vide */
+		m_board[APos.line][APos.col].box.piece = EPnone;
+		m_board[APos.line][APos.col].box.content = ECnone;
+	}
+	else // Si les deux pièces sont identiques, elles sont éliminées
+	{
+		/* Plus rien dans la case de la pièce A */
+		m_board[APos.line][APos.col].box.piece = EPnone;
+		m_board[APos.line][APos.col].box.content = ECnone;
+
+		/* Plus rien dans la case de la pièce B */
+		m_board[BPos.line][BPos.col].box.piece = EPnone;
+		m_board[BPos.line][BPos.col].box.content = ECnone;
+	}
+}
+
+// Première phase, mise à jour des données internes
+void updateData(const SGameState * const gameState)
+{
+	/* Variables internes à la fonction */
+	int i, j; // Variables pour les boucles
+	int diff[10][10]; // Tableau sauvegardant les différences sur la plateau depuis les changements
+	SPos negative, positive; // Tableaux contenant les positions qui ont changé depuis le dernier mouvement
+
+	m_nbMove = 0; // A déplacer dans la fonction précédant l'envoi de mouvement
+
+	/* On analyse les changements qu'il y a eu depuis notre dernier tour, 
+	on stocke ça dans le tableau de positions adéquat */
+	for (i=0; i < 10; i++)
+	{
+		for (j=0; j < 10; j++)
+		{
+			diff[i][j] = m_board[i][j].box.piece - gameState->board[i][j].piece;
+
+			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
+			if ((m_board[i][j].box.piece - gameState->board[i][j].piece) < 0)
+				temp.line = i; temp.col = j;
+
+			/* Sinon si une pièce est arrivée en (i,j), on stocke */
+			else if ((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)
+				positive.line = i; positive.col = j;
 		}
 	}
-	// Réinitialisation des valeurs
 
+	/* Mise à jour du plateau interne */
+	m_board[positive.line][positive.col].box.piece = gameState->board[negative.line][negative.col].piece;	
+	m_board[positive.line][positive.col].box.content = gameState->board[negative.line][negative.col].content;
+
+	m_board[negative.line][negative.col].box.piece = EPnone;
+	m_board[negative.line][negative.col].box.content = ECNone;
+
+	/* Réinitialisation des valeurs */
 	m_myMove = false;
 	m_hisMove = false;
 }
@@ -318,5 +352,109 @@ void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, unsi
 					new_j = temp;				
 			}
 		}						
+	}
+}
+
+// Décision du mouvement à effectuer
+SMove decideMove(const SGameState * const gameState)
+{
+	// Décision du mouvemennt
+	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
+}
+
+// Enregistrement du plateau si déplacement simple
+void saveMove()
+{
+	// On vide la case d'où vient la pièce
+	m_board[m_myMove.start.line][m_myMove.start.col].box.piece = EPnone;
+	m_board[m_myMove.start.line][m_myMove.start.col].box.content = ECnone;
+
+	// On met la nouvelle pièce dans sa nouvelle case
+	m_board[m_myMove.end.line][m_myMove.end.col].box.piece = gameState.board[m_myMove.start.line][m_myMove.start.col].piece;
+	m_board[m_myMove.end.line][m_myMove.end.col].box.content = m_color;
+}
+// procedure interne a decideMoves
+// Classement des mouvements en fonction du risque encouru
+void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
+{
+	/* Declaration des variables internes a la procedure*/
+	int i = r = n = 0;
+	EColor enemyColor;
+
+	/* Initialisation de la couleur ennemie */
+	if (m_color == ECred)
+		enemyColor = ECblue;
+	else
+		enemyColor = ECred;
+	
+	while(i<m_nbMove){
+		/* si en effectuant le mouvement je peux directement  etre attaqué en haut */
+		if( limiteUnachived(m_movements[i].end.line,top) &&  m_board[ m_movements[i].end.line + 1 ][m_movements[i].end.col].content != enemyColor)
+		{
+			riskedMoves[r] = m_movements[i];
+			r++;
+		}
+		else 
+		{
+			/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
+			if(limiteUnachived(m_movements[i].end.line,bottom) &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
+			{
+				riskedMoves[r] = m_movements[i];
+				r++;
+			}
+			else
+			{	
+				/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
+				if (limiteUnachived(m_movements[i].end.line,right) &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
+				{
+					riskedMoves[r] = m_movements[i];
+					r++;
+				}
+				else
+				{	
+					/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
+					if (limiteUnachived(m_movements[i].end.line,left) &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
+					{
+						riskedMoves[r] = m_movements[i];
+						r++;
+					}
+					/* si en effectuant le mouvement je ne risque rien */
+					else
+					{
+						normalMoves[n] = m_movements[i];
+						n++;
+					}
+
+				}
+			}
+		}
+	}
+
+}
+
+// permet de savoir si pour une pièce à une position donnée,si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
+bool limiteUnachieved(SPos position, Direction piecedirection)
+{
+	switch(piecedirection){
+		case left: 
+			if(SPos.col - 1 < 0)
+				return false;
+			else return true;
+			break;
+		case right:
+			if(SPos.col + 1 > 9) 
+				return false;
+			else return true;
+			break;
+		case top:
+			if(SPos.line + 1 > 9) 
+				return false;
+			else return true;
+			break;
+		case bottom:
+			if(SPos.line - 1 < 0) 
+				return false;
+			else return true;
+			break;
 	}
 }
