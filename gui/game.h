@@ -1,7 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 
-#include "structures.h"
+#include "../structure.h"
 
 //--------------------------------------------fonctions de gestion de jeu et arbitrage------------------------------------------------
 // valables pour un joueur humain ou inhumain (pica)
@@ -14,7 +14,7 @@ SGameMode DetectGameMode(int argc, char *argv[]);
 
 
 // procédures d'initialisation
-void Game_InitPlayer(EPlayer player1, EPlayer player2, SGameConfig gameconfig);	
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig);	
 void Game_InitGameState(SGameState* gamestate);
 
 
