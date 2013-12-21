@@ -1,5 +1,6 @@
 // structures
-
+#ifndef _STRUCTURE_H
+	#define _STRUCTURE_H
 
 // Etat d'une case du jeu
 typedef enum
@@ -59,8 +60,9 @@ typedef struct
 
 typedef struct {
 	unsigned int NbPenalty;	// nombre de pénalités du joueur
-	const EColor Color;		// couleur du joueur (const pour éviter la triche)
-}Player;
+	EColor Color;		// couleur du joueur (const pour éviter la triche)
+}EPlayer;
+
 
 typedef enum
 {
@@ -75,8 +77,9 @@ typedef struct
 	char Player1Name[16];
 	char Player2Name[16];
 	SGameMode Mode; 
-	const EColor ColorPlayer1;
+	EColor ColorPlayer1;
 }SGameConfig;
 
 
 
+#endif

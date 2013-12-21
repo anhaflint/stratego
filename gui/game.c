@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "game.h"
 
 
@@ -15,7 +16,7 @@
 SGameMode DetectGameMode(int argc, char* argv[])
 {
 	SGameMode gamemode = ERROR;
-	if (argc == 1 || argc >4)
+	if(argc ==1 || argc >4)
 		printf("le nombre d'arguments est incorrect\n");
 	if (*argv[1] == '1')
 		gamemode = IA_HUMAN;
@@ -32,7 +33,23 @@ SGameMode DetectGameMode(int argc, char* argv[])
  * au début de chaque jeu
  * initialise les deux joueurs en même temps 
  */
-void Game_InitPlayer();	
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig)
+{
+	srand(time(NULL)); // initialisation de rand
+	if(rand()%2== 0)
+	{
+		player1->Color = ECred;
+		player2->Color = ECblue;
+	}
+	else
+	{
+		player1->Color = ECblue;
+		player2->Color = ECred;
+	}
+	gameconfig->ColorPlayer1 = player1->Color;
+	
+
+}
 /* procédure d'initialisation de l'etat du jeu
  * @param SGameState* gamestate
  *			pointeur vers l'etat du jeu
