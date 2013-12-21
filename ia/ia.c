@@ -6,7 +6,11 @@ typedef enum{
 	defaut=0,
 	offensive,
 	defensive,
-	malicious
+	malicious,
+	protective,
+	risked,
+	bluff,
+	agressive,
 }Strategy;
 
 typedef enum{
@@ -57,7 +61,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 
 	switch(m_strategy){
 
-		case defensive:
+		case defensive://deja fait
 			/* placement du drapeau */
 			boardInit[0][0] = EPflag;
 			/* placement des bombes */
@@ -82,6 +86,195 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[3][3] = EPgeneral;
 			/* placement du maréchal */
 			boardInit[3][6] = EPmarshal;
+		break;
+
+		case defaut:
+			/* placement du drapeau */
+			boardInit[0][6] = EPflag;
+			/* placement des bombes */
+			boardInit[2][6] = boardInit[2][8] = boardInit[1][6] = boardInit[1][8] = boardInit[0][5] = boardInit[0][7] = EPbomb;
+			/* placement de l'espion */
+			boardInit[1][3] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][3] = boardInit[3][5] = boardInit[3][8] = boardInit[2][1] = boardInit[2][4] = boardInit[0][1] = boardInit[0][9] = EPscout;
+			/* placements des démineurs */
+			boardInit[0][0] = boardInit[0][2] = boardInit[0][3] = boardInit[0][8] = boardInit[3][7] = EPminer;
+			/* placement des sergents */
+			boardInit[1][1] = boardInit[1][7] = boardInit[1][9] = boardInit[0][4] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[3][2] = boardInit[2][7] = boardInit[2][9] = boardInit[1][5] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[3][4] = boardInit[3][9] = boardInit[2][5] = boardInit[1][7] = EPcaptain;
+			/* placement des majors */
+			boardInit[2][2] = boardInit[1][2] = boardInit[1][4] = EPmajor;
+			/* placement des colonels */
+			boardInit[3][1] = boardInit[2][3] = EPcolonel;
+			/* placements du général */
+			boardInit[3][6] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[2][0] = EPmarshal;
+		break;
+
+		case offensive:
+			/* placement du drapeau */
+			boardInit[0][9] = EPflag;
+			/* placement des bombes */
+			boardInit[1][0] = boardInit[0][1] = boardInit[0][6] = boardInit[1][7] = boardInit[0][8] = boardInit[1][9] = EPbomb;
+			/* placement de l'espion */
+			boardInit[2][3] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPscout;
+			/* placements des démineurs */
+			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPminer;
+			/* placement des sergents */
+			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
+			/* placement des majors */
+			boardInit[3][2] = boardInit[3][7] = boardInit[1][1] = EPmajor;
+			/* placement des colonels */
+			boardInit[2][9] = boardInit[0][2] = EPcolonel;
+			/* placements du général */
+			boardInit[3][3] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[3][6] = EPmarshal;
+		break;
+
+		case protective://deja fait
+			/* placement du drapeau */
+			boardInit[0][9] = EPflag;
+			/* placement des bombes */
+			boardInit[0][6] = boardInit[0][8] = boardInit[1][7] = boardInit[1][9] = boardInit[2][8] = boardInit[3][9] = EPbomb;
+			/* placement de l'espion */
+			boardInit[3][7] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][1] = boardInit[3][5] = boardInit[2][0] = boardInit[2][2] = boardInit[2][3] = boardInit[1][1] = boardInit[1][5] = boardInit[1][6] = EPscout;
+			/* placements des démineurs */
+			boardInit[3][3] = boardInit[2][7] = boardInit[0][2] = boardInit[0][3] = boardInit[0][4] = EPminer;
+			/* placement des sergents */
+			boardInit[2][9] = boardInit[1][3] = boardInit[1][8] = boardInit[0][7] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[3][1] = boardInit[3][4] = boardInit[1][4] = boardInit[0][1] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[2][6] = boardInit[1][0] = boardInit[1][2] = boardInit[0][5] = EPcaptain;
+			/* placement des majors */
+			boardInit[2][1] = boardInit[2][5] = boardInit[0][0] = EPmajor;
+			/* placement des colonels */
+			boardInit[3][2] = boardInit[3][6] = EPcolonel;
+			/* placements du général */
+			boardInit[3][8] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[2][4] = EPmarshal;
+		break;
+
+		case risked:
+			/* placement du drapeau */
+			boardInit[0][0] = EPflag;
+			/* placement des bombes */
+			boardInit[1][0] = boardInit[0][1] = boardInit[0][4] = boardInit[1][5] = boardInit[0][6] = boardInit[2][8] = EPbomb;
+			/* placement de l'espion */
+			boardInit[2][3] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPscout;
+			/* placements des démineurs */
+			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPminer;
+			/* placement des sergents */
+			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
+			/* placement des majors */
+			boardInit[3][2] = boardInit[3][7] = boardInit[1][1] = EPmajor;
+			/* placement des colonels */
+			boardInit[2][9] = boardInit[0][2] = EPcolonel;
+			/* placements du général */
+			boardInit[3][3] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[3][6] = EPmarshal;
+		break;
+
+		case agressive://deja fait
+			/* placement du drapeau */
+			boardInit[0][0] = EPflag;
+			/* placement des bombes */
+			boardInit[1][0] = boardInit[0][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[3][9] = EPbomb;
+			/* placement de l'espion */
+			boardInit[2][2] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][1] = boardInit[0][2] = boardInit[0][3] = boardInit[0][4] = boardInit[0][5] = boardInit[0][6] = boardInit[0][7] = EPscout;
+			/* placements des démineurs */
+			boardInit[3][2] = boardInit[2][3] = boardInit[1][3] = boardInit[1][4] = boardInit[0][8] = EPminer;
+			/* placement des sergents */
+			boardInit[3][6] = boardInit[3][7] = boardInit[2][9] = boardInit[0][9] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[1][2] = boardInit[1][7] = boardInit[1][8] = boardInit[1][9] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[2][4] = boardInit[2][6] = boardInit[2][7] = boardInit[1][6] = EPcaptain;
+			/* placement des majors */
+			boardInit[3][3] = boardInit[2][8] = boardInit[1][5] = EPmajor;
+			/* placement des colonels */
+			boardInit[2][1] = boardInit[2][5] = EPcolonel;
+			/* placements du général */
+			boardInit[2][0] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[1][1] = EPmarshal;
+		break;
+
+		case malicious:
+			/* placement du drapeau */
+			boardInit[0][7] = EPflag;
+			/* placement des bombes */
+			boardInit[0][4] = boardInit[1][5] = boardInit[0][6] = boardInit[1][7] = boardInit[0][8] = boardInit[1][9] = EPbomb;
+			/* placement de l'espion */
+			boardInit[2][3] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPscout;
+			/* placements des démineurs */
+			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPminer;
+			/* placement des sergents */
+			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
+			/* placement des majors */
+			boardInit[0][5] = boardInit[0][9] = boardInit[1][1] = EPmajor;
+			/* placement des colonels */
+			boardInit[2][9] = boardInit[0][2] = EPcolonel;
+			/* placements du général */
+			boardInit[3][3] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[3][6] = EPmarshal;
+		break;
+
+		case bluff://deja fait
+			/* placement du drapeau */
+			boardInit[3][3] = EPflag;
+			/* placement des bombes */
+			boardInit[3][2] = boardInit[3][4] = boardInit[3][5] = boardInit[2][3] = boardInit[2][6] = boardInit[0][7] = EPbomb;
+			/* placement de l'espion */
+			boardInit[0][5] = EPspy;
+			/*placement des eclaireurs */
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][7] = boardInit[3][8] = boardInit[3][9] = boardInit[1][7] = boardInit[0][1] = boardInit[0][4] = EPscout;
+			/* placements des démineurs */
+			boardInit[2][7] = boardInit[1][4] = boardInit[1][5] = boardInit[0][2] = boardInit[0][9] = EPminer;
+			/* placement des sergents */
+			boardInit[3][6] = boardInit[1][1] = boardInit[0][1] = boardInit[0][6] = EPsergeant;			
+			/* placement des lieutenants */
+			boardInit[1][0] = boardInit[1][9] = boardInit[0][3] = boardInit[0][8] = EPlieutenant;
+			/* placement des capitaines */
+			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][8] = EPcaptain;
+			/* placement des majors */
+			boardInit[2][0] = boardInit[2][5] = boardInit[2][9] = EPmajor;
+			/* placement des colonels */
+			boardInit[2][2] = boardInit[2][8] = EPcolonel;
+			/* placements du général */
+			boardInit[2][1] = EPgeneral;
+			/* placement du maréchal */
+			boardInit[2][4] = EPmarshal;
 		break;
 	}
 }
@@ -373,6 +566,7 @@ void saveMove()
 	m_board[m_myMove.end.line][m_myMove.end.col].box.piece = gameState.board[m_myMove.start.line][m_myMove.start.col].piece;
 	m_board[m_myMove.end.line][m_myMove.end.col].box.content = m_color;
 }
+
 // procedure interne a decideMoves
 // Classement des mouvements en fonction du risque encouru
 void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
@@ -387,33 +581,28 @@ void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
 	else
 		enemyColor = ECred;
 	
-	while(i<m_nbMove){
+	while(i<m_nbMove)
+	{
 		/* si en effectuant le mouvement je peux directement  etre attaqué en haut */
-		if( limiteUnachived(m_movements[i].end.line,top) &&  m_board[ m_movements[i].end.line + 1 ][m_movements[i].end.col].content != enemyColor)
+		if( m_movements[i].end.line < 9 &&  m_board[ m_movements[i].end.line + 1 ][m_movements[i].end.col].content != enemyColor)
 		{
 			riskedMoves[r] = m_movements[i];
 			r++;
 		}
-		else 
-		{
-			/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
-			if(limiteUnachived(m_movements[i].end.line,bottom) &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
+		/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
+		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
 			{
 				riskedMoves[r] = m_movements[i];
 				r++;
 			}
-			else
-			{	
-				/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
-				if (limiteUnachived(m_movements[i].end.line,right) &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
+			/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
+			else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
 				{
 					riskedMoves[r] = m_movements[i];
 					r++;
 				}
-				else
-				{	
-					/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
-					if (limiteUnachived(m_movements[i].end.line,left) &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
+				/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
+				else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
 					{
 						riskedMoves[r] = m_movements[i];
 						r++;
@@ -424,11 +613,7 @@ void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
 						normalMoves[n] = m_movements[i];
 						n++;
 					}
-
-				}
-			}
-		}
-	}
+	}	
 
 }
 
