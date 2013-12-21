@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "game.h"
 
 
@@ -32,7 +33,11 @@ SGameMode DetectGameMode(int argc, char* argv[])
  * au début de chaque jeu
  * initialise les deux joueurs en même temps 
  */
-void Game_InitPlayer();	
+void Game_InitPlayer(EPlayer player1, EPlayer player2, SGameConfig gameconfig)
+{
+	if (random)
+
+}
 /* procédure d'initialisation de l'etat du jeu
  * @param SGameState* gamestate
  *			pointeur vers l'etat du jeu

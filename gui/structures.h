@@ -65,7 +65,7 @@ typedef enum
 typedef struct {
 	unsigned int NbPenalty;	// nombre de pénalités du joueur
 	EPlayerColor Color;		// couleur du joueur (const pour éviter la triche)
-}Player;
+}EPlayer;
 
 typedef enum
 {
