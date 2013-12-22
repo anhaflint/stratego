@@ -9,6 +9,9 @@
  * un match est composé de plusieurs jeux
  */
 
+// procédure d'affichage 
+void DisplayGS(SGameState gamestate);
+
 // fonction de detection du mode de jeu
 SGameMode DetectGameMode(int argc, char *argv[]);
 

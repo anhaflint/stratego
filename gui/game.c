@@ -4,6 +4,31 @@
 #include "game.h"
 
 
+
+/* procédure qui affiche la totalité du gamestate 
+ * sous la forme tableau de 10*10 : [couleur | piece]
+ * 2 tableaux de 11 cases comptatn le nombre de pieces élimninées
+ */
+void DisplayGS(SGameState gamestate)
+{
+	int i, j; 
+	for(i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			printf(" [%d|%d] ", gamestate.board[i][j].content, gamestate.board[i][j].piece);
+		}
+		printf("\n");
+	}
+
+	for(i=0; i<11; i++)
+	{
+		printf("[%d]       [%d]\n", gamestate.redOut[i], gamestate.blueOut[i]);
+	}
+	printf("\n");
+}
+
+
 /* fonction de detection du mode de jeu
  * @param char *argv[]
  *			nombre de joueurs humains detectés via argv[1]=j j={0,1,2}
@@ -16,14 +41,17 @@
 SGameMode DetectGameMode(int argc, char* argv[])
 {
 	SGameMode gamemode = ERROR;
-	if(argc ==1 || argc >4)
+	if(argc >4 || argc == 1)
 		printf("le nombre d'arguments est incorrect\n");
-	if (*argv[1] == '1')
-		gamemode = IA_HUMAN;
-	else if (*argv[1] == '2')
-		gamemode = HUMAN_HUMAN;
-	else if (*argv[1] == '0')
-		gamemode = IA_IA;
+	if(argc > 1)
+	{
+		if (*argv[1] == '0')
+			gamemode = IA_IA;
+		else if (*argv[1] == '1')
+			gamemode = IA_HUMAN;
+		else if (*argv[1] == '2')
+			gamemode = HUMAN_HUMAN;
+	}
 	return gamemode;
 
 }
@@ -35,6 +63,8 @@ SGameMode DetectGameMode(int argc, char* argv[])
  */
 void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig)
 {
+	player1->nbPenalty = 0;
+	player2->nbPenalty = 0;
 	srand(time(NULL)); // initialisation de rand
 	if(rand()%2== 0)
 	{
@@ -47,15 +77,31 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 		player2->Color = ECred;
 	}
 	gameconfig->ColorPlayer1 = player1->Color;
-	
-
 }
+
+
 /* procédure d'initialisation de l'etat du jeu
  * @param SGameState* gamestate
  *			pointeur vers l'etat du jeu
  */
-void Game_InitGameState(SGameState* gamestate);
-
+void Game_InitGameState(SGameState* gamestate)
+{
+	int i, j; 
+	for(i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			gamestate->board[i][j].content = ECnone;
+			gamestate->board[i][j].piece = EPnone;
+		}
+	}
+	for(i=0; i<11; i++)
+	{
+		gamestate->redOut[i] = 0; // il y a 0 eclaireurs éliminés etc
+		gamestate->blueOut[i] = 0;
+	}
+	
+}
 
 /* fonction pour vérifier si la pièce de départ est bien placée 
  * @param : SPos start

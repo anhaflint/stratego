@@ -6,17 +6,23 @@
 #include "../stratego.h"
 
 //gcc -Wall mainTestGame.c  game.c -o test
+
+
+
 int main(int argc, char* argv[])
 {
 	SGameConfig gameConfig;
+	SGameState gameState;
+	//EPlayer player1, player2;
+
 	gameConfig.Mode = DetectGameMode(argc, argv);
-	EPlayer player1, player2;
-	/*if(gamemode == IA_IA)
-	{
-		pfInitLibrary j1InitLibrary = InitLibrary;
-	}*/
-	Game_InitPlayer(&player1, &player2, &gameConfig);
+	//Game_InitPlayer(&player1, &player2, &gameConfig);
+	Game_InitGameState(&gameState);
+
+
+	DisplayGS(gameState);
 	printf("la config est %d\n", gameConfig.Mode);
-	printf("la couleur du joueur 1 est %d\n", gameConfig.ColorPlayer1);
+//	printf("la couleur du joueur 1 est %d\n", gameConfig.ColorPlayer1);
 	return 0;
 }
+

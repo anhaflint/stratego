@@ -25,7 +25,7 @@ typedef enum
 	EPgeneral,
 	EPmarshal,
 	EPflag,
-	EPnone,
+	EPnone,// 12
 } EPiece;
 
 typedef struct
@@ -59,7 +59,7 @@ typedef struct
 
 
 typedef struct {
-	unsigned int NbPenalty;	// nombre de pénalités du joueur
+	unsigned int nbPenalty;	// nombre de pénalités du joueur
 	EColor Color;		// couleur du joueur (const pour éviter la triche)
 }EPlayer;
 
