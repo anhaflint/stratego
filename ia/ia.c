@@ -3,7 +3,7 @@
 #include "ia.h"
 
 typedef enum{
-	defaut=0,
+	str_default=0,
 	offensive,
 	defensive,
 	malicious,
@@ -56,7 +56,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 	printf("StartGame\n");
 	m_color = color;
 	m_fight = false;
-	m_strategy = defaut;
+	m_strategy = str_default;
 	m_caution = 5;
 
 	switch(m_strategy){
@@ -88,7 +88,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[3][6] = EPmarshal;
 		break;
 
-		case defaut://deja fait
+		case str_default://deja fait
 			/* placement du drapeau */
 			boardInit[0][6] = EPflag;
 			/* placement des bombes */
@@ -104,7 +104,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			/* placement des lieutenants */
 			boardInit[3][2] = boardInit[2][7] = boardInit[2][9] = boardInit[1][5] = EPlieutenant;
 			/* placement des capitaines */
-			boardInit[3][4] = boardInit[3][9] = boardInit[2][5] = boardInit[1][7] = EPcaptain;
+			boardInit[3][4] = boardInit[3][9] = boardInit[2][5] = boardInit[1][0] = EPcaptain;
 			/* placement des majors */
 			boardInit[2][2] = boardInit[1][2] = boardInit[1][4] = EPmajor;
 			/* placement des colonels */
