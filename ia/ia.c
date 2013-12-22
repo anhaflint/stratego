@@ -290,14 +290,15 @@ void EndMatch()
 	printf("EndMatch\n");
 }
 
-void NextMove(const SGameState * const gameState, SMove *move)
+SMove NextMove(const SGameState * const gameState);
 {
 	printf("NextMove\n");
 	updateData(gameState); // Première phase, mise à jour des données internes
 	analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles
 	decideMove(gameState); // Décision du mouvement à faire
-	checkMove(); // Vérification du mouvement avec notre propre arbitre interne à l'IA
-	*move = m_decidedMove; // On retourne le mouvement à l'arbitre
+	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
+		saveMove(); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
+	return m_decidedMove;
 }
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
@@ -559,12 +560,12 @@ SMove decideMove(const SGameState * const gameState)
 void saveMove()
 {
 	// On vide la case d'où vient la pièce
-	m_board[m_myMove.start.line][m_myMove.start.col].box.piece = EPnone;
-	m_board[m_myMove.start.line][m_myMove.start.col].box.content = ECnone;
+	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.piece = EPnone;
+	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.content = ECnone;
 
 	// On met la nouvelle pièce dans sa nouvelle case
-	m_board[m_myMove.end.line][m_myMove.end.col].box.piece = gameState.board[m_myMove.start.line][m_myMove.start.col].piece;
-	m_board[m_myMove.end.line][m_myMove.end.col].box.content = m_color;
+	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.piece = gameState.board[m_decidedMove.start.line][m_decidedMove.start.col].piece;
+	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.content = m_color;
 }
 
 // procedure interne a decideMoves
@@ -591,30 +592,29 @@ void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
 		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
-			{
-				riskedMoves[r] = m_movements[i];
-				r++;
-			}
-			/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
-			else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
-				{
-					riskedMoves[r] = m_movements[i];
-					r++;
-				}
-				/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
-				else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
-					{
-						riskedMoves[r] = m_movements[i];
-						r++;
-					}
-					/* si en effectuant le mouvement je ne risque rien */
-					else
-					{
-						normalMoves[n] = m_movements[i];
-						n++;
-					}
+		{
+			riskedMoves[r] = m_movements[i];
+			r++;
+		}
+		/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
+		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
+		{
+			riskedMoves[r] = m_movements[i];
+			r++;
+		}
+		/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
+		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
+		{
+			riskedMoves[r] = m_movements[i];
+			r++;
+		}
+		/* si en effectuant le mouvement je ne risque rien */
+		else
+		{
+			normalMoves[n] = m_movements[i];
+			n++;
+		}
 	}	
-
 }
 
 // permet de savoir si pour une pièce à une position donnée,si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
