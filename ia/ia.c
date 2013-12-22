@@ -156,7 +156,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			/* placement des sergents */
 			boardInit[2][9] = boardInit[1][3] = boardInit[1][8] = boardInit[0][7] = EPsergeant;			
 			/* placement des lieutenants */
-			boardInit[3][1] = boardInit[3][4] = boardInit[1][4] = boardInit[0][1] = EPlieutenant;
+			boardInit[3][0] = boardInit[3][4] = boardInit[1][4] = boardInit[0][1] = EPlieutenant;
 			/* placement des capitaines */
 			boardInit[2][6] = boardInit[1][0] = boardInit[1][2] = boardInit[0][5] = EPcaptain;
 			/* placement des majors */
@@ -258,7 +258,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			/* placement de l'espion */
 			boardInit[0][5] = EPspy;
 			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][7] = boardInit[3][8] = boardInit[3][9] = boardInit[1][7] = boardInit[0][1] = boardInit[0][4] = EPscout;
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][7] = boardInit[3][8] = boardInit[3][9] = boardInit[1][7] = boardInit[0][0] = boardInit[0][4] = EPscout;
 			/* placements des démineurs */
 			boardInit[2][7] = boardInit[1][4] = boardInit[1][5] = boardInit[0][2] = boardInit[0][9] = EPminer;
 			/* placement des sergents */
