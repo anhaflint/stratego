@@ -61,7 +61,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 
 	switch(m_strategy){
 
-		case defensive://deja fait
+		case defensive:
 			/* placement du drapeau */
 			boardInit[0][0] = EPflag;
 			/* placement des bombes */
@@ -88,7 +88,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[3][6] = EPmarshal;
 		break;
 
-		case str_default://deja fait
+		case str_default:
 			/* placement du drapeau */
 			boardInit[0][6] = EPflag;
 			/* placement des bombes */
@@ -115,7 +115,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[2][0] = EPmarshal;
 		break;
 
-		case offensive://deja fait
+		case offensive:
 			/* placement du drapeau */
 			boardInit[0][5] = EPflag;
 			/* placement des bombes */
@@ -142,7 +142,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[3][2] = EPmarshal;
 		break;
 
-		case protective://deja fait
+		case protective:
 			/* placement du drapeau */
 			boardInit[0][9] = EPflag;
 			/* placement des bombes */
@@ -169,7 +169,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[2][4] = EPmarshal;
 		break;
 
-		case risked:
+		case risked://a faire
 			/* placement du drapeau */
 			boardInit[0][0] = EPflag;
 			/* placement des bombes */
@@ -196,7 +196,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			boardInit[3][6] = EPmarshal;
 		break;
 
-		case agressive://deja fait
+		case agressive:
 			/* placement du drapeau */
 			boardInit[0][0] = EPflag;
 			/* placement des bombes */
@@ -229,28 +229,28 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 			/* placement des bombes */
 			boardInit[0][4] = boardInit[1][5] = boardInit[0][6] = boardInit[1][7] = boardInit[0][8] = boardInit[1][9] = EPbomb;
 			/* placement de l'espion */
-			boardInit[2][3] = EPspy;
+			boardInit[2][6] = EPspy;
 			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPscout;
+			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][2] = boardInit[2][8] = boardInit[1][3] = EPscout;
 			/* placements des démineurs */
-			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPminer;
+			boardInit[2][3] = boardInit[2][7] = boardInit[1][1] = boardInit[0][0] = boardInit[0][2] = EPminer;
 			/* placement des sergents */
-			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;			
+			boardInit[1][4] = boardInit[1][6] = boardInit[0][5] = boardInit[0][9] = EPsergeant;			
 			/* placement des lieutenants */
-			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
+			boardInit[3][9] = boardInit[2][1] = boardInit[0][1] = boardInit[0][3] = EPlieutenant;
 			/* placement des capitaines */
-			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
+			boardInit[2][4] = boardInit[1][2] = boardInit[1][0] = boardInit[1][8] = EPcaptain;
 			/* placement des majors */
-			boardInit[0][5] = boardInit[0][9] = boardInit[1][1] = EPmajor;
+			boardInit[3][2] = boardInit[3][7] = boardInit[2][5] = EPmajor;
 			/* placement des colonels */
-			boardInit[2][9] = boardInit[0][2] = EPcolonel;
+			boardInit[2][9] = boardInit[2][0] = EPcolonel;
 			/* placements du général */
-			boardInit[3][3] = EPgeneral;
+			boardInit[3][6] = EPgeneral;
 			/* placement du maréchal */
-			boardInit[3][6] = EPmarshal;
+			boardInit[3][3] = EPmarshal;
 		break;
 
-		case bluff://deja fait
+		case bluff:
 			/* placement du drapeau */
 			boardInit[3][3] = EPflag;
 			/* placement des bombes */
