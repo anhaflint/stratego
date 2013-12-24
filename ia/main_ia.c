@@ -243,3 +243,4 @@ void drawMoves(SMove moves[170], int m_nbMove)
 		printf("( %d,%d ) -> ( %d,%d )\n", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
 	}
 }
+ SMoves chooseMove(SMoves)

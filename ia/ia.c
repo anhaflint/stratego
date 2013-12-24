@@ -573,7 +573,7 @@ void saveMove()
 // Classement des mouvements en fonction du risque encouru
 void evaluateMoves(SMove riskedMoves[], SMove normalMoves[])
 {
-	/* Declaration des variables internes a la procedure*/
+	/* Declaration des variables internes à la procédure*/
 	int i = r = n = 0;
 	EColor enemyColor;
 
@@ -644,3 +644,4 @@ bool limiteUnachieved(SPos position, Direction piecedirection)
 			break;
 	}
 }
+ SMoves chooseMove(SMoves)
