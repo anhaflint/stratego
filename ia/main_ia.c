@@ -1,51 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include "../structure.h"
 #include "couleurs.h"
-
-typedef enum
-{
-	ECnone,
-	EClake,
-	ECred,
-	ECblue
-} EColor;
-
-typedef enum
-{
-	EPbomb=0,
-	EPspy,
-	EPscout,
-	EPminer,
-	EPsergeant,
-	EPlieutenant,
-	EPcaptain,
-	EPmajor,
-	EPcolonel,
-	EPgeneral,
-	EPmarshal,
-	EPflag,
-	EPnone,
-} EPiece;
-
-typedef struct
-{
-	EColor content;
-	EPiece piece;
-} SBox;
-
-// Structure de représentation d'une position
-typedef struct
-{
-	int line;
-	int col;
-} SPos;
-
-// Structure de représentation d'un mouvement
-typedef struct
-{
-	SPos start;
-	SPos end;
-} SMove;
 
 // Structure qui sera interne à l'ia
 typedef struct{
@@ -67,7 +23,6 @@ int main(int argc, char* argv[])
 	initBoard(m_board);
 	drawBoard(m_board);
 	analyzeBoard(m_board);
-
 	return 0;
 }
 
@@ -101,6 +56,14 @@ void initBoard(InfoPiece board[10][10])
 			}				
 		}
 	}	
+
+	/* Mise en place des pions */
+
+	/* Implémentation aléatoire de 10 pièces rouges */
+	// A venir...
+
+	/* Implémentation aléatoire de 10 pièces bleues */
+	// A venir...
 }
 
 void drawBoard(InfoPiece board[10][10])
