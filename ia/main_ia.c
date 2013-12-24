@@ -1,51 +1,9 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
+#include "../structure.h"
 #include "couleurs.h"
-
-typedef enum
-{
-	ECnone,
-	EClake,
-	ECred,
-	ECblue
-} EColor;
-
-typedef enum
-{
-	EPbomb=0,
-	EPspy,
-	EPscout,
-	EPminer,
-	EPsergeant,
-	EPlieutenant,
-	EPcaptain,
-	EPmajor,
-	EPcolonel,
-	EPgeneral,
-	EPmarshal,
-	EPflag,
-	EPnone,
-} EPiece;
-
-typedef struct
-{
-	EColor content;
-	EPiece piece;
-} SBox;
-
-// Structure de représentation d'une position
-typedef struct
-{
-	int line;
-	int col;
-} SPos;
-
-// Structure de représentation d'un mouvement
-typedef struct
-{
-	SPos start;
-	SPos end;
-} SMove;
 
 // Structure qui sera interne à l'ia
 typedef struct{
@@ -67,13 +25,13 @@ int main(int argc, char* argv[])
 	initBoard(m_board);
 	drawBoard(m_board);
 	analyzeBoard(m_board);
-
 	return 0;
 }
 
 void initBoard(InfoPiece board[10][10])
 {
-	int i,j;
+	int i,j, randomI, randomJ;
+	srand(time(NULL)); // Réinitialisation de l'aléatoire
 
 	for (i=0; i<10; i++) // Lignes
 	{
@@ -84,23 +42,37 @@ void initBoard(InfoPiece board[10][10])
 				board[i][j].box.content = EClake;
 				board[i][j].box.piece = EPnone;
 			}
-			else if (i < 4)
-			{
-				board[i][j].box.content = ECblue;
-				board[i][j].box.piece = EPscout;
-			}				
-			else if (i > 5)
-			{
-				board[i][j].box.content = ECred;
-				board[i][j].box.piece = EPscout;				
-			}
 			else
 			{
 				board[i][j].box.content = ECnone;
 				board[i][j].box.piece = EPnone;
-			}				
+			}
 		}
 	}	
+
+	/* Mise en place des pions */
+	int nbPions = 10;
+
+	/* Implémentation aléatoire de 10 pièces rouges 
+	et de 10 pièces bleues*/
+
+	for (i=0; i < nbPions*2; i++)
+	{
+		randomI = rand() % 10;
+		randomJ = rand() % 10;
+		while (board[randomI][randomJ].box.content != ECnone)
+		{
+			randomI = rand() % 10;
+			randomJ = rand() % 10;
+		}
+
+		if (i < nbPions)
+			board[randomI][randomJ].box.content = ECred;
+		else
+			board[randomI][randomJ].box.content = ECblue;
+
+		board[randomI][randomJ].box.piece = rand() % 12;
+	}
 }
 
 void drawBoard(InfoPiece board[10][10])
@@ -121,7 +93,7 @@ void drawBoard(InfoPiece board[10][10])
 			if (board[9-i][j].box.content == EClake)
 				couleur("30");
 
-			if (board[9-i][j].box.piece > 10)
+			if (board[9-i][j].box.piece >= 10)
 				printf(" %d", board[9-i][j].box.piece);		
 			else
 				printf(" %d ", board[9-i][j].box.piece);
@@ -240,7 +212,6 @@ void drawMoves(SMove moves[170], int m_nbMove)
 
 	for (i = 0; i < m_nbMove; i++)
 	{
-		printf("( %d,%d ) -> ( %d,%d )\n", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
+		printf("( %d,%d ) -> ( %d,%d )  ", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
 	}
 }
- SMoves chooseMove(SMoves)
