@@ -38,9 +38,7 @@ typedef struct {
  	int lenght_list;
  }GroupMoves;
 
- {
  	/* data */
- };
 
 Strategy m_strategy; // Stratégie choisie
 EColor m_color; // Couleur des pièces de l'IA
@@ -619,31 +617,31 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 		/* si en effectuant le mouvement je peux directement  etre attaqué en haut */
 		if( m_movements[i].end.line < 9 &&  m_board[ m_movements[i].end.line + 1 ][m_movements[i].end.col].content != enemyColor)
 		{
-			riskedMoves[r] = m_movements[i];
+			*riskedMoves[r] = m_movements[i];
 			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
 		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
 		{
-			riskedMoves[r] = m_movements[i];
+			*riskedMoves[r] = m_movements[i];
 			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
 		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
 		{
-			riskedMoves[r] = m_movements[i];
+			*riskedMoves[r] = m_movements[i];
 			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
 		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
 		{
-			riskedMoves[r] = m_movements[i];
+			*riskedMoves[r] = m_movements[i];
 			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je ne risque rien */
 		else
 		{
-			normalMoves[n] = m_movements[i];
+			*normalMoves[n] = m_movements[i];
 			*normalMoves.lenght_list++;
 		}
 	}	
