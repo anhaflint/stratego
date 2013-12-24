@@ -14,8 +14,9 @@ SDL_Surface  cellaff;		//
 typedef struct _BoardLayout
 {
 	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
+	SDL_Surface *Patron			// Stockage du patron d'images
 	SDL_Surface *Background;    // Image de fond 
-	SDL_Rect posBackground;		// Position de l'écran (0,0), utile pour affichage du fond
+	SDL_Rect 	*posBackground;	// Position de l'écran (0,0), utile pour affichage du fond
 	SDL_Surface *Screen;		// Surface de l'ecran
 	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
 	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
@@ -26,7 +27,7 @@ typedef struct _BoardLayout
  * @param BoardLayout layout
  * 			images du jeu
  * 			à passer par adresse &layout
- *			fonction dans laquelle on loadera tous les BMP dans la structure
+ *			fonction dans laquelle on loadera tous les positions des BMP de la surface Patron
  */
 void BoardLayout_Init(BoardLayout layout);
 
@@ -51,13 +52,16 @@ void Display_Init(BoardLayout layout);
  */
 void Display_Board(BoardLayout layout, SGameState gamestate);
 
-void Display_Fight(SDL_Surface* piece);
+void Display_Fight(SDL_Surface* piece, BoardLayout layout);
 /**
  * @param EPiece pice 
  *		piece à afficher
+ 	Devra prendre en compte le fait que la pièce retournée est temporairement affichée pour une suivante.
  */
-void Display_Piece(EPiece piece); // affichage d'une piece
-void Display_CpyBg(); // affichage du background sur une petite partie du plateau
+
+void Display_Piece(SGameState gamestate, SPos posPiece, BoardLayout layout); // affichage d'une piece
+
+void Display_CpyBg(BoardLayout layout, SPos posPiece); // affichage du background sur une petite partie du plateau
 
 
 #endif
