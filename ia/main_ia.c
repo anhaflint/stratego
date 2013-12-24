@@ -48,7 +48,7 @@ void initBoard(InfoPiece board[10][10])
 				board[i][j].box.piece = EPnone;
 			}
 		}
-	}	
+	}
 
 	/* Mise en place des pions */
 	int nbPions = 10;
@@ -97,7 +97,6 @@ void drawBoard(InfoPiece board[10][10])
 
 		for (j = 0; j < 10; ++j)
 		{
-
 			if (board[9-i][j].box.content == ECred)
 				couleur("31");			
 			if (board[9-i][j].box.content == ECblue)
