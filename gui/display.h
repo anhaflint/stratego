@@ -1,33 +1,36 @@
-
+#ifndef _DISPLAY_H
+	#define _DISPLAY_H
 
 
 
 typedef struct
 {
-SDL_Rect     position;
-SDL_Surface     cellaff;  		//Position relative d'une case ainsi que sa surface "image" associé NULL => Backgroung
-								//																	tuileA ou tuileT
-								// Cette stucture est utile pour connaître la position de chaque des cases ainsi que l'image qui la remplit
-}Cell;
+SDL_Rect     position;  	//Position relative d'une case ainsi que sa surface "image" associé 
+SDL_Surface  cellaff;		//																	
+}Cell;						// Utile pour connaître le remplissage de chaqune des cases | NULL => Background
+							//															| tuileA ou tuileT
 
 
 typedef struct _BoardLayout
 {
-	SDL_Rect PiecesLayout[26];
-	SDL_Surface *Background;    //image de fond
-	SDL_Surface *Screen;		//surface de l'ecran
-	SDL_Surface *Fight; 		//image affichee lors d'un combat si jamais on en met une
-	Cell DisplayTab[10][10];//tableau contenant les positions des pions à afficher
-}BoardLayout;
+	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
+	SDL_Surface *Background;    // Image de fond 
+	SDL_Rect posBackground;		// Position de l'écran (0,0), utile pour affichage du fond
+	SDL_Surface *Screen;		// Surface de l'ecran
+	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
+	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
+}layout;
 
 
-/* fonction d'initialisation de la structure contenant toutes les images à utiliser
+/* fonction d'nitialisation de la structure contenant toutes les images à utiliser
  * @param BoardLayout layout
  * 			images du jeu
  * 			à passer par adresse &layout
  *			fonction dans laquelle on loadera tous les BMP dans la structure
  */
 void BoardLayout_Init(BoardLayout layout);
+
+//-----------------------------------------------------------------------------------------------
 
 /*
  * @param SDL_Surface* window 
@@ -55,3 +58,6 @@ void Display_Fight(SDL_Surface* piece);
  */
 void Display_Piece(EPiece piece); // affichage d'une piece
 void Display_CpyBg(); // affichage du background sur une petite partie du plateau
+
+
+#endif
