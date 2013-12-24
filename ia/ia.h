@@ -148,8 +148,10 @@ void saveMove();
 * Classe les mouvements possibles en fonction du risque encouru
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués
 * @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
+* @param lenght_r longueur du tableau riskedMoves
+* @param lenght_r longueur du tableau normalMoves
 */
-void evaluateMoves(SMove riskedMoves[], SMove normalMoves[]);
+void evaluateMoves(SMove riskedMoves[],int *lenght_r, SMove normalMoves[], int *lenght_n);
 
 /**
 * permet de savoir si pour une pièce à une position donnée,

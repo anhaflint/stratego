@@ -27,7 +27,21 @@ typedef struct{
 	bool isVisible;
 	bool isBomb;
 }InfoPiece;
- 
+
+typedef struct {
+	SMove move;
+ 	int caution;
+ }Mymove;
+
+ typedef struct{
+ 	Mymove listMoves[172];
+ 	int lenght_list;
+ }GroupMoves;
+
+ {
+ 	/* data */
+ };
+
 Strategy m_strategy; // Stratégie choisie
 EColor m_color; // Couleur des pièces de l'IA
 InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
@@ -291,7 +305,7 @@ void EndMatch()
 	printf("EndMatch\n");
 }
 
-SMove NextMove(const SGameState * const gameState);
+SMove NextMove(const SGameState * const gameState)
 {
 	printf("NextMove\n");
 	updateData(gameState); // Première phase, mise à jour des données internes
@@ -558,7 +572,7 @@ SMove decideMove(const SGameState * const gameState,InfoPiece m_board[10][10],St
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 	int lenght_r;
 	int lenght_n;
-	evaluateMoves(SMove riskedMoves[],int *lenght_r, SMove normalMoves[], int *lenght_n);
+	evaluateMoves(&normalMoves,&riskedMoves);
 	switch(m_strategy)
 	{
 		case defensive || malicious || searchme :
@@ -585,14 +599,14 @@ void saveMove()
 
 // procedure interne a decideMoves
 // Classement des mouvements en fonction du risque encouru
-void evaluateMoves(SMove riskedMoves[],int *lenght_r, SMove normalMoves[], int *lenght_n)
+void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 {
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
 	EColor enemyColor;
 	/* initialisation des longueurs de tableau des mouvements*/
-	*lenght_r = 0;
-	*lenght_n = 0;
+	*normalMoves.lenght_list= 0;
+	*riskedMoves.lenght_list= 0;
 
 	/* Initialisation de la couleur ennemie */
 	if (m_color == ECred)
@@ -606,36 +620,36 @@ void evaluateMoves(SMove riskedMoves[],int *lenght_r, SMove normalMoves[], int *
 		if( m_movements[i].end.line < 9 &&  m_board[ m_movements[i].end.line + 1 ][m_movements[i].end.col].content != enemyColor)
 		{
 			riskedMoves[r] = m_movements[i];
-			*lenght_r++;
+			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
 		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
 		{
 			riskedMoves[r] = m_movements[i];
-			*lenght_r++;
+			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
 		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].content != enemyColor)
 		{
 			riskedMoves[r] = m_movements[i];
-			*lenght_r++;
+			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
 		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].content != enemyColor)
 		{
 			riskedMoves[r] = m_movements[i];
-			*lenght_r++;
+			*riskedMoves.lenght_list++;
 		}
 		/* si en effectuant le mouvement je ne risque rien */
 		else
 		{
 			normalMoves[n] = m_movements[i];
-			*lenght_n++;
+			*normalMoves.lenght_list++;
 		}
 	}	
 }
 
-SMove chooseMove(const SGameState * const gameState,InfoPiece m_board[10][10],SMove moves[],int m_caution)
+SMove chooseMove(const SGameState * const gameState,InfoPiece m_board[10][10],GroupMoves moves,int m_caution)
 {
 	/* Declaration des variables internes à la procédure*/
 	int i = r = n = 0;
