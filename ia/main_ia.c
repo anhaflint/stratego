@@ -78,11 +78,23 @@ void initBoard(InfoPiece board[10][10])
 void drawBoard(InfoPiece board[10][10])
 {
 	int i, j;
-	printf("  | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  |\n");
+	printf("  |");
+	for (i=0; i<10; i++)
+	{
+		couleur("33");
+		printf(" %d  ", i);
+		couleur("0");
+		printf("|");
+	}
+	printf("\n");
 	printf("-----------------------------------------------------\n");
 	for (i=0; i<10; i++)
 	{
-		printf("%d |", 9-i);
+		couleur("33");
+		printf("%d ", 9-i);
+		couleur("0");
+		printf("|");
+
 		for (j = 0; j < 10; ++j)
 		{
 
@@ -214,4 +226,5 @@ void drawMoves(SMove moves[170], int m_nbMove)
 	{
 		printf("( %d,%d ) -> ( %d,%d )  ", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
 	}
+	printf("\n");
 }
