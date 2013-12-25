@@ -493,8 +493,14 @@ int attributionRank(EPiece myPiece,EPiece enemyPiece)
 			11 ==> on a un risque eleve mais avec un bon calcul de proba on reussit a avoir estimation de la piece
 			12 ==> warning max à surtout eviter
 	*/
-	/* cas ou la piece enemie est une bombe,le drapeau ou l'espion */
-	if(enemyPiece == EPflag || enemyPiece == EPbomb || (enemyPiece == EPspy && myPiece != EPmarshal))
+	/* cas ou la piece enemie est le drapeau */
+	if (enemyPiece == EPflag)
+		return -12;
+	/* cas ou la piece enemie est la bombe et que la notre est un demineur */
+	else if (enemyPiece == EPbomb && myPiece == EPminer)
+		return -11;
+	/* cas ou la piece enemie est une bombe ou l'espion */
+	else if( enemyPiece == EPbomb || (enemyPiece == EPspy && myPiece != EPmarshal))
 		return 0;
 	/* cas ou la piece enemie est un espion et la mienne un marechal */
 	else if (enemyPiece == EPspy && myPiece == EPmarshal)
