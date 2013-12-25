@@ -1,10 +1,49 @@
-//------------------------------- Structures --------------------------------//
+//----------------------- Structures et énumérations ------------------------//
 
+/* Stockage en interne du plateau, avec
+des informations supplémentaires sur les pièces */
 typedef struct{
 	SBox box;
 	bool isVisible;
 	bool isBomb;
 }InfoPiece;
+
+/* Structure stockant un mouvement et
+son niveau de risque */
+typedef struct{
+	SMove move;
+ 	int caution;
+}Mymove;
+
+/* Structure contenant la liste des mouvements
+possibles ainsi que leur nombre */
+typedef struct{
+ 	Mymove listMoves[172];
+ 	int lenght_list;
+}GroupMoves;
+
+/* Enumération des différentes stratégies
+utilisables par l'IA */
+typedef enum{
+	str_default=0,
+	offensive,
+	defensive,
+	malicious,
+	protective,
+	risked,
+	bluff,
+	agressive,
+	searchme,
+}Strategy;
+
+/* Enumération pour les direction
+--> Si inutilisé à la fin, supprimer */
+typedef enum{
+	left=0,
+	right,
+	top,
+	bottom,
+}Direction;
 
 //-------------------------- Fonctions de l'API IA --------------------------//
 
@@ -68,30 +107,9 @@ void Penalty();
 
 //------------------------ Fonctions internes à l'IA -------------------------//
 
-/**
-*  Renvoie le gagnant du combat dans lequel la pièce A attaque la pièce B (A != B)
-* @param SPiece A
-*  Pièce attaquante
-* @param SPiece B
-*  Pièce attaquée
-* @return SPiece
-*  Pièce gagnante du combat
-*/
-SPiece winner(SPiece A, SPiece B);
+//----------- Fonctions utilisées à chaque tour de jeu -----------//
 
-/**
-* Calcule et fais les remplacements sur le plateau selon le 
-* résultat de Piece A qui attaque Piece B
-* @param SPiece PieceA
-*	Pièce attaquante
-* @param SPiece Piece B
-*   Pièce attaquée
-* @param SPos APos
-*	Position de la pièce qui attaque
-* @param Spos BPos
-* 	Position de la pièce attaquée
-*/
-void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos);
+//----- updateData() -----//
 
 /**
 * Met à jour les données internes avec les nouvelles données fournies par l'arbitre
@@ -99,6 +117,8 @@ void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos);
 *        l'état du jeu courant
 */
 void updateData(const SGameState * const gameState);
+
+//----- analyzeBoard() -----//
 
 /**
 * Analyse des mouvements possibles sur le plateau par l'IA, stockage en interne
@@ -124,6 +144,7 @@ void analyzeBoard();
 */
 void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, int* compteur);
 
+//----- decideMove() -----//
 
 /**
 * Renvoie le mouvement à faire qui a été décidé par l'IA
@@ -135,21 +156,60 @@ void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, int*
 SMove decideMove(gameState);
 
 /**
-* Vérification du mouvement décidé par l'IA
+* Classe les mouvements possibles en fonction du risque encouru
+* @param riskedMoves est le tableau qui contient tous les movements courants risqués
+* @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
+* @param lenght_r longueur du tableau riskedMoves
+* @param lenght_r longueur du tableau normalMoves
 */
-void checkMove();
+void evaluateMoves(SMove riskedMoves[],int *lenght_r, SMove normalMoves[], int *lenght_n);
+
+/**
+* A commenter
+*
+*/
+SMove chooseMove(const SGameState * const gameState,InfoPiece m_board[10][10],GroupMoves moves,int m_caution);
+
+//----- saveMove() -----//
 
 /**
 * Enregistre le plateau si on a fait un déplacement simple
 */
 void saveMove();
 
+//----------- Fonctions utilisées à l'envoi d'un combat par l'arbitre -----------//
+
 /**
-* Classe les mouvements possibles en fonction du risque encouru
-* @param riskedMoves est le tableau qui contient tous les movements courants risqués
-* @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
+* Calcule et fais les remplacements sur le plateau selon le 
+* résultat de Piece A qui attaque Piece B
+* @param SPiece PieceA
+*	Pièce attaquante
+* @param SPiece Piece B
+*   Pièce attaquée
+* @param SPos APos
+*	Position de la pièce qui attaque
+* @param Spos BPos
+* 	Position de la pièce attaquée
 */
-void evaluateMoves(SMove riskedMoves[], SMove normalMoves[]);
+void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos);
+
+/**
+*  Renvoie le gagnant du combat dans lequel la pièce A attaque la pièce B (A != B)
+* @param SPiece A
+*  Pièce attaquante
+* @param SPiece B
+*  Pièce attaquée
+* @return SPiece
+*  Pièce gagnante du combat
+*/
+SPiece winner(SPiece A, SPiece B);
+
+//----------- Fonctions à supprimer si inutilisées à la fin -----------//
+
+/**
+* Vérification du mouvement décidé par l'IA
+*/
+void checkMove();
 
 /**
 * permet de savoir si pour une pièce à une position donnée,

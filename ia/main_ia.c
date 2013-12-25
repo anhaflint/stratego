@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 #include "../structure.h"
 #include "couleurs.h"
 
@@ -28,7 +30,8 @@ int main(int argc, char* argv[])
 
 void initBoard(InfoPiece board[10][10])
 {
-	int i,j;
+	int i,j, randomI, randomJ;
+	srand(time(NULL)); // Réinitialisation de l'aléatoire
 
 	for (i=0; i<10; i++) // Lignes
 	{
@@ -39,44 +42,61 @@ void initBoard(InfoPiece board[10][10])
 				board[i][j].box.content = EClake;
 				board[i][j].box.piece = EPnone;
 			}
-			else if (i < 4)
-			{
-				board[i][j].box.content = ECblue;
-				board[i][j].box.piece = EPscout;
-			}				
-			else if (i > 5)
-			{
-				board[i][j].box.content = ECred;
-				board[i][j].box.piece = EPscout;				
-			}
 			else
 			{
 				board[i][j].box.content = ECnone;
 				board[i][j].box.piece = EPnone;
-			}				
+			}
 		}
-	}	
+	}
 
 	/* Mise en place des pions */
+	int nbPions = 10;
 
-	/* Implémentation aléatoire de 10 pièces rouges */
-	// A venir...
+	/* Implémentation aléatoire de 10 pièces rouges 
+	et de 10 pièces bleues*/
 
-	/* Implémentation aléatoire de 10 pièces bleues */
-	// A venir...
+	for (i=0; i < nbPions*2; i++)
+	{
+		randomI = rand() % 10;
+		randomJ = rand() % 10;
+		while (board[randomI][randomJ].box.content != ECnone)
+		{
+			randomI = rand() % 10;
+			randomJ = rand() % 10;
+		}
+
+		if (i < nbPions)
+			board[randomI][randomJ].box.content = ECred;
+		else
+			board[randomI][randomJ].box.content = ECblue;
+
+		board[randomI][randomJ].box.piece = rand() % 12;
+	}
 }
 
 void drawBoard(InfoPiece board[10][10])
 {
 	int i, j;
-	printf("  | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  |\n");
+	printf("  |");
+	for (i=0; i<10; i++)
+	{
+		couleur("33");
+		printf(" %d  ", i);
+		couleur("0");
+		printf("|");
+	}
+	printf("\n");
 	printf("-----------------------------------------------------\n");
 	for (i=0; i<10; i++)
 	{
-		printf("%d |", 9-i);
+		couleur("33");
+		printf("%d ", 9-i);
+		couleur("0");
+		printf("|");
+
 		for (j = 0; j < 10; ++j)
 		{
-
 			if (board[9-i][j].box.content == ECred)
 				couleur("31");			
 			if (board[9-i][j].box.content == ECblue)
@@ -84,7 +104,7 @@ void drawBoard(InfoPiece board[10][10])
 			if (board[9-i][j].box.content == EClake)
 				couleur("30");
 
-			if (board[9-i][j].box.piece > 10)
+			if (board[9-i][j].box.piece >= 10)
 				printf(" %d", board[9-i][j].box.piece);		
 			else
 				printf(" %d ", board[9-i][j].box.piece);
@@ -203,6 +223,7 @@ void drawMoves(SMove moves[170], int m_nbMove)
 
 	for (i = 0; i < m_nbMove; i++)
 	{
-		printf("( %d,%d ) -> ( %d,%d )\n", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
+		printf("( %d,%d ) -> ( %d,%d )  ", moves[i].start.line, moves[i].start.col, moves[i].end.line, moves[i].end.col);
 	}
+	printf("\n");
 }
