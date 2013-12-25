@@ -2,6 +2,7 @@
 #include "structures.h"
 #include "ia.h"
 
+// Structure qui sera interne à l'ia
 typedef enum{
 	str_default=0,
 	offensive,
@@ -21,7 +22,7 @@ typedef enum{
 	bottom,
 }Direction;
 
-// Structure qui sera interne à l'ia
+
 typedef struct{
 	SBox box;
 	bool isVisible;
@@ -602,6 +603,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
 	EColor enemyColor;
+	EPiece enemyPiece;
 	/* initialisation des longueurs de tableau des mouvements*/
 	*normalMoves.lenght_list= 0;
 	*riskedMoves.lenght_list= 0;
@@ -619,6 +621,8 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 		{
 			*riskedMoves[r] = m_movements[i];
 			*riskedMoves.lenght_list++;
+			// regarder l'etat du jeu et du tableau pour voir si je connait le pion enemi voisin et evaluer la pericolosité
+
 		}
 		/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
 		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].content != enemyColor)
