@@ -1,44 +1,8 @@
 #include <stdbool.h>
-#include "structures.h"
+#include "../structure.h"
 #include "ia.h"
 
-typedef enum{
-	str_default=0,
-	offensive,
-	defensive,
-	malicious,
-	protective,
-	risked,
-	bluff,
-	agressive,
-	searchme,
-}Strategy;
-
-typedef enum{
-	left=0,
-	right,
-	top,
-	bottom,
-}Direction;
-
-// Structure qui sera interne à l'ia
-typedef struct{
-	SBox box;
-	bool isVisible;
-	bool isBomb;
-}InfoPiece;
-
-typedef struct {
-	SMove move;
- 	int caution;
- }Mymove;
-
- typedef struct{
- 	Mymove listMoves[172];
- 	int lenght_list;
- }GroupMoves;
-
- 	/* data */
+//------------------------- Données internes de l'IA ------------------------//
 
 Strategy m_strategy; // Stratégie choisie
 EColor m_color; // Couleur des pièces de l'IA
@@ -52,6 +16,7 @@ SPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces 
 bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
 bool m_hisMove; // Variable pour connaître le mouvement que l'ennemi a fait au tour précédent : false = mouvement normal et true = attaque
 
+//-------------------------- Fonctions de l'API IA --------------------------//
 
 void InitLibrary(char name[50])
 {
@@ -335,83 +300,11 @@ void Penalty()
 	printf("Penalty\n");
 }
 
-//---------------- Fonctions personnelles ---------------//
+//------------------------ Fonctions internes à l'IA -------------------------//
 
-// Fonction interne à AttackResult
-SPiece winner(SPiece A, SPiece B)
-{
-	/* Si la pièce visée est le drapeau,
-	la pièce attaquante gagne d'office */
-	if (B == EPflag)
-		return A;
-	/* Si l'attaquant est un espion */
-	else if (A == EPspy)
-	{
-		/* Il gagne seulement si la pièce 
-		cible est le maréchal */
-		if (B == EPmarshal)
-			return A;
-		else
-			return B;
-	}
-	/* Sinon si l'attaquant est un démineur */
-	else if (A == EPminer)
-	{
-		/* Il gagne si la pièce attaquée est une 
-		bombe, un espion ou un éclaireur */
-		if (B < EPminer)
-			return A;
-		else
-			return B;
-	}
-	/* Sinon, dans tous les autres cas */
-	else
-	{
-		/* Si la pièce attaquée est une bombe ou si sa 
-		puissance est supérieure à l'attaquant, elle gagne */
-		if ((B == EPbomb) || (B > A))
-			return B;
-		else
-			return A;
-	}
-}
+//----------- Fonctions utilisées à chaque tour de jeu -----------//
 
-// Fonction interne à AttackResult
-void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos)
-{
-	SPiece winner;
-
-	if (PieceA != PieceB) // Si les deux pièces sont différentes, on analyse le fight
-	{
-		// On détermine le gagnant du combat		
-		winner = winner(PieceA, PieceB);
-
-		if (winner == PieceA) // Si la pièce A a attaqué et gagné, on remplace la pièce B
-		{
-			/* On place la pièce A sur la case où était la pièce B */
-			m_board[BPos.line][BPos.col].box.piece = PieceA;
-			m_board[BPos.line][BPos.col].box.content = m_board[APos.line][APos.col].box.content;
-		}
-		else // Si la pièce A a perdu, on sauvegarde ce qu'est la pièce B
-		{	
-			m_board[BPos.line][BPos.col].box.piece = PieceB;
-		}		
-
-		/* Dans tous les cas, la case d'où vient la pièce A devient vide */
-		m_board[APos.line][APos.col].box.piece = EPnone;
-		m_board[APos.line][APos.col].box.content = ECnone;
-	}
-	else // Si les deux pièces sont identiques, elles sont éliminées
-	{
-		/* Plus rien dans la case de la pièce A */
-		m_board[APos.line][APos.col].box.piece = EPnone;
-		m_board[APos.line][APos.col].box.content = ECnone;
-
-		/* Plus rien dans la case de la pièce B */
-		m_board[BPos.line][BPos.col].box.piece = EPnone;
-		m_board[BPos.line][BPos.col].box.content = ECnone;
-	}
-}
+//----- updateData() -----//
 
 // Première phase, mise à jour des données internes
 void updateData(const SGameState * const gameState)
@@ -452,6 +345,8 @@ void updateData(const SGameState * const gameState)
 	m_myMove = false;
 	m_hisMove = false;
 }
+
+//----- analyzeBoard() -----//
 
 // Analyse du plateau => Mise à jour des déplacements possibles
 void analyzeBoard()
@@ -562,6 +457,8 @@ void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, unsi
 	}
 }
 
+//----- decideMove() -----//
+
 // Décision du mouvement à effectuer
 SMove decideMove(const SGameState * const gameState,InfoPiece m_board[10][10],Strategy m_strategy,SMove m_decidedMove)
 {
@@ -579,20 +476,6 @@ SMove decideMove(const SGameState * const gameState,InfoPiece m_board[10][10],St
 			else chooseMove(const SGameState,m_board[10][10],riskedMoves,m_decidedMove);
 		break;
 	}
-
-
-}
-
-// Enregistrement du plateau si déplacement simple
-void saveMove()
-{
-	// On vide la case d'où vient la pièce
-	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.piece = EPnone;
-	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.content = ECnone;
-
-	// On met la nouvelle pièce dans sa nouvelle case
-	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.piece = gameState.board[m_decidedMove.start.line][m_decidedMove.start.col].piece;
-	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.content = m_color;
 }
 
 // procedure interne a decideMoves
@@ -662,6 +545,101 @@ SMove chooseMove(const SGameState * const gameState,InfoPiece m_board[10][10],Gr
 	if(m_caution>5)
 	
 }
+
+//----- saveMove() -----//
+
+// Enregistrement du plateau si déplacement simple
+void saveMove()
+{
+	// On vide la case d'où vient la pièce
+	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.piece = EPnone;
+	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.content = ECnone;
+
+	// On met la nouvelle pièce dans sa nouvelle case
+	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.piece = gameState.board[m_decidedMove.start.line][m_decidedMove.start.col].piece;
+	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.content = m_color;
+}
+
+//----------- Fonctions utilisées à l'envoi d'un combat par l'arbitre -----------//
+
+// Fonction interne à AttackResult
+void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos)
+{
+	SPiece winner;
+
+	if (PieceA != PieceB) // Si les deux pièces sont différentes, on analyse le fight
+	{
+		// On détermine le gagnant du combat		
+		winner = winner(PieceA, PieceB);
+
+		if (winner == PieceA) // Si la pièce A a attaqué et gagné, on remplace la pièce B
+		{
+			/* On place la pièce A sur la case où était la pièce B */
+			m_board[BPos.line][BPos.col].box.piece = PieceA;
+			m_board[BPos.line][BPos.col].box.content = m_board[APos.line][APos.col].box.content;
+		}
+		else // Si la pièce A a perdu, on sauvegarde ce qu'est la pièce B
+		{	
+			m_board[BPos.line][BPos.col].box.piece = PieceB;
+		}		
+
+		/* Dans tous les cas, la case d'où vient la pièce A devient vide */
+		m_board[APos.line][APos.col].box.piece = EPnone;
+		m_board[APos.line][APos.col].box.content = ECnone;
+	}
+	else // Si les deux pièces sont identiques, elles sont éliminées
+	{
+		/* Plus rien dans la case de la pièce A */
+		m_board[APos.line][APos.col].box.piece = EPnone;
+		m_board[APos.line][APos.col].box.content = ECnone;
+
+		/* Plus rien dans la case de la pièce B */
+		m_board[BPos.line][BPos.col].box.piece = EPnone;
+		m_board[BPos.line][BPos.col].box.content = ECnone;
+	}
+}
+
+// Fonction interne à AttackResult
+SPiece winner(SPiece A, SPiece B)
+{
+	/* Si la pièce visée est le drapeau,
+	la pièce attaquante gagne d'office */
+	if (B == EPflag)
+		return A;
+	/* Si l'attaquant est un espion */
+	else if (A == EPspy)
+	{
+		/* Il gagne seulement si la pièce 
+		cible est le maréchal */
+		if (B == EPmarshal)
+			return A;
+		else
+			return B;
+	}
+	/* Sinon si l'attaquant est un démineur */
+	else if (A == EPminer)
+	{
+		/* Il gagne si la pièce attaquée est une 
+		bombe, un espion ou un éclaireur */
+		if (B < EPminer)
+			return A;
+		else
+			return B;
+	}
+	/* Sinon, dans tous les autres cas */
+	else
+	{
+		/* Si la pièce attaquée est une bombe ou si sa 
+		puissance est supérieure à l'attaquant, elle gagne */
+		if ((B == EPbomb) || (B > A))
+			return B;
+		else
+			return A;
+	}
+}
+
+//----------- Fonctions à supprimer si inutilisées à la fin -----------//
+
 // permet de savoir si pour une pièce à une position donnée,si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
 bool limiteUnachieved(SPos position, Direction piecedirection)
 {
