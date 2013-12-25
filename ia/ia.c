@@ -467,9 +467,12 @@ SMove decideMove(const SGameState * const gameState,InfoPiece m_board[10][10],St
 	// Décision du mouvemennt
 	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
-	int lenght_r;
-	int lenght_n;
+
+	GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
+
 	evaluateMoves(&normalMoves,&riskedMoves);
+	globalEvaluation(&priorityMoves,riskedMoves);
+
 	switch(m_strategy)
 	{
 		case defensive || malicious || searchme :
@@ -481,7 +484,7 @@ SMove decideMove(const SGameState * const gameState,InfoPiece m_board[10][10],St
 }
 
 // procedure interne a evaluateMoves
-// Donne l'information sur la piece enemie pour evaluer le risque encouru
+// Donne l'information sur la piece ennemie pour evaluer le risque encouru
 int attributionRank(EPiece myPiece,EPiece enemyPiece)
 {	
 	int forceDifference;// ecart de force entre la piece enemie et la mienne;
@@ -493,22 +496,22 @@ int attributionRank(EPiece myPiece,EPiece enemyPiece)
 			11 ==> on a un risque eleve mais avec un bon calcul de proba on reussit a avoir estimation de la piece
 			12 ==> warning max à surtout eviter
 	*/
-	/* cas ou la piece enemie est le drapeau */
+	/* cas ou la piece ennemie est le drapeau ou on peut attaquer le maréchal */
 	if (enemyPiece == EPflag)
 		return -12;
-	/* cas ou la piece enemie est la bombe et que la notre est un demineur */
+	/* cas ou la piece ennemie est la bombe et que la notre est un demineur */
 	else if (enemyPiece == EPbomb && myPiece == EPminer)
 		return -11;
-	/* cas ou la piece enemie est une bombe ou l'espion */
+	/* cas ou la piece ennemie est une bombe ou l'espion */
 	else if( enemyPiece == EPbomb || (enemyPiece == EPspy && myPiece != EPmarshal))
 		return 0;
-	/* cas ou la piece enemie est un espion et la mienne un marechal */
+	/* cas ou la piece ennemie est un espion et la mienne un marechal */
 	else if (enemyPiece == EPspy && myPiece == EPmarshal)
 		return 12;// le maximun warning 
 	/* cas où on n'a pas d'information sur la piece */
 	else if ( enemyPiece == EPnone)
 		return 11;
-	/* cas où la piece de l'enemi et la mienne est eguale */
+	/* cas où la piece de l'ennemi et la mienne est egale */
 	else if (enemyPiece == myPiece)
 		return 10;
 	else
@@ -520,7 +523,7 @@ int attributionRank(EPiece myPiece,EPiece enemyPiece)
 
 // procedure interne a decideMoves
 // Classement des mouvements en fonction du risque encouru
-void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves *riskedMoves)
+void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 {
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
@@ -543,8 +546,8 @@ void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves 
 	/* classification des mouvements */
 	while(i<m_nbMove)
 	{
-		/* si en effectuant le mouvement je peux directement  etre attaqué en haut */
-		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == enemyColor)
+		/* si en effectuant le mouvement dans une case vide, je peux directement  être attaqué en haut  au prochain tour */
+		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.piece;
 
@@ -552,8 +555,8 @@ void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves 
 			*riskedMoves.listMoves[r].caution=attributionRank(myPiece,enemyPiece);
 			*riskedMoves.lenght_list++;
 		}
-		/* si en effectuant le mouvement je peux directement  etre attaqué en bas */
-		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == enemyColor)
+		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué en bas */
+		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line - 1][m_movements[i].end.col].box.piece;
 
@@ -561,8 +564,8 @@ void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves 
 			*riskedMoves.listMoves[r].caution=attributionRank(myPiece,enemyPiece);
 			*riskedMoves.lenght_list++;
 		}
-		/* si en effectuant le mouvement je peux directement  etre attaqué à droite*/
-		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == enemyColor)
+		/* si en effectuant le mouvement dans une case videje peux directement  être attaqué à droite*/
+		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col + 1].box.piece;
 
@@ -570,8 +573,8 @@ void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves 
 			*riskedMoves.listMoves[r].caution=attributionRank(myPiece,enemyPiece);
 			*riskedMoves.lenght_list++;
 		}
-		/* si en effectuant le mouvement je peux directement  etre attaqué par le bas */
-		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == enemyColor)
+		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué par le bas */
+		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col - 1 ].box.piece;
 			
@@ -579,8 +582,12 @@ void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves 
 			*riskedMoves.listMoves[r].caution=attributionRank(myPiece,enemyPiece);
 			*riskedMoves.lenght_list++;
 		}
-		/* si en effectuant le mouvement je ne risque rien */
-		else
+		/* si 0n effectuant le mouvement dans une case contenant une piece ennemie */
+		else if 
+		{
+			// a traiter
+		}
+		else /* si en effectuant le mouvement je ne risque rien */
 		{
 			*normalMoves.listMoves[r].move = m_movements[i];
 			*normalMoves.lenght_list++;
@@ -588,6 +595,13 @@ void evaluateMoves(InfoPiece m_board[10][10],GroupMoves *normalMoves,GroupMoves 
 	}	
 }
 
+// procedure interne a decideMoves
+// evaluation globale des mouvements dupliqués et risqués 
+void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
+{
+	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
+	// a faire
+}
 
 SMove chooseMove(const SGameState * const gameState,InfoPiece m_board[10][10],GroupMoves moves,int m_caution)
 {

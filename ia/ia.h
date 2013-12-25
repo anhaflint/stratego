@@ -159,10 +159,15 @@ SMove decideMove(gameState);
 * Classe les mouvements possibles en fonction du risque encouru
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués
 * @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
-* @param lenght_r longueur du tableau riskedMoves
-* @param lenght_r longueur du tableau normalMoves
 */
-void evaluateMoves(SMove riskedMoves[],int *lenght_r, SMove normalMoves[], int *lenght_n);
+void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves);
+
+/**
+* Donne l'information sur la pièce ennemie voisine pour évaluer le risque encouru si on effectue le mouvement
+* @param myPiece est la pièce qui effectue le mouvement 
+* @param enemyPiece est la pièce ennemie voisine à analyser pour donne un grade de risque au mouvement effectuer par myPiece
+*/
+int attributionRank(EPiece myPiece,EPiece enemyPiece)
 
 /**
 * A commenter
