@@ -166,8 +166,9 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves);
 * Donne l'information sur la pièce ennemie voisine pour évaluer le risque encouru si on effectue le mouvement
 * @param myPiece est la pièce qui effectue le mouvement 
 * @param enemyPiece est la pièce ennemie voisine à analyser pour donne un grade de risque au mouvement effectuer par myPiece
+* @param evaluationType permet de savoir si on evalue la piece ennemie voisine ou si on attaque l'ennemi
 */
-int attributionRank(EPiece myPiece,EPiece enemyPiece)
+int attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 
 /**
 * A commenter
