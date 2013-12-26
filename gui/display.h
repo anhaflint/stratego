@@ -6,12 +6,12 @@
 typedef struct
 {
 SDL_Rect     position;  	//Position relative d'une case ainsi que sa surface "image" associé 
-SDL_Surface  cellaff;		//																	
+SDL_Surface  *cellaff;		//																	
 }Cell;						// Utile pour connaître le remplissage de chaqune des cases | NULL => Background
 							//															| tuileA ou tuileT
 
 
-typedef struct _BoardLayout
+typedef struct
 {
 	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
 	SDL_Surface *Patron			// Stockage du patron d'images
@@ -20,7 +20,7 @@ typedef struct _BoardLayout
 	SDL_Surface *Screen;		// Surface de l'ecran
 	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
 	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
-}layout;
+}BoardLayout;
 
 
 /* fonction d'nitialisation de la structure contenant toutes les images à utiliser
