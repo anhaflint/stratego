@@ -1,0 +1,36 @@
+CALCULS DE PROBABILITES EN CAS DE LANCEMENT
+D'ATTAQUE SUR UN ENNEMI INCONNU
+
+Variables :
+nbBombes = nombre de bombes ennemies encore en jeu
+nbPieces = nombre de pièces ennemies restantes non visibles
+nbPiecesPlusFortes = nombre de pièces ennemies restantes plus fortes que notre pièce non visibles
+nbPiecesMoinsFortes = nombre de pièces ennemies restantes moins fortes que notre pièce non visibles
+nbBombes = nombre de bombes ennemies non visibles restantes
+nbMarshal = vaut 1 si le marshal ennemi est en vie et caché, 0 sinon
+nbDrapeau = 1
+
+Cas possibles :
+
+1) Si l'ennemi a déjà bougé, donc ni bombe ni flag
+	1-1) Si notre pièce est un démineur
+		-> P(gagner_combat) = nbPiecesMoinsFortes / (nbPieces - nbBombes - nbDrapeau);
+	1-1) Si notre pièce est un espion
+		-> P(gagner_combat) = nbMarshal / (nbPieces - nbBombes - nbDrapeau); (il n'y a que contre le marshal que l'espion gagne)
+	1-3) Si notre pièce est autre chose
+		-> P(gagner combat) = nbPiecesMoinsFortes / (nbPieces - nbBombes - nbDrapeau);
+
+2) Si l'ennemi n'a pas bougé, chance potentielle d'être une bombe ou un drapeau
+	2-1) Si notre pièce est un démineur
+		-> P(gagner_combat) = (nbPiecesMoinsFortes + nbBombes + nbDrapeau) / nbPieces;
+	2-2) Si notre pièce est un espion
+		-> P(gagner_combat) = nbMarshal + nbDrapeau / nbPieces;
+	2-3) Si notre pièce est autre chose
+		-> P(gagner_combat) = nbPiecesMoinsFortes + nbDrapeau / nbPieces;
+
+Comme ces probas vont de 0 à 1, et que les taux de risque vont de -10 à 10 à peu près, on pourrait faire ce calcul pour retrouver le risque :
+
+risque = -20 * probabilité + 10
+
+Si la probabilité de gagner est nulle (0), le risque vaut 10
+Si la probabilité de gagner est sûre (1), le risque vaut -10
