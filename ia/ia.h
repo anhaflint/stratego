@@ -127,9 +127,9 @@ void analyzeBoard();
 
 /**
 * Analyse le mouvement de (i,j) à (new_i, new_j), vérifiant si c'est en ligne
-* @param int i
+* @param unsigned int i
 *   Ligne sur laquelle est la pièce dont le mouvement est à analyser
-* @param int j
+* @param unsigned int j
 *   Colonne sur laquelle est la pièce dont le mouvement est à analyser
 * @param int new_i
 *   Ligne sur laquelle est la case sur laquelle on veut tester le mouvement
@@ -139,10 +139,10 @@ void analyzeBoard();
 *   Vaut 1 si le déplacement à analyser est vertical, 0 sinon
 * @param int lim
 *   Limite de déplacement sur le plateau dans la direction du mouvement (0 ou 9)
-* @param int* compteur
+* @param unsigned int* compteur
 *   Compteur du nombre de mouvements possibles au total
 */
-void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, int* compteur);
+void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur);
 
 //----- decideMove() -----//
 
@@ -153,7 +153,15 @@ void addAnalyzedMove(int i, int j, int new_i, int new_j, int is_i, int lim, int*
 * @return SMove
 * 	mouvement à faire, décidé par l'IA
 */
-SMove decideMove(gameState);
+SMove decideMove(const SGameState * const  gameState);
+
+/**
+* Donne l'information sur la pièce ennemie voisine pour évaluer le risque encouru si on effectue le mouvement
+* @param myPiece est la pièce qui effectue le mouvement 
+* @param enemyPiece est la pièce ennemie voisine à analyser pour donne un grade de risque au mouvement effectuer par myPiece
+* @param evaluationType permet de savoir si on evalue la piece ennemie voisine ou si on attaque l'ennemi
+*/
+int attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType);
 
 /**
 * Classe les mouvements possibles en fonction du risque encouru
@@ -163,52 +171,52 @@ SMove decideMove(gameState);
 void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves);
 
 /**
-* Donne l'information sur la pièce ennemie voisine pour évaluer le risque encouru si on effectue le mouvement
-* @param myPiece est la pièce qui effectue le mouvement 
-* @param enemyPiece est la pièce ennemie voisine à analyser pour donne un grade de risque au mouvement effectuer par myPiece
-* @param evaluationType permet de savoir si on evalue la piece ennemie voisine ou si on attaque l'ennemi
+* A commenter
+*
 */
-int attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
+void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves);
 
 /**
 * A commenter
 *
 */
-SMove chooseMove(const SGameState * const gameState,InfoPiece m_board[10][10],GroupMoves moves,int m_caution);
+SMove chooseMove(const SGameState * const gameState, GroupMoves moves);
 
 //----- saveMove() -----//
 
 /**
 * Enregistre le plateau si on a fait un déplacement simple
+* @param SGameState gameState
+* 	l'état du jeu courant
 */
-void saveMove();
+void saveMove(const SGameState * const gameState);
 
 //----------- Fonctions utilisées à l'envoi d'un combat par l'arbitre -----------//
 
 /**
 * Calcule et fais les remplacements sur le plateau selon le 
 * résultat de Piece A qui attaque Piece B
-* @param SPiece PieceA
+* @param EPiece PieceA
 *	Pièce attaquante
-* @param SPiece Piece B
+* @param EPiece Piece B
 *   Pièce attaquée
 * @param SPos APos
 *	Position de la pièce qui attaque
 * @param Spos BPos
 * 	Position de la pièce attaquée
 */
-void analyseFight(SPiece PieceA, SPiece PieceB, SPos APos, SPos BPos);
+void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos);
 
 /**
 *  Renvoie le gagnant du combat dans lequel la pièce A attaque la pièce B (A != B)
-* @param SPiece A
+* @param EPiece A
 *  Pièce attaquante
-* @param SPiece B
+* @param EPiece B
 *  Pièce attaquée
-* @return SPiece
+* @return EPiece
 *  Pièce gagnante du combat
 */
-SPiece winner(SPiece A, SPiece B);
+EPiece winnerFight(EPiece A, EPiece B);
 
 //----------- Fonctions à supprimer si inutilisées à la fin -----------//
 
@@ -227,4 +235,4 @@ void checkMove();
 	pour évaluer si à la nouvelle position obtenue reste dans le tableau
 	exemple: position + left = position.col -1 , la nouvelle position à evaluer
 */
-bool limiteUnachieved(SPos position, Direction piecedirection)
+bool limiteUnachieved(SPos position, Direction piecedirection);
