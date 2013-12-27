@@ -22,8 +22,8 @@ void Game_InitGameState(SGameState* gamestate);
 
 
 // fonctions de verification de mouvements
+int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate);
 int Game_CheckMove(SMove move);
-int Game_CheckPosition(SPos start);
 SMove Player_NextMove(const SGameState * const gamestate);
 
 // fonction qui effectue le mouvement

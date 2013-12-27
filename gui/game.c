@@ -7,7 +7,7 @@
 
 /* procédure qui affiche la totalité du gamestate 
  * sous la forme tableau de 10*10 : [couleur | piece]
- * 2 tableaux de 11 cases comptatn le nombre de pieces élimninées
+ * 2 tableaux de 11 cases comptant le nombre de pieces élimninées
  */
 void DisplayGS(SGameState gamestate)
 {
@@ -108,7 +108,41 @@ void Game_InitGameState(SGameState* gamestate)
  * 			position de départ du mouvement
  * @return value : entier pour connaitre la validité de la position
  */
-int Game_CheckPosition(SPos start);
+int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
+{
+	int i, j;
+	int RETURN = 0; // ERROR
+	/* En fonction de la couleur du joueur, on regarde differentes parties du tableau du gamestate
+	 * On regarde si la couleur du pion selectionné par le joueur est la bonne
+	 * On regarde si sa piece est un scout : si oui, on renvoie 2 car on doit savoir pour la validité du mouvement
+	 * On regarde si la piece est une piece mobile qui n'est pas un scout : @return value = 1
+	 * si le pion n'est pas une piece mobile, la couleur selectionnée est mauvaise ou si la case est vide : @return value = 0
+	 */
+
+	if (player.Color == ECred) // on regarde différentes parties du tableau du gamestate en fonction de la couleur
+	{ // Rouge, indice i € [6, 9] bas du tableau
+		i = start.line;
+		j = start.col;
+	}
+	else // Bleu, indice i € [0,3], haut du tableau
+	{
+		i = 9 - start.line;
+		j = 9 - start.col;
+	}
+
+	EColor _color = gamestate.board[i][j].content; // couleur de la piece selectionnée sur le gamestate
+	EPiece _piece = gamestate.board[i][j].piece;  // piece selectionnée en vrai sur le gamestate
+
+	if (player.Color == _color) // Le joueur cherche bien à bouger ses pions
+	{
+		if (_piece == EPscout) 
+			RETURN = 2;  // Le scout se deplace différemment
+		else if ((_piece > EPbomb)&&(_piece < EPflag)&&(_piece != EPscout)) // piece != bomb, flag ou none 
+				RETURN = 1; // piece valide et n'est pas le scout
+	}
+
+	return RETURN;
+}
 
 
 /* fonction pour vérifier si un mouvement est valide

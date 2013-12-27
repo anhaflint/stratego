@@ -24,7 +24,7 @@ typedef enum
 	EPcolonel,
 	EPgeneral,
 	EPmarshal,
-	EPflag,
+	EPflag, // 11
 	EPnone,// 12
 } EPiece;
 
