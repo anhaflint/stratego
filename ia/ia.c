@@ -31,12 +31,15 @@ void StartMatch()
 	printf("StartMatch\n");
 }
 
-void StartGame(const EColor color, EPiece boardInit[4][10]){
+void StartGame(const EColor color, EPiece boardInit[4][10])
+{
 	/* Initialisation du tableau de l'IA avec positionement de pions*/
 	printf("StartGame\n");
 	m_color = color;
 	m_strategy = str_default;
 	m_caution = 5;
+
+	Ecolor enemyColor = (m_color == ECblue) ? ECred : ECblue;
 
 	switch(m_strategy){
 
@@ -259,6 +262,46 @@ void StartGame(const EColor color, EPiece boardInit[4][10]){
 		case risked:
 		break;
 	}
+
+	/* Initialisation du tableau interne */
+
+	for (i=0; i<10; i++) // Lignes
+	{
+		for (j=0; j<10; j++) // Colonnes
+		{
+			if (i < 4) // Si on est dans nos rangs, on sauvegarde ce qu'on a mis
+			{
+				m_board[i][j].box.content = m_color;
+				m_board[i][j].box.piece = boardInit[i][j];
+				m_board[i][j].isVisible = false;
+				m_board[i][j].isBomb = true;
+			}
+			else if (i > 3 && i < 6) // Sinon si on est entre les joueurs
+			{
+				if ((j > 1 && j < 4)||(j > 5 && j < 8)) // Si on se trouve sur un lac
+				{
+					m_board[i][j].box.content = EClake;
+					m_board[i][j].box.piece = EPnone;
+					m_board[i][j].isVisible = false;
+					m_board[i][j].isBomb = false;
+				}
+				else // Sinon on se trouve sur une case vide
+				{
+					m_board[i][j].box.content = ECnone;
+					m_board[i][j].box.piece = EPnone;
+					m_board[i][j].isVisible = false;
+					m_board[i][j].isBomb = false;
+				}
+			}
+			else // Sinon, on est dans le camp ennemi
+			{
+				m_board[i][j].box.content = enemyColor;
+				m_board[i][j].box.piece = EPnone;
+				m_board[i][j].isVisible = false;
+				m_board[i][j].isBomb = true;
+			}
+		}		
+	}
 }
 
 void EndGame()
@@ -279,7 +322,7 @@ SMove NextMove(const SGameState * const gameState)
 	analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles
 	decideMove(gameState); // Décision du mouvement à faire
 	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
-		saveMove(gameState); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
+		saveMove(); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
 	return m_decidedMove;
 }
 
@@ -310,14 +353,36 @@ void Penalty()
 
 //----- updateData() -----//
 
+/* Mise à jour d'une case de notre structure InfoPiece m_board */
+void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, bool isBomb)
+{
+	m_board[position.line][position.col].box.piece = piece;
+	m_board[position.line][position.col].box.content = color;
+	m_board[position.line][position.col].isVisible = isVisible;
+	m_board[position.line][position.col].isBomb = isBomb;
+}
+
 // Première phase, mise à jour des données internes
 void updateData(const SGameState * const gameState)
 {
+	/************************
+	* Il y a 4 cas possibles de mouvements 
+	* qui se sont passés depuis le dernier tour :
+	* - On a attaqué une pièce, et l'ennemi a également attaqué une pièce
+	* - On a attaqué une pièce, et l'ennemi a effectué un déplacement simple
+	* - On a effectué un déplacement simple, et l'ennemi a également effectué un déplacement simple
+	* - On a effectué un déplacement simple, et l'ennemi a attaqué une pièce
+	* Tous les cas d'attaque (dans un sens ou dans un autre) sont gérés par la fonction AttackResult().
+	* Tous les cas où l'on fait un déplacement simple sont gérés par la fonction saveMove().
+	* Il ne reste donc qu'à gérer les deux cas dans lesquels l'ennemi effectue 
+	* un déplacement simple : ce cas est géré dans cette fonction updateData()
+	*************************/
+
 	/* Variables internes à la fonction */
 	int i, j; // Variables pour les boucles	
-	SPos negative, positive; // Tableaux contenant les positions qui ont changé depuis le dernier mouvement
-
+	SMove enemyMovement; // Tableaux contenant les positions qui ont changé depuis le dernier mouvement
 	m_nbMove = 0; // A déplacer dans la fonction précédant l'envoi de mouvement
+	bool enemyHasMoved = false; // Permet de savoir si l'ennemi a fait un déplacement simple
 
 	/* On analyse les changements qu'il y a eu depuis notre dernier tour, 
 	on stocke ça dans le tableau de positions adéquat */
@@ -325,27 +390,34 @@ void updateData(const SGameState * const gameState)
 	{
 		for (j=0; j < 10; j++)
 		{
-			/* Si une pièce n'est plus dans la case en (i,j), on stocke */			
+			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
 			if ((m_board[i][j].box.piece - gameState->board[i][j].piece) < 0)
 			{
-				negative.line = i;
-				negative.col = j;
+				enemyHasMoved = true;
+				enemyMovement.start.line = i;
+				enemyMovement.start.col = j;
 			}
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
 			else if ((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)
 			{
-				positive.line = i; 
-				positive.col = j;
+				enemyMovement.end.line = i; 
+				enemyMovement.end.col = j;
 			}
 		}
 	}
 
-	/* Mise à jour du plateau interne */
-	m_board[positive.line][positive.col].box.piece = gameState->board[negative.line][negative.col].piece;	
-	m_board[positive.line][positive.col].box.content = gameState->board[negative.line][negative.col].content;
-
-	m_board[negative.line][negative.col].box.piece = EPnone;
-	m_board[negative.line][negative.col].box.content = ECnone;
+	if (enemyHasMoved)
+	{		
+		/* On met à jour la case d'arrivée de l'ennemi */		
+		updateSquare(enemyMovement.end,
+			m_board[enemyMovement.start.line][enemyMovement.start.col].box.piece, 
+			m_board[enemyMovement.start.line][enemyMovement.start.col].box.content, 
+			m_board[enemyMovement.start.line][enemyMovement.start.col].isVisible, 
+			false);
+		
+		/* On vide la case d'où provient l'ennemi */
+		updateSquare(enemyMovement.start, EPnone, ECnone, false, false);
+	}
 
 	/* Réinitialisation des valeurs */
 	m_myMove = false;
@@ -663,15 +735,17 @@ SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 //----- saveMove() -----//
 
 // Enregistrement du plateau si déplacement simple
-void saveMove(const SGameState * const gameState)
+void saveMove()
 {
-	// On vide la case d'où vient la pièce
-	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.piece = EPnone;
-	m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.content = ECnone;
-
 	// On met la nouvelle pièce dans sa nouvelle case
-	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.piece = gameState->board[m_decidedMove.start.line][m_decidedMove.start.col].piece;
-	m_board[m_decidedMove.end.line][m_decidedMove.end.col].box.content = m_color;
+	updateSquare(m_decidedMove.end,
+		m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.piece,
+		m_color,
+		m_board[m_decidedMove.start.line][m_decidedMove.start.col].isVisible,
+		m_board[m_decidedMove.start.line][m_decidedMove.start.col].isBomb);
+
+	// Puis on vide la case d'où vient la pièce
+	updateSquare(m_decidedMove.start, EPnone, ECnone, false, false);
 }
 
 //----------- Fonctions utilisées à l'envoi d'un combat par l'arbitre -----------//
@@ -689,27 +763,23 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos)
 		if (winner == PieceA) // Si la pièce A a attaqué et gagné, on remplace la pièce B
 		{
 			/* On place la pièce A sur la case où était la pièce B */
-			m_board[BPos.line][BPos.col].box.piece = PieceA;
-			m_board[BPos.line][BPos.col].box.content = m_board[APos.line][APos.col].box.content;
+			updateSquare(BPos, PieceA, m_board[APos.line][APos.col].box.content, true, false);
 		}
 		else // Si la pièce A a perdu, on sauvegarde ce qu'est la pièce B
 		{	
-			m_board[BPos.line][BPos.col].box.piece = PieceB;
+			updateSquare(BPos, PieceB, m_board[BPos.line][BPos.col].box.content, true, (PieceB == EPbomb) ? true : false);
 		}		
 
 		/* Dans tous les cas, la case d'où vient la pièce A devient vide */
-		m_board[APos.line][APos.col].box.piece = EPnone;
-		m_board[APos.line][APos.col].box.content = ECnone;
+		updateSquare(APos, EPnone, ECnone, false, false);
 	}
 	else // Si les deux pièces sont identiques, elles sont éliminées
 	{
 		/* Plus rien dans la case de la pièce A */
-		m_board[APos.line][APos.col].box.piece = EPnone;
-		m_board[APos.line][APos.col].box.content = ECnone;
+		updateSquare(APos, EPnone, ECnone, false, false);
 
 		/* Plus rien dans la case de la pièce B */
-		m_board[BPos.line][BPos.col].box.piece = EPnone;
-		m_board[BPos.line][BPos.col].box.content = ECnone;
+		updateSquare(BPos, EPnone, ECnone, false, false);
 	}
 }
 
