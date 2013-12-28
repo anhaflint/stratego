@@ -39,7 +39,11 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	m_strategy = str_default;
 	m_caution = 5;
 
-	Ecolor enemyColor = (m_color == ECblue) ? ECred : ECblue;
+	/* Variables servant à 
+	l'initialisation de m_board */
+	EColor enemyColor = (m_color == ECblue) ? ECred : ECblue;
+	int i, j;
+	SPos pos;	
 
 	switch(m_strategy){
 
@@ -269,36 +273,27 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	{
 		for (j=0; j<10; j++) // Colonnes
 		{
+			pos.line = i;
+			pos.col = j;
+
 			if (i < 4) // Si on est dans nos rangs, on sauvegarde ce qu'on a mis
 			{
-				m_board[i][j].box.content = m_color;
-				m_board[i][j].box.piece = boardInit[i][j];
-				m_board[i][j].isVisible = false;
-				m_board[i][j].isBomb = true;
+				updateSquare(pos, m_color, boardInit[i][j], false, true);				
 			}
 			else if (i > 3 && i < 6) // Sinon si on est entre les joueurs
 			{
 				if ((j > 1 && j < 4)||(j > 5 && j < 8)) // Si on se trouve sur un lac
 				{
-					m_board[i][j].box.content = EClake;
-					m_board[i][j].box.piece = EPnone;
-					m_board[i][j].isVisible = false;
-					m_board[i][j].isBomb = false;
+					updateSquare(pos, EClake, EPnone, false, false);
 				}
 				else // Sinon on se trouve sur une case vide
 				{
-					m_board[i][j].box.content = ECnone;
-					m_board[i][j].box.piece = EPnone;
-					m_board[i][j].isVisible = false;
-					m_board[i][j].isBomb = false;
+					updateSquare(pos, ECnone, EPnone, false, false);
 				}
 			}
 			else // Sinon, on est dans le camp ennemi
 			{
-				m_board[i][j].box.content = enemyColor;
-				m_board[i][j].box.piece = EPnone;
-				m_board[i][j].isVisible = false;
-				m_board[i][j].isBomb = true;
+				updateSquare(pos, enemyColor, EPnone, false, true);
 			}
 		}		
 	}
