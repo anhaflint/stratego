@@ -4,6 +4,7 @@
 #include "../structure.h"
 #include "game.h"
 #include "../stratego.h"
+#include "../ia/couleurs.h"
 
 //gcc -Wall mainTestGame.c  game.c -o test
 
@@ -22,6 +23,7 @@ int main(int argc, char* argv[])
 	// initialisation des joueurs
 	//Game_InitPlayer(&player1, &player2, &gameConfig);
 	// initialisation du gamestate
+	if (gameConfig.Mode == 3) return EXIT_FAILURE;
 	Game_InitGameState(&gameState);
 	// mise en place de pions sur le gamestate comme si on avait placé de pieces
 	// joueur BLEU,  haut du tableau

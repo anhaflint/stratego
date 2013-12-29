@@ -10,19 +10,20 @@
  */
 
 // procédure d'affichage 
-void DisplayGS(SGameState gamestate);
+void DisplayGS(SGameState gamestate); // OK, peut etre donner la couleur en parametre pour voir comment c'est affiché pour le joueur
 
 // fonction de detection du mode de jeu
-SGameMode DetectGameMode(int argc, char *argv[]);
+SGameMode DetectGameMode(int argc, char *argv[]); // OK
 
 
 // procédures d'initialisation
-void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig);	
-void Game_InitGameState(SGameState* gamestate);
+// procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation et le gamestate des joueurs (dans le bon sens)	
+void Game_CpyGameState(SGameState* gamestate, EPlayer player, EPiece boardInit[4][10]);
+void Game_InitGameState(SGameState* gamestate); // voir si on init direct toutes les lignes de couleur
 
 
 // fonctions de verification de mouvements
-int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate);
+int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate); // OK, a verifier pour l'inversion du gamestate
 int Game_CheckMove(SMove move);
 SMove Player_NextMove(const SGameState * const gamestate);
 
@@ -37,8 +38,7 @@ void Game_EndMatch();
 // fonction de gestion des pénalités
 void Game_AddPenalty();	// idée : variable statique ? allouées au début du programme et libérées à la fin
 
-// procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation	
-void Game_CpyGameState(SGameState* gamestate, const EColor color, EPiece boardInit[4][10]);
+
 
 // initialisation du jeu pour le joueur humain (placement des pieces)
 void Game_Begin(const EColor color, EPiece boardInit[4][10]);
