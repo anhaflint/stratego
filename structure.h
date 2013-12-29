@@ -61,6 +61,7 @@ typedef struct
 typedef struct {
 	unsigned int nbPenalty;	// nombre de pénalités du joueur
 	EColor Color;		// couleur du joueur (const pour éviter la triche)
+	SBox Pboard[10][10]; // tableau qui comprend la copie du gamestate dans le bon sens pour le joueur
 }EPlayer;
 
 

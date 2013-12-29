@@ -61,7 +61,7 @@ SGameMode DetectGameMode(int argc, char* argv[])
  * au début de chaque jeu
  * initialise les deux joueurs en même temps 
  */
-void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig)
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig, EPiece boardInitBlue[4][10], EPiece boardInitRed[4][10])
 {
 	player1->nbPenalty = 0;
 	player2->nbPenalty = 0;
@@ -78,6 +78,8 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 	}
 	gameconfig->ColorPlayer1 = player1->Color;
 }
+	SBox Pboard[10][10];
+
 
 
 /* procédure d'initialisation de l'etat du jeu
@@ -186,8 +188,13 @@ void Game_AddPenalty();	// idée : variable statique ? allouées au début du pr
  * 				couleur du joueur pour lequel on passe le tableau
  * @param EPiece boardInit[4][10]
  *				tableau initialisé du joueur 
+ * @param SBox* board[10][10] 
+ *				gamestate du joueur, avec le tableau orienté vers le bas
  */
-void Game_CpyGameState(SGameState* gamestate, const EColor color, EPiece boardInit[4][10]);
+void Game_CpyGameState(SGameState* gamestate, EPlayer player, EPiece boardInit[4][10])
+{
+
+}
 
 /* initialisation du jeu pour le jour humain (placement des pieces)
  * à ce moment là on ne verifie pas la validité des mouvements car il ne peut pas acceder au tableau du joueur adverse
