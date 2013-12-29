@@ -29,7 +29,7 @@ typedef struct
  * 			à passer par adresse &layout
  *			fonction dans laquelle on loadera tous les positions des BMP de la surface Patron
  */
-void BoardLayout_Init(BoardLayout layout);
+void BoardLayout_Init(BoardLayout* layout);
 
 //-----------------------------------------------------------------------------------------------
 
