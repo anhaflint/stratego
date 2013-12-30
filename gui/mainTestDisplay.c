@@ -5,7 +5,7 @@
 #include "display.h"
 #include "../stratego.h"
 
-//gcc -Wall mainTestDisplay.c  display.c -o tdisp
+//gcc -Wall mainTestDisplay.c  display.c -lSDL -o tdisp
 
 
 
@@ -14,7 +14,7 @@ int main()
 
 	BoardLayout layout;
 	BoardLayout_Init(&layout);
-
+	//Display_Init(layout,int noJoueur);
 
 	return 0;
 }

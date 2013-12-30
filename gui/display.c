@@ -60,11 +60,34 @@ for (i=13;i<26;i++){
 
 
 /*
-void Display_Init(BoardLayout layout){
+void Display_Init(BoardLayout layout,int noJoueur){
 
+SDL_Rect rectTuilesAPlacer[12];
+SDL_Rect rectImageTuilesAPlacer[12];
+int i;
 
+	for (i=0,i<12,i++){
+		rectTuilesAPlacer[i].h=50;
+		rectTuilesAPlacer[i].w=50;
+		
+		if (noJoueur=1)
+		{
+			rectTuilesAPlacer[i].x=10;
+			rectTuilesAPlacer[i].y=50+50*i;
+			rectImageTuilesAPlacer[i]=layout.PiecesLayout[1+i];
+		}
+		if (noJoueur=2)
+		{
+			rectTuilesAPlacer[i].x=710;
+			rectTuilesAPlacer[i].y=50+50*i;
+			rectImageTuilesAPlacer[i]=layout.PiecesLayout[14+i];
+		}
+		SDL_BlitSurface(layout.Patron, rectImageTuilesAPlacer[i], layout->Screen, rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+	}
+ 	SDL_Flip(layout.Screen); // Rafraichissement
 
 }
+
 void Display_Board(BoardLayout layout, SGameState gamestate){
 
 
