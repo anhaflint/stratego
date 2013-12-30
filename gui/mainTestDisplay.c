@@ -3,33 +3,10 @@
 #include <SDL/SDL.h>
 #include "../structure.h"
 #include "display.h"
+#include "event.h"
 #include "../stratego.h"
 
-//gcc -Wall mainTestDisplay.c  display.c -lSDL -o tdisp
-
-
-
-
-//--------------------------------------------------------------------------------------------
-// Fonctions auxiliaires
-//--------------------------------------------------------------------------------------------
-void pause()
-{
-    int continuer = 1;
-    SDL_Event event;
- 
-    while (continuer)
-    {
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                continuer = 0;
-        }
-    }
-}
-
-
+//gcc -Wall mainTestDisplay.c display.c event.c -lSDL -o tdisp
 
 int main()
 {
@@ -46,11 +23,17 @@ if (SDL_Init(SDL_INIT_VIDEO) == -1) // Si erreur :
 	Display_Init(layout,2);
 	//Display_Init(layout,3);       Enlever commentaire pour test supprimer aff latéral
 
-
 	SDL_Flip(layout.Screen);
 
-    pause(); // Permet de laisser la fenêtre affichée à l'écran
+	SDL_Event event;
+    int continuer=1;
 
+while(continuer==1)
+{
+     SDL_WaitEvent(&event);
+     Event_InitGameState(&event,&continuer); //affiche seulement la position du clic pour le moment
+
+}
     SDL_Quit(); // Libération de la SDL en mémoire
  
     return EXIT_SUCCESS;
