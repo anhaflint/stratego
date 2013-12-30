@@ -42,7 +42,9 @@ if (SDL_Init(SDL_INIT_VIDEO) == -1) // Si erreur :
 
 	BoardLayout layout;
 	BoardLayout_Init(&layout);
-	//Display_Init(layout,int noJoueur);
+	Display_Init(layout,2);
+	Display_Init(layout,1);
+
 
 	SDL_Flip(layout.Screen);
 

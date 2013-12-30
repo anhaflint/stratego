@@ -9,20 +9,20 @@ void BoardLayout_Init(BoardLayout* layout){
 
 int i,j;
 for (i=0;i<13;i++){
-	layout->PiecesLayout[i].x=i*50;
+	layout->PiecesLayout[i].x=i*40;
 	layout->PiecesLayout[i].y=0;
-	layout->PiecesLayout[i].w=50;		//Init Rectangle découpe Patron Pièces Bleu
-	layout->PiecesLayout[i].h=50;
+	layout->PiecesLayout[i].w=40;		//Init Rectangle découpe Patron Pièces Bleu
+	layout->PiecesLayout[i].h=40;
 }
 
 for (i=13;i<26;i++){
-	layout->PiecesLayout[i].x=i*50;
-	layout->PiecesLayout[i].y=50;
-	layout->PiecesLayout[i].w=50;		//Init Rectangle découpe Patron Pièces Rouges
-	layout->PiecesLayout[i].h=50;
+	layout->PiecesLayout[i].x=i*40;
+	layout->PiecesLayout[i].y=40;
+	layout->PiecesLayout[i].w=40;		//Init Rectangle découpe Patron Pièces Rouges
+	layout->PiecesLayout[i].h=40;
 }
 
-	layout->Patron=SDL_LoadBMP("images/tuiles.bmp");   // Charge image Patron Pièces
+	layout->Patron=SDL_LoadBMP("images/piecestest.bmp");   // Charge image Patron Pièces
 	
 	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
 
@@ -39,8 +39,8 @@ for (i=13;i<26;i++){
 		for (j=0;j<10;j++){
 
 		
-			layout->DisplayTab[i][j].position.x=155+50*j; //Position relative d'une case
-			layout->DisplayTab[i][j].position.y=55+50*i;
+			layout->DisplayTab[i][j].position.x=156+50*j; //Position relative d'une case
+			layout->DisplayTab[i][j].position.y=56+50*i;
 
 			layout->DisplayTab[i][j].cellaff=NULL; // Rien n'est encore afficher sur le plateau
 		}
@@ -49,36 +49,35 @@ for (i=13;i<26;i++){
 
 }
 
-
-/*
 void Display_Init(BoardLayout layout,int noJoueur){
 
 SDL_Rect rectTuilesAPlacer[12];
 SDL_Rect rectImageTuilesAPlacer[12];
 int i;
 
-	for (i=0,i<12,i++){
-		rectTuilesAPlacer[i].h=50;
-		rectTuilesAPlacer[i].w=50;
+	for (i=0;i<12;i++){
+		rectTuilesAPlacer[i].h=40;
+		rectTuilesAPlacer[i].w=40;
 		
-		if (noJoueur=1)
+		if (noJoueur==1)
 		{
 			rectTuilesAPlacer[i].x=10;
-			rectTuilesAPlacer[i].y=50+50*i;
+			rectTuilesAPlacer[i].y=50+40*i;
 			rectImageTuilesAPlacer[i]=layout.PiecesLayout[1+i];
 		}
-		if (noJoueur=2)
+		if (noJoueur==2)
 		{
 			rectTuilesAPlacer[i].x=710;
-			rectTuilesAPlacer[i].y=50+50*i;
+			rectTuilesAPlacer[i].y=50+40*i;
 			rectImageTuilesAPlacer[i]=layout.PiecesLayout[14+i];
 		}
-		SDL_BlitSurface(layout.Patron, rectImageTuilesAPlacer[i], layout->Screen, rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+		SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
 	}
  	SDL_Flip(layout.Screen); // Rafraichissement
 
 }
 
+/*
 void Display_Board(BoardLayout layout, SGameState gamestate){
 
 

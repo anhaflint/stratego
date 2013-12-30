@@ -36,7 +36,7 @@ void BoardLayout_Init(BoardLayout* layout);
 
 //-----------------------------------------------------------------------------------------------
 
-/*
+
 void Display_Init(BoardLayout layout,int noJoueur); 	
 										// Affichage du départ : tuiles sur les cotes
 									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour permettre au joueur de placer 
@@ -46,12 +46,15 @@ void Display_Init(BoardLayout layout,int noJoueur);
 										// aient été éliminés ! il faut donc deux fonctions
  
 
+ 
+ /*
  //fonction d'affichage du plateau pendant le jeu
  * @param SDL_Surface* window 
  *		surface sur laquelle on va blitter les éléments dans la fonction
  * @param SGameState gamestate
  * 		état du jeu à afficher
  //
+
 void Display_Board(BoardLayout layout, SGameState gamestate);
 
 void Display_Fight(SDL_Surface* piece, BoardLayout layout);
