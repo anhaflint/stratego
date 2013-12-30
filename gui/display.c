@@ -24,7 +24,7 @@ for (i=13;i<26;i++){
 
 	layout->Patron=SDL_LoadBMP("images/tuiles.bmp");   // Charge image Patron Pièces
 	
-	layout->Background=SDL_LoadBMP("images/venice3.bmp");   // Charge image de fond
+	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
 
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran
  	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre
