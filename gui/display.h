@@ -37,7 +37,7 @@ void BoardLayout_Init(BoardLayout* layout);
 //-----------------------------------------------------------------------------------------------
 
 
-void Display_Init(BoardLayout layout,int noJoueur); 	
+void Display_Init(BoardLayout layout,int color); 	
 										// Affichage du départ : tuiles sur les cotes
 									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour permettre au joueur de placer 
 										// ses pieces : il n'y a pas besoin de creer de tableaux en mémoire je crois.

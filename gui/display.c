@@ -16,7 +16,7 @@ for (i=0;i<13;i++){
 }
 
 for (i=13;i<26;i++){
-	layout->PiecesLayout[i].x=i*40;
+	layout->PiecesLayout[i].x=(i-13)*40;
 	layout->PiecesLayout[i].y=40;
 	layout->PiecesLayout[i].w=40;		//Init Rectangle découpe Patron Pièces Rouges
 	layout->PiecesLayout[i].h=40;
@@ -49,7 +49,7 @@ for (i=13;i<26;i++){
 
 }
 
-void Display_Init(BoardLayout layout,int noJoueur){
+void Display_Init(BoardLayout layout,int color){
 
 SDL_Rect rectTuilesAPlacer[12];
 SDL_Rect rectImageTuilesAPlacer[12];
@@ -59,19 +59,28 @@ int i;
 		rectTuilesAPlacer[i].h=40;
 		rectTuilesAPlacer[i].w=40;
 		
-		if (noJoueur==1)
+		if (color==1)
 		{
 			rectTuilesAPlacer[i].x=10;
-			rectTuilesAPlacer[i].y=50+40*i;
+			rectTuilesAPlacer[i].y=33+45*i;
 			rectImageTuilesAPlacer[i]=layout.PiecesLayout[1+i];
+			SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
 		}
-		if (noJoueur==2)
+		if (color==2)
 		{
 			rectTuilesAPlacer[i].x=710;
-			rectTuilesAPlacer[i].y=50+40*i;
+			rectTuilesAPlacer[i].y=33+45*i;
 			rectImageTuilesAPlacer[i]=layout.PiecesLayout[14+i];
+			SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
 		}
-		SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+		if (color==3){  // remise à vide
+			rectTuilesAPlacer[i].x=10;
+			rectTuilesAPlacer[i].y=33+45*i;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+			rectTuilesAPlacer[i].x=710;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+
+		}	
 	}
  	SDL_Flip(layout.Screen); // Rafraichissement
 

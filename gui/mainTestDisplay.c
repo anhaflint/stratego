@@ -42,8 +42,9 @@ if (SDL_Init(SDL_INIT_VIDEO) == -1) // Si erreur :
 
 	BoardLayout layout;
 	BoardLayout_Init(&layout);
-	Display_Init(layout,2);
 	Display_Init(layout,1);
+	Display_Init(layout,2);
+	//Display_Init(layout,3);       Enlever commentaire pour test supprimer aff latéral
 
 
 	SDL_Flip(layout.Screen);
