@@ -7,6 +7,7 @@
 
 void BoardLayout_Init(BoardLayout* layout){ 
 
+int i,j;
 for (i=0;i<13;i++){
 	layout->PiecesLayout[i].x=i*50;
 	layout->PiecesLayout[i].y=0;
@@ -24,8 +25,8 @@ for (i=13;i<26;i++){
 	layout->Patron=SDL_LoadBMP("tuiles.bmp");   // Charge image Patron Pièces
 	
 	layout->Background=SDL_LoadBMP("venice2.bmp");   // Charge image de fond
- 	layout->posBackground.x=0;
- 	layout->posBackground.y=0;
+ 	layout->posBackground->x=0;
+ 	layout->posBackground->y=0;
 
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran
 
@@ -33,14 +34,14 @@ for (i=13;i<26;i++){
 
 //Init Display TAB	
 
-	for (i=0;i<13;i++){
-		for (j=0;j<13;j++){
+	for (i=0;i<10;i++){
+		for (j=0;j<10;j++){
 
 		
-			layout->DisplayTab[i][j]->position.x=155+50*j; //Position relative d'une case
-			layout->DisplayTab[i][j]->position.y=55+50*i;
+			layout->DisplayTab[i][j].position.x=155+50*j; //Position relative d'une case
+			layout->DisplayTab[i][j].position.y=55+50*i;
 
-			layout->DisplayTab[i][j]->cellaff=NULL; // Rien n'est encore afficher sur le plateau
+			layout->DisplayTab[i][j].cellaff=NULL; // Rien n'est encore afficher sur le plateau
 		}
 
 	}
@@ -48,7 +49,7 @@ for (i=13;i<26;i++){
 }
 
 
-
+/*
 void Display_Init(BoardLayout layout){
 
 
@@ -103,4 +104,6 @@ layout->DisplayTab[i][j].cellaff=NULL;
 // On affiche la découpe
 SDL_BlitSurface(layout->Background, rectCut, layout->Screen, layout->DisplayTab[i][j].position);
 
+
 }
+*/
