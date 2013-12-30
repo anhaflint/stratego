@@ -9,6 +9,13 @@
 
 
 void Event_InitGameState(SDL_Event *event, int *continuer);
+/* Fonction appellé en boucle pour Analyse du Placement Inital des Pieces
+	Paramètres : Un Event, et un entier responsable de la sortie ou non de la boucle d'appel.
+	*/
+
+
+
+
 /*
 SMove Event_Boardclick(SGameState gamestate); 	// Fonction d'interprétation des évents. 
 												// Traduction de la position de la souris en pixels -> [i,j]

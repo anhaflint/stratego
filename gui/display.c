@@ -8,17 +8,21 @@
 void BoardLayout_Init(BoardLayout* layout){ 
 
 int i,j;
+
+
+//Init Rectangle découpe Patron Pièces Bleu
 for (i=0;i<13;i++){
-	layout->PiecesLayout[i].x=i*40;
-	layout->PiecesLayout[i].y=0;
-	layout->PiecesLayout[i].w=40;		//Init Rectangle découpe Patron Pièces Bleu
+	layout->PiecesLayout[i].x=i*40;			// On part du point (0,0) du Patron
+	layout->PiecesLayout[i].y=0;			// On avance suivant x de 40 px
+	layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
 	layout->PiecesLayout[i].h=40;
 }
 
+//Init Rectangle découpe Patron Pièces Rouges
 for (i=13;i<26;i++){
-	layout->PiecesLayout[i].x=(i-13)*40;
-	layout->PiecesLayout[i].y=40;
-	layout->PiecesLayout[i].w=40;		//Init Rectangle découpe Patron Pièces Rouges
+	layout->PiecesLayout[i].x=(i-13)*40;	// On part du point (0,40) du Patron
+	layout->PiecesLayout[i].y=40;			// On avance tj suivant x de 40 px
+	layout->PiecesLayout[i].w=40;		
 	layout->PiecesLayout[i].h=40;
 }
 
@@ -26,23 +30,33 @@ for (i=13;i<26;i++){
 	
 	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
 
- 	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran
- 	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre
- 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background
+
+ 	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran : 800x600
+
+ 	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre notamment son nom
+
+ 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background en 0,0 sur l'écran
+ 	
+ 	// Rafraichissement
  	SDL_Flip(layout->Screen);
+
 
 	layout->Fight=NULL; 		// Stocke image affichée lors d'un combat si jamais on en met une
 
-//Init Display TAB	
+//Init Display TAB	: Tab des cellules du plateau
 
 	for (i=0;i<10;i++){
 		for (j=0;j<10;j++){
 
 		
-			layout->DisplayTab[i][j].position.x=156+50*j; //Position relative d'une case
+			layout->DisplayTab[i][j].position.x=156+50*j; //Position relative d'une case 
 			layout->DisplayTab[i][j].position.y=56+50*i;
 
-			layout->DisplayTab[i][j].cellaff=NULL; // Rien n'est encore afficher sur le plateau
+			// On part du point (156,56) on parcout les colonnes, puis les lignes en ajoutant 50 px à chaque fois.
+
+
+			layout->DisplayTab[i][j].cellaff=NULL;	//Rien n'est encore afficher sur le plateau.
+													//toute cellule ne possède aucun remplissage => Background
 		}
 
 	}

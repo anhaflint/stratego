@@ -39,8 +39,12 @@ void BoardLayout_Init(BoardLayout* layout);
 
 void Display_Init(BoardLayout layout,int color); 	
 										// Affichage du départ : tuiles sur les cotes
-									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour permettre au joueur de placer 
+									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour les rouges
+										//													   à droite pour les bleus
+										// pour permettre au joueur de placer 
 										// ses pieces : il n'y a pas besoin de creer de tableaux en mémoire je crois.
+										// color =1 : Joueur 1,  color =2 : Joueur 2 , color=3 : Suppression Aff J1 + J2.
+
 										// on ne peut pas utiliser les tab redOut et blueOut pour le début car il faudrait pouvoir tester
 										// a quel stade du jeu on est (init ou pas) sinon le joueur peut reprendre ses pions après qu'ils
 										// aient été éliminés ! il faut donc deux fonctions
