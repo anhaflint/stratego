@@ -7,13 +7,6 @@
 
 void BoardLayout_Init(BoardLayout* layout){ 
 
-if (SDL_Init(SDL_INIT_VIDEO) == -1) // Si erreur :
-    {
-        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
-        exit(EXIT_FAILURE); // On quitte le programme
-    }
-
-
 int i,j;
 for (i=0;i<13;i++){
 	layout->PiecesLayout[i].x=i*50;
@@ -32,12 +25,10 @@ for (i=13;i<26;i++){
 	layout->Patron=SDL_LoadBMP("tuiles.bmp");   // Charge image Patron Pièces
 	
 	layout->Background=SDL_LoadBMP("venice2.bmp");   // Charge image de fond
- 	layout->posBackground->x=0;
- 	layout->posBackground->y=0;
 
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran
  	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre
- 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, layout->posBackground); //Affichage du Background
+ 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background
  	SDL_Flip(layout->Screen);
 
 	layout->Fight=NULL; 		// Stocke image affichée lors d'un combat si jamais on en met une

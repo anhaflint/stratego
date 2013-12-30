@@ -20,7 +20,6 @@ typedef struct
 	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
 	SDL_Surface *Patron;			// Stockage du patron d'images
 	SDL_Surface *Background;    // Image de fond 
-	SDL_Rect 	*posBackground;	// Position de l'écran (0,0), utile pour affichage du fond
 	SDL_Surface *Screen;		// Surface de l'ecran
 	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
 	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
