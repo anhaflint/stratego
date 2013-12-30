@@ -38,6 +38,7 @@ for (i=13;i<26;i++){
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran
  	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre
  	SDL_BlitSurface(layout->Background, NULL, layout->Screen, layout->posBackground); //Affichage du Background
+ 	SDL_Flip(layout->Screen);
 
 	layout->Fight=NULL; 		// Stocke image affichée lors d'un combat si jamais on en met une
 
