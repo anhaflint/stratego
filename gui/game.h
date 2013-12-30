@@ -11,6 +11,7 @@
 
 // procédure d'affichage 
 void DisplayGS(SGameState gamestate); // OK, peut etre donner la couleur en parametre pour voir comment c'est affiché pour le joueur
+void DisplayPlayerGS(SBox board[10][10]);
 
 // fonction de detection du mode de jeu
 SGameMode DetectGameMode(int argc, char *argv[]); // OK
@@ -18,7 +19,8 @@ SGameMode DetectGameMode(int argc, char *argv[]); // OK
 
 // procédures d'initialisation
 // procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation et le gamestate des joueurs (dans le bon sens)	
-void Game_CpyGameState(SGameState* gamestate, EPlayer player, EPiece boardInit[4][10]);
+void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10]);
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig);
 void Game_InitGameState(SGameState* gamestate); // voir si on init direct toutes les lignes de couleur
 
 

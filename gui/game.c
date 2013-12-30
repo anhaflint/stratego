@@ -28,6 +28,20 @@ void DisplayGS(SGameState gamestate)
 	printf("\n");
 }
 
+void DisplayPlayerGS(SBox board[10][10])
+{
+	int i, j; 
+	for(i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			printf(" [%d|%d] ", board[i][j].content, board[i][j].piece);
+		}
+		printf("\n");
+	}
+
+	printf("\n");
+}
 
 /* fonction de detection du mode de jeu
  * @param char *argv[]
@@ -60,11 +74,13 @@ SGameMode DetectGameMode(int argc, char* argv[])
 /* procédure d'initialisation des variables de la structure joueur 
  * au début de chaque jeu
  * initialise les deux joueurs en même temps 
+ * initialise les couleurs des pions dans les plateaux des joueurs mais pas leur valeur
  */
-void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig, EPiece boardInitBlue[4][10], EPiece boardInitRed[4][10])
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig)
 {
 	player1->nbPenalty = 0;
 	player2->nbPenalty = 0;
+	int i, j;
 	srand(time(NULL)); // initialisation de rand
 	if(rand()%2== 0)
 	{
@@ -77,8 +93,34 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 		player2->Color = ECred;
 	}
 	gameconfig->ColorPlayer1 = player1->Color;
+	for (i=0; i<10; i++)
+	{
+		for (j=0; j<10; j++)
+		{
+			if (i < 4) // Mise a jour des couleurs des pions dans le gamestate
+			{
+				// haut des plateaux des joueurs sont de la couleur de leur adversaire
+				player1->Pboard[i][j].content = player2->Color;
+				player2->Pboard[i][j].content = player1->Color;
+				// bas des plateaux des joueurs sont de la couleur du joueur
+				player1->Pboard[9-i][j].content = player2->Color;
+				player2->Pboard[9-i][j].content = player1->Color;
+
+			}
+			else if ((i>=4) && (i<=5))
+			{ // lignes vides du milieu
+				player1->Pboard[i][j].content = ECnone;
+				player2->Pboard[i][j].content = ECnone;
+				// Lacs
+				if ((j==2)||(j==3)||(j==6)||(j==7))
+				{
+					player1->Pboard[i][j].content = EClake;
+					player2->Pboard[i][j].content = EClake;					
+				}
+			}
+		}
+	}
 }
-	SBox Pboard[10][10];
 
 
 
@@ -93,8 +135,18 @@ void Game_InitGameState(SGameState* gamestate)
 	{
 		for(j=0; j<10; j++)
 		{
-			gamestate->board[i][j].content = ECnone;
 			gamestate->board[i][j].piece = EPnone;
+			if (i < 4)
+			{
+				gamestate->board[i][j].content = ECblue;
+				gamestate->board[9-i][j].content = ECred; 
+			}
+			else if ((i>=4) && (i<=5))
+			{
+				gamestate->board[i][j].content = ECnone;
+				if ((j==2)||(j==3)||(j==6)||(j==7))
+					gamestate->board[i][j].content = EClake;
+			}
 		}
 	}
 	for(i=0; i<11; i++)
@@ -191,8 +243,33 @@ void Game_AddPenalty();	// idée : variable statique ? allouées au début du pr
  * @param SBox* board[10][10] 
  *				gamestate du joueur, avec le tableau orienté vers le bas
  */
-void Game_CpyGameState(SGameState* gamestate, EPlayer player, EPiece boardInit[4][10])
+void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10])
 {
+	int i, j, k, l; 
+	// i : lignes du tableau 10*10
+	// j : colonnes du tab 10*10
+	// k : lignes du tableau 4*10
+	// l : colonnes du tab 4*10
+	if (player->Color == ECred)
+	{// On remplie le bas du gamestate
+		for (k=0; k<4; k++)
+		{
+			for (l=0; l<10; l++)
+			{
+				gamestate->board[9-k][l].piece = boardInit[k][l];
+			}
+		}
+	}
+	else if ( player->Color == ECblue)
+	{// On remplie le haut du gamestate en retournant le tableau de 4*10 de 180°
+		for (k=0; k<4; k++)
+		{
+			for (l=0; l<10; l++)
+			{
+				gamestate->board[k][9-l].piece = boardInit[k][l];
+			}
+		}
+	}
 
 }
 
