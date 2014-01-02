@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
+#include "../structure.h"
+#include "display.h"
 
 #ifndef _EVENT_H
 	#define _EVENT_H
@@ -8,9 +10,14 @@
 // ------------------------------------------fonctions à utiliser pour gèrer un joueur humain----------------------------------------
 
 
-void Event_InitGameState(SDL_Event *event, int *continuer);
+void Event_InitGameState(SDL_Event *event, int *continuer,int color,BoardLayout layout, EPiece Pieces[4][10]);
 /* Fonction appellé en boucle pour Analyse du Placement Inital des Pieces
-	Paramètres : Un Event, et un entier responsable de la sortie ou non de la boucle d'appel.
+	Paramètres : -Un Event
+	 			 -un entier responsable de la sortie ou non de la boucle d'appel.
+	 			 -un entier pour traiter le placement des pions de la couleur : 1 : rouge
+	 			 																2 : bleu
+	 			 																3:  réinit
+	Renvoi : Un tab de pieces pour un joueur
 	*/
 
 
