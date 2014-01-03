@@ -278,22 +278,22 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 
 			if (i < 4) // Si on est dans nos rangs, on sauvegarde ce qu'on a mis
 			{
-				updateSquare(pos, m_color, boardInit[i][j], false, true);				
+				updateSquare(pos, boardInit[i][j], m_color, false, true);				
 			}
 			else if (i > 3 && i < 6) // Sinon si on est entre les joueurs
 			{
 				if ((j > 1 && j < 4)||(j > 5 && j < 8)) // Si on se trouve sur un lac
 				{
-					updateSquare(pos, EClake, EPnone, false, false);
+					updateSquare(pos, EPnone, EClake, false, false);
 				}
 				else // Sinon on se trouve sur une case vide
 				{
-					updateSquare(pos, ECnone, EPnone, false, false);
+					updateSquare(pos, EPnone, ECnone, false, false);
 				}
 			}
 			else // Sinon, on est dans le camp ennemi
 			{
-				updateSquare(pos, enemyColor, EPnone, false, true);
+				updateSquare(pos, EPnone, enemyColor, false, true);
 			}
 		}		
 	}
