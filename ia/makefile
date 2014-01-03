@@ -11,3 +11,7 @@ clean:
 
 mrproper: clean
 	rm -rf main
+
+lib:
+	gcc -fPIC -c ia.c
+	gcc -shared -o libIA.so ia.o
