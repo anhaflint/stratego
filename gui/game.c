@@ -3,6 +3,8 @@
 #include <time.h>
 #include "game.h"
 
+// Tous les tableaux sont comptés avec le 0,0 en bas à gauche
+// Tous les indices donnés en commentaires sont comptés à partir de 0 (indice 3 = 4eme ligne du tableau)
 
 
 /* procédure qui affiche la totalité du gamestate 
@@ -15,8 +17,8 @@ void DisplayGS(SGameState gamestate)
 	for(i=0; i<10; i++)
 	{
 		for(j=0; j<10; j++)
-		{
-			printf(" [%d|%d] ", gamestate.board[i][j].content, gamestate.board[i][j].piece);
+		{  // l'affichage commence par le haut du gamestate
+			printf(" [%d|%d] ", gamestate.board[9-i][j].content, gamestate.board[9-i][j].piece);
 		}
 		printf("\n");
 	}
@@ -34,8 +36,8 @@ void DisplayPlayerGS(SBox board[10][10])
 	for(i=0; i<10; i++)
 	{
 		for(j=0; j<10; j++)
-		{
-			printf(" [%d|%d] ", board[i][j].content, board[i][j].piece);
+		{  // l'affichage commence par le haut du gamestate
+			printf(" [%d|%d] ", board[9-i][j].content, board[9-i][j].piece);
 		}
 		printf("\n");
 	}
@@ -92,30 +94,46 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 		player1->Color = ECblue;
 		player2->Color = ECred;
 	}
+	// Mise a jour de la couleur du joueur 1 dans la config du jeu
 	gameconfig->ColorPlayer1 = player1->Color;
+	// Remplissage des tableaux des joueurs
 	for (i=0; i<10; i++)
 	{
 		for (j=0; j<10; j++)
 		{
 			if (i < 4) // Mise a jour des couleurs des pions dans le gamestate
 			{
-				// haut des plateaux des joueurs sont de la couleur de leur adversaire
-				player1->Pboard[i][j].content = player2->Color;
-				player2->Pboard[i][j].content = player1->Color;
-				// bas des plateaux des joueurs sont de la couleur du joueur
+				// bas des plateaux des joueurs sont de la couleur du joeur
+				player1->Pboard[i][j].content = player1->Color;
+				player2->Pboard[i][j].content = player2->Color;
+				// haut des plateaux des joueurs sont de la couleur de l'adversaire du joueur
 				player1->Pboard[9-i][j].content = player2->Color;
 				player2->Pboard[9-i][j].content = player1->Color;
 
 			}
-			else if ((i>=4) && (i<=5))
-			{ // lignes vides du milieu
-				player1->Pboard[i][j].content = ECnone;
-				player2->Pboard[i][j].content = ECnone;
-				// Lacs
-				if ((j==2)||(j==3)||(j==6)||(j==7))
+			else if (i>3)
+			{ 
+				// pieces du joueur adverse non renseignées pour ne pas tricher
+				player1->Pboard[i][j].piece = EPnone;
+				player2->Pboard[i][j].piece = EPnone;
+
+				// lignes vides du milieu  (indices 4 et 5)
+				if (i<=5)
 				{
-					player1->Pboard[i][j].content = EClake;
-					player2->Pboard[i][j].content = EClake;					
+					// Couleur des cases vides : Rien
+					player1->Pboard[i][j].content = ECnone;
+					player2->Pboard[i][j].content = ECnone;
+					// Pieces des cases vides : Rien pour l'instant
+					player1->Pboard[i][j].piece = EPnone;
+					player2->Pboard[i][j].piece = EPnone;
+				
+
+					// Lacs
+					if ((j==2)||(j==3)||(j==6)||(j==7))
+					{
+						player1->Pboard[i][j].content = EClake;
+						player2->Pboard[i][j].content = EClake;					
+					}
 				}
 			}
 		}
@@ -135,15 +153,20 @@ void Game_InitGameState(SGameState* gamestate)
 	{
 		for(j=0; j<10; j++)
 		{
+			// Toutes les cases sont vides au début du jeu
 			gamestate->board[i][j].piece = EPnone;
 			if (i < 4)
 			{
-				gamestate->board[i][j].content = ECblue;
-				gamestate->board[9-i][j].content = ECred; 
+				// Bas du gamestate (lignes de 0 à 3)
+				gamestate->board[i][j].content = ECred;
+				// Haut du gamestate (lignes de 6 à 9)
+				gamestate->board[9-i][j].content = ECblue; 
 			}
 			else if ((i>=4) && (i<=5))
 			{
+				// La case ne contient pas de pion donc la couleur est nulle et le contenu aussi
 				gamestate->board[i][j].content = ECnone;
+				// Placement des lacs
 				if ((j==2)||(j==3)||(j==6)||(j==7))
 					gamestate->board[i][j].content = EClake;
 			}
@@ -164,8 +187,9 @@ void Game_InitGameState(SGameState* gamestate)
  */
 int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
 {
-	int i, j;
 	int RETURN = 0; // ERROR
+	int i = start.line;
+	int	j = start.col;
 	/* En fonction de la couleur du joueur, on regarde differentes parties du tableau du gamestate
 	 * On regarde si la couleur du pion selectionné par le joueur est la bonne
 	 * On regarde si sa piece est un scout : si oui, on renvoie 2 car on doit savoir pour la validité du mouvement
@@ -173,21 +197,23 @@ int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
 	 * si le pion n'est pas une piece mobile, la couleur selectionnée est mauvaise ou si la case est vide : @return value = 0
 	 */
 
-	if (player.Color == ECred) // on regarde différentes parties du tableau du gamestate en fonction de la couleur
-	{ // Rouge, indice i € [6, 9] bas du tableau
-		i = start.line;
-		j = start.col;
+	/* Pas besoin car on regarde directement le gamestate du joueur, qui est déjà dans le sens de display
+	 * A  effacer plus tard ---------------------------------------------------------------------------------------
+	if (player.Color == ECblue) // on regarde différentes parties du tableau du gamestate en fonction de la couleur
+	{ // Bleu, indice i € [6, 9] haut du tableau
+
 	}
-	else // Bleu, indice i € [0,3], haut du tableau
+	else // Rouge, indice i € [0,3], bas du tableau
 	{
 		i = 9 - start.line;
 		j = 9 - start.col;
 	}
+	*/
 
-	EColor _color = gamestate.board[i][j].content; // couleur de la piece selectionnée sur le gamestate
-	EPiece _piece = gamestate.board[i][j].piece;  // piece selectionnée en vrai sur le gamestate
+	EColor _color = player.Pboard[i][j].content; // couleur de la piece selectionnée sur le gamestate du joueur
+	EPiece _piece = player.Pboard[i][j].piece;  // piece selectionnée en vrai sur le gamestate du joueur
 
-	if (player.Color == _color) // Le joueur cherche bien à bouger ses pions
+	if (_color == player.Color) // Le joueur cherche bien à bouger ses pions
 	{
 		if (_piece == EPscout) 
 			RETURN = 2;  // Le scout se deplace différemment
@@ -245,9 +271,7 @@ void Game_AddPenalty();	// idée : variable statique ? allouées au début du pr
  */
 void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10])
 {
-	int i, j, k, l; 
-	// i : lignes du tableau 10*10
-	// j : colonnes du tab 10*10
+	int k, l; 
 	// k : lignes du tableau 4*10
 	// l : colonnes du tab 4*10
 	if (player->Color == ECred)
@@ -256,7 +280,7 @@ void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[
 		{
 			for (l=0; l<10; l++)
 			{
-				gamestate->board[9-k][l].piece = boardInit[k][l];
+				gamestate->board[k][l].piece = boardInit[k][l];
 			}
 		}
 	}
@@ -266,7 +290,7 @@ void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[
 		{
 			for (l=0; l<10; l++)
 			{
-				gamestate->board[k][9-l].piece = boardInit[k][l];
+				gamestate->board[9-k][9-l].piece = boardInit[k][l];
 			}
 		}
 	}
