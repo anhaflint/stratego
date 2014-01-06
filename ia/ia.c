@@ -34,10 +34,13 @@ void StartMatch()
 void StartGame(const EColor color, EPiece boardInit[4][10])
 {
 	/* Initialisation du tableau de l'IA avec positionement de pions*/
-	printf("StartGame\n");
+	printf("Démarrage de StartGame...\n");
 	m_color = color;
+	printf("Couleur choisie : %d\n", m_color);
 	m_strategy = str_default;
+	printf("Stratégie choisie : %d\n", m_strategy);
 	m_caution = 5;
+	printf("Taux de risque initial : %d\n", m_caution);
 
 	/* Variables servant à 
 	l'initialisation de m_board */
@@ -297,6 +300,32 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 			}
 		}		
 	}
+
+	printf("Affichage du tableau interne :\n");
+
+	printf("  |");
+	for (i=0; i<10; i++)
+	{
+		printf(" %d  ", i);
+		printf("|");
+	}
+	printf("\n");
+	printf("-----------------------------------------------------\n");
+	for (i=0; i<10; i++)
+	{		
+		printf("%d ", 9-i);		
+		printf("|");
+
+		for (j = 0; j < 10; ++j)
+		{
+			if (m_board[9-i][j].box.piece >= 10)
+				printf(" %d", m_board[9-i][j].box.piece);		
+			else
+				printf(" %d ", m_board[9-i][j].box.piece);			
+			printf(" |");				
+		}
+		printf("\n-----------------------------------------------------\n");
+	}	
 }
 
 void EndGame()
@@ -323,7 +352,33 @@ SMove NextMove(const SGameState * const gameState)
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 {	
-	printf("AttackResult\n");	
+	int i, j;
+	printf("Démarrage de AttackResult\n");	
+	printf("Tableau avant fin de l'attaque\n");
+	printf("  |");
+	for (i=0; i<10; i++)
+	{
+		printf(" %d  ", i);
+		printf("|");
+	}
+	printf("\n");
+	printf("-----------------------------------------------------\n");
+	for (i=0; i<10; i++)
+	{		
+		printf("%d ", 9-i);		
+		printf("|");
+
+		for (j = 0; j < 10; ++j)
+		{
+			if (m_board[9-i][j].box.piece >= 10)
+				printf(" %d", m_board[9-i][j].box.piece);		
+			else
+				printf(" %d ", m_board[9-i][j].box.piece);			
+			printf(" |");				
+		}
+		printf("\n-----------------------------------------------------\n");
+	}
+	printf("(%d,%d) à (%d,%d) : %d versus %d\n", armyPos.line, armyPos.col, enemyPos.line, enemyPos.col, armyPiece, enemyPiece);
 	
 	/* Si c'est nous qui avons engagé l'attaque */
 	if (m_myMove)
@@ -334,6 +389,30 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	{
 		m_hisMove = true;
 		analyseFight(enemyPiece, armyPiece, enemyPos, armyPos);
+	}
+	printf("Tableau après l'attaque\n");
+	printf("  |");
+	for (i=0; i<10; i++)
+	{
+		printf(" %d  ", i);
+		printf("|");
+	}
+	printf("\n");
+	printf("-----------------------------------------------------\n");
+	for (i=0; i<10; i++)
+	{		
+		printf("%d ", 9-i);		
+		printf("|");
+
+		for (j = 0; j < 10; ++j)
+		{
+			if (m_board[9-i][j].box.piece >= 10)
+				printf(" %d", m_board[9-i][j].box.piece);		
+			else
+				printf(" %d ", m_board[9-i][j].box.piece);			
+			printf(" |");				
+		}
+		printf("\n-----------------------------------------------------\n");
 	}
 }
 
@@ -540,22 +619,26 @@ SMove decideMove(const SGameState * const gameState)
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 
 	GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
-	GroupMoves normalMoves, riskedMoves;
+    GroupMoves normalMoves, riskedMoves;
 
-	evaluateMoves(&normalMoves,&riskedMoves);
-	globalEvaluation(&priorityMoves,riskedMoves);
+    evaluateMoves(&normalMoves,&riskedMoves);
+    globalEvaluation(&priorityMoves,riskedMoves);
 
-	switch(m_strategy)
-	{
-		case defensive || malicious || searchme :
-			if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
-				chooseMove(gameState, normalMoves);
-			else chooseMove(gameState, riskedMoves);
-		break;
-	}
+    switch(m_strategy)
+    {
+            case defensive || malicious || searchme :
+                    if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
+                        chooseMove(gameState, normalMoves);
+                    else chooseMove(gameState, riskedMoves);
+            break;
+    }
+
+    /* A décommenter si test de lib 
+	m_decidedMove = m_movements[0];
+	return m_decidedMove; */
 }
 
-// procedure interne a evaluateMoves
+//procedure interne a evaluateMoves
 // Donne l'information sur la piece ennemie voisine pour evaluer le risque encouru
 int attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 {	
@@ -757,11 +840,13 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos)
 
 		if (winner == PieceA) // Si la pièce A a attaqué et gagné, on remplace la pièce B
 		{
+			printf("La pièce alliée %d gagne, la pièce ennemie %d perd\n", PieceA, PieceB);
 			/* On place la pièce A sur la case où était la pièce B */
 			updateSquare(BPos, PieceA, m_board[APos.line][APos.col].box.content, true, false);
 		}
 		else // Si la pièce A a perdu, on sauvegarde ce qu'est la pièce B
 		{	
+			printf("La pièce ennemie %d gagne, la pièce ennemie %d perd\n", PieceB, PieceA);
 			updateSquare(BPos, PieceB, m_board[BPos.line][BPos.col].box.content, true, (PieceB == EPbomb) ? true : false);
 		}		
 
@@ -770,6 +855,7 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos)
 	}
 	else // Si les deux pièces sont identiques, elles sont éliminées
 	{
+		printf("Les deux pièces sont identiques, elles sont éliminées\n");
 		/* Plus rien dans la case de la pièce A */
 		updateSquare(APos, EPnone, ECnone, false, false);
 
