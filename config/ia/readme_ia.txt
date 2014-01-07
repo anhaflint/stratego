@@ -4,7 +4,7 @@
 
 \\\\\\\\ II - CHOIX D'UN MOUVEMENT A EFFECTUER ////////
 
-Notre IA résonne seulement sur le coup suivant, elle ne fait
+Notre IA raisonne seulement sur le coup suivant, elle ne fait
 pas de raisonnement à long terme comme le permet l'algorithme
 minimax. Nous avons choisi de différencier plusieurs étapes
 dans le choix d'un mouvement à effectuer :

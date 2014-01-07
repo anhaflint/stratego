@@ -1,24 +1,28 @@
 CALCULS DE PROBABILITES EN CAS DE LANCEMENT
 D'ATTAQUE SUR UN ENNEMI INCONNU
 
+Quand je dis des pièces non visibles, ce sont des pièces que l'on a pas encore découvert
+(qui n'ont pas participé à un combat)
+
 Variables :
-nbBombes = nombre de bombes ennemies encore en jeu
 nbPieces = nombre de pièces ennemies restantes non visibles
+nbPiecesMouvantes = nombre de pièces ennemis restantes non visibles qui peuvent bouger (nbPieces - nbBombes - nbDrapeau)
 nbPiecesPlusFortes = nombre de pièces ennemies restantes plus fortes que notre pièce non visibles
-nbPiecesMoinsFortes = nombre de pièces ennemies restantes moins fortes que notre pièce non visibles
+nbPiecesMoinsFortes = nombre de pièces ennemies restantes moins fortes que notre pièce non visibles sauf 0
 nbBombes = nombre de bombes ennemies non visibles restantes
 nbMarshal = vaut 1 si le marshal ennemi est en vie et caché, 0 sinon
 nbDrapeau = 1
+gagner_combat = éliminer l'adversaire
 
 Cas possibles :
 
 1) Si l'ennemi a déjà bougé, donc ni bombe ni flag
 	1-1) Si notre pièce est un démineur
-		-> P(gagner_combat) = nbPiecesMoinsFortes / (nbPieces - nbBombes - nbDrapeau);
+		-> P(gagner_combat) = nbPiecesMoinsFortes / nbPiecesMouvantes;
 	1-1) Si notre pièce est un espion
-		-> P(gagner_combat) = nbMarshal / (nbPieces - nbBombes - nbDrapeau); (il n'y a que contre le marshal que l'espion gagne)
+		-> P(gagner_combat) = nbMarshal / nbPiecesMouvantes; (il n'y a que contre le marshal que l'espion gagne)
 	1-3) Si notre pièce est autre chose
-		-> P(gagner combat) = nbPiecesMoinsFortes / (nbPieces - nbBombes - nbDrapeau);
+		-> P(gagner combat) = nbPiecesMoinsFortes / nbPiecesMouvantes;
 
 2) Si l'ennemi n'a pas bougé, chance potentielle d'être une bombe ou un drapeau
 	2-1) Si notre pièce est un démineur
@@ -27,6 +31,27 @@ Cas possibles :
 		-> P(gagner_combat) = nbMarshal + nbDrapeau / nbPieces;
 	2-3) Si notre pièce est autre chose
 		-> P(gagner_combat) = nbPiecesMoinsFortes + nbDrapeau / nbPieces;
+
+ENSUITE, CALCUL DE PROBABILITES DE NE PAS SE FAIRE PIQUER SA PIECE EN BOUGEANT SUR UNE CASE PRES D'UN OU PLUSIEURS ENNEMIS
+
+Cas possibles :
+
+1) S'il y a un ennemi à proximité, mêmes probas qu'au dessus
+2) S'il y a deux ennemis
+	2-1) Si les deux ont déjà bougé ==>
+	2-2) Si les deux n'ont pas bougé ==>
+	2-3) Si un pas bougé, et un bougé ==> 
+3) S'il y a 3 ennemis
+	2-1) Si le premier a bougé
+		3-1) Si les deux ont déjà bougé ==>
+		3-2) Si les deux n'ont pas bougé ==>
+		3-3) Si un pas bougé, et un bougé ==> 
+	2-2) Si le premier n'a pas bougé
+		3-1) Si les deux ont déjà bougé ==>
+		3-2) Si les deux n'ont pas bougé ==>
+		3-3) Si un pas bougé, et un bougé ==> 
+
+CALCUL DU TAUX DE RISQUE EN FONCTION DES PROBA DE GAGNER
 
 Comme ces probas vont de 0 à 1, et que les taux de risque vont de -10 à 10 à peu près, on pourrait faire ce calcul pour retrouver le risque :
 
