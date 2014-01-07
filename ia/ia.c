@@ -48,6 +48,12 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	int i, j;
 	SPos pos;	
 
+	/* Penser à réécrire sous la forme : 
+	boardInit = {{12, 0, 0, 5, 6, 7, 8}, 
+				 {11, 2, 3, 6, 8, 9, 10},
+				 {12, 0, 0, 5, 6, 7, 8},
+				 {12, 0, 0, 5, 6, 7, 8}}
+	En pensant que la première ligne dans le code se retrouvera en bas sur le plateau, vu que c'est la ligne 0 */
 	switch(m_strategy){
 
 		case defensive:
