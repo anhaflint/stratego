@@ -168,7 +168,7 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 * @return SMove
 * 	mouvement à faire, décidé par l'IA
 */
-SMove decideMove(const SGameState * const  gameState);
+void decideMove(const SGameState * const  gameState);
 
 /**
 * Donne l'information sur la pièce ennemie voisine pour évaluer le risque encouru si on effectue le mouvement
