@@ -1,3 +1,4 @@
+#include "../structure.h"
 #include "display.h"
 
 //**************************************************************************
@@ -98,6 +99,206 @@ int i;
 	}
  	SDL_Flip(layout.Screen); // Rafraichissement
 
+}
+
+
+
+void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color){
+
+	switch (Piece)
+	{
+		case 0: //BOMBE
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[11]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[24]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 11: // FLAG
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[12]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[25]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+
+		case 1: //SPY
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[1]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[14]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+
+		case 2: //SCOUT
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[2]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[15]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 3: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[3]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[16]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 4: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[4]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[17]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 5: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[5]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[18]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 6: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[6]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[19]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 7: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[7]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[20]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 8: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[8]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[21]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 9: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[9]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[22]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			break;
+
+		case 10: //...
+		
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[10]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[23]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+			break;
+
+	}	
+SDL_Flip(layout.Screen); // Rafraichissement
+}
+
+
+void Display_ReinitDisplayBoard(BoardLayout layout)
+{
+	int i,j;
+	SDL_Rect rectCut;
+	rectCut.w=40;
+	rectCut.h=40;
+
+	for (i=0;i<10;i++)
+	{
+		for (j=0;j<10;j++)
+		{
+				rectCut.x=156+50*j;
+				rectCut.y=506-50*i;
+				SDL_BlitSurface(layout.Background, &rectCut, layout.Screen, &(layout.DisplayTab[i][j].position));
+				
+		}
+	}
+SDL_Flip(layout.Screen); // Rafraichissement
 }
 
 /*

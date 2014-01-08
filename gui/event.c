@@ -6,6 +6,17 @@ EPiece PieceSelectionnee;
 SPos PosSelectionnee;
 int pieceOK=0;
 int posOK=0;
+int i,j;
+
+// INIT TAB PIECES
+
+for (i=0;i<4;i++)
+  {
+    for (j=0;j<10;j++)
+    {
+     Pieces[i][j]=EPnone;   
+    }
+  }
 
 
 // Affichage des pièces
@@ -91,10 +102,15 @@ while (placement!=0)
 
             if( ( (PosSelectionnee.line != -1)&&(PosSelectionnee.col != -1) ) && (PosSelectionnee.line < 4) )
             {
-
-            posOK=1;
-
-            printf("Choisissez une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+              if (Pieces[PosSelectionnee.line][PosSelectionnee.col]==EPnone)
+              {
+                posOK=1;
+                printf("Choisissez une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+              }
+              else
+              {
+                printf("Case déjà attribuée\n");
+              }
 
             }
       }
@@ -110,6 +126,7 @@ while (placement!=0)
             pieceOK=0;
             placement--;
             printf("Ajout de la pièce %d en [%d][%d] | Nb de placement : %d \n\n\n", PieceSelectionnee,PosSelectionnee.line,PosSelectionnee.col,placement);
+            Display_PieceInit(PieceSelectionnee, PosSelectionnee, layout, color);
       }
 
 
@@ -117,6 +134,7 @@ while (placement!=0)
    }
 }
 Display_Init(layout,3); // On efface l'affichage des tuiles car Placement terminé
+Display_ReinitDisplayBoard(layout);
 }
 
 
