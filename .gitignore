@@ -1,2 +1,4 @@
 ia/main
 *.exe
+*.o
+*.so
