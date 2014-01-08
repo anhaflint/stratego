@@ -20,7 +20,9 @@ void Event_InitGameState(SDL_Event *event, int *continuer,int color,BoardLayout 
 	Renvoi : Un tab de pieces pour un joueur
 	*/
 
+EPiece Event_IdPiece_Init(int x,int y, int color);
 
+// SPos Event_IdBoard(int x,int y);
 
 
 /*
