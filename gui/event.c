@@ -3,6 +3,9 @@
 void Event_InitGameState(SDL_Event *event, int *continuer,int color,BoardLayout layout, EPiece Pieces[4][10]){
 
 EPiece PieceSelectionnee;
+SPos PosSelectionnee;
+int pieceOK=0;
+int posOK=0;
 
 
 // Affichage des pièces
@@ -21,12 +24,14 @@ Display_Init(layout,2); // On affiche les pieces bleue latéralement à doite
 int placement=40;           // nombre de pièces à placer
 
 
-while (placement!=0){       // Tant que le placement n'est pas fini
+while (placement!=0)
+{       // Tant que le placement n'est pas fini
 
-SDL_WaitEvent(event);      // Capture d'un évent(clic)
+  SDL_WaitEvent(event);      // Capture d'un évent(clic)
 
-// On analyse le type d'event reçu
-switch(event->type)
+
+  // On analyse le type d'event reçu
+  switch(event->type)
    {
         case SDL_QUIT:          // Si l'on quitte la fenêtre, on quitte la boucle, donc le jeu.
             printf("Vous quittez le jeu...\n");
@@ -36,53 +41,96 @@ switch(event->type)
             
             break;
 
-        case SDL_MOUSEBUTTONUP: // Si il y a un clic, on affiche les positions x y du pointeur de la souris
-                                // A changer bientôt par une analyse des coordonnées pour affectation d'une pièce dans un Game State par ex.
-
+        case SDL_MOUSEBUTTONUP: // Si il y a un clic, on récupère les positions x y du pointeur de la souris
+               
+            //----------------
+            // ANALYSE PIECES
+            //----------------
+      if(pieceOK==0)
+       {
+//---- ROUGE------
             if(color==1){
 
               PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,1);
               
               if (PieceSelectionnee!=EPnone){
+                pieceOK = 1;
 
-                printf("Vous avez cliqué en %d,%d : Un Espace Rouge \n",event->button.x,event->button.y );
-                printf("Val pièce cliquée : %d \n",PieceSelectionnee);
-                placement--;
-                printf("Il vous reste %d placement à faire \n",placement);
-              }
-              
-              else{
+                //placement--;
+                
+                printf("Choisissez une case pour la pièce de val. %d \n",PieceSelectionnee );
+                //printf("Il vous reste %d placement à faire \n",placement);
+              }          
 
-                printf("Vous avez cliqué en %d,%d : INCORRECT \n",event->button.x,event->button.y );
-                printf("Veuillez cliquer sur une case rouge ou une case du plateau \n" );
-
-              }            
             }
 
-
+//---- BLEU------
             if(color==2){
 
              PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,2);
 
               if (PieceSelectionnee!=EPnone){
-                printf("Vous avez cliqué en %d,%d : Un Espace Bleu \n",event->button.x,event->button.y );
+
+                pieceOK = 1;
                 
-                printf("Val pièce cliquée : %d \n",PieceSelectionnee);
-                placement--;
-                printf("Il vous reste %d placement à faire \n",placement);
+                printf("Choisissez une case pour la pièce de val. %d \n\n",PieceSelectionnee );
+                //printf("Il vous reste %d placement à faire \n",placement);
+              
+
               }
 
-              else{
-                printf("Vous avez cliqué en %d,%d : INCORRECT \n",event->button.x,event->button.y );
-                printf("Veuillez cliquer sur une case bleu ou une case du plateau \n" );
-
-              }            
             }
-           break;
+       }
+
+            //----------------
+            // ANALYSE POS
+            //----------------
+      if (posOK==0)
+      { 
+            PosSelectionnee=Event_IdBoard(event->button.x,event->button.y); // Recupération position sur le plateau
+
+            if( ( (PosSelectionnee.line != -1)&&(PosSelectionnee.col != -1) ) && (PosSelectionnee.line < 4) )
+            {
+
+            posOK=1;
+
+            printf("Choisissez une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+
+            }
+      }
+
+            //----------------
+            // AJOUT DANS TABLEAU EPiece Pieces
+            //----------------
+
+       if ( ((posOK==1) && (pieceOK==1)) || ((pieceOK==1) && (posOK==1)) )
+      { 
+            Pieces[PosSelectionnee.line][PosSelectionnee.col]=PieceSelectionnee;
+            posOK=0;
+            pieceOK=0;
+            placement--;
+            printf("Ajout de la pièce %d en [%d][%d] | Nb de placement : %d \n\n\n", PieceSelectionnee,PosSelectionnee.line,PosSelectionnee.col,placement);
+      }
+
+
+           break; // Fin de l'analyse du clic
    }
 }
 Display_Init(layout,3); // On efface l'affichage des tuiles car Placement terminé
 }
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
 
 EPiece Event_IdPiece_Init(int x,int y,int color){
 
@@ -121,7 +169,6 @@ int noPiece;
 
   }
 
-            printf("Le numéro pièce est : %d\n", noPiece);
    switch(noPiece){
 
           case 0:
@@ -176,10 +223,69 @@ int noPiece;
         return EPnone;
 }
 
-/* SPos Event_IdBoard(int x,int y){
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+SPos Event_IdBoard(int x,int y){
+
+  int i,j;
+  SPos posBoard;
+
+  // TRAITEMENT SUR Y - lignes
+
+  for (i=0;i<10;i++){
+       
+      if (   ( y>=501-50*i )    &&   ( y<=549-50*i )     ) {
+                                          // La première case est en y C [156:196] auquel on ajoute 50px pour passer
+                                          // d'une pièce à l'autre
+
+       break;
+      }
+      
+    }
+
+      // CAS Y correspont à aucune lignes
+      if (i==10){
+
+        posBoard.line=-1;
+        posBoard.col=-1;
+        return posBoard;
+      }
+
+  // TRAITEMENT SUR X - colonnes
+
+    for (j=0;j<10;j++){
+     
+      if (   ( x>=151+50*j )    &&   ( x<=199+50*j )     ) {
+                                          // La première case est en y C [156:196] auquel on ajoute 50px pour passer
+                                          // d'une pièce à l'autre
+
+        break;
+      }
+    }
+
+          // CAS Y correspont à aucune lignes
+      if (j==10){
+
+        posBoard.line=-1;
+        posBoard.col=-1;
+        return posBoard;
+      }
+
+  // INSERTION ET RENVOI DU SPOS VALIDE
+
+    posBoard.line=i;
+    posBoard.col=j;
+    return posBoard;
 
 }
-*/
+
 
 
 

@@ -49,7 +49,7 @@ void Display_Init(BoardLayout layout,int color);
 										// a quel stade du jeu on est (init ou pas) sinon le joueur peut reprendre ses pions après qu'ils
 										// aient été éliminés ! il faut donc deux fonctions
  
-
+//void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout); // affichage d'une piece
  
  /*
  //fonction d'affichage du plateau pendant le jeu

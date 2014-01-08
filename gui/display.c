@@ -50,7 +50,7 @@ for (i=13;i<26;i++){
 
 		
 			layout->DisplayTab[i][j].position.x=156+50*j; //Position relative d'une case 
-			layout->DisplayTab[i][j].position.y=556-50*i;
+			layout->DisplayTab[i][j].position.y=506-50*i;
 
 			// On part du point (156,56) on parcout les colonnes, puis les lignes en ajoutant 50 px à chaque fois.
 

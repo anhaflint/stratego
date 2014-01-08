@@ -22,13 +22,17 @@ void Event_InitGameState(SDL_Event *event, int *continuer,int color,BoardLayout 
 
 EPiece Event_IdPiece_Init(int x,int y, int color);
 
-// SPos Event_IdBoard(int x,int y);
+/*
+		// Traduction de la position de la souris pixels => EPiece -- Placement
+		
+*/
 
+
+SPos Event_IdBoard(int x,int y);
 
 /*
-SMove Event_Boardclick(SGameState gamestate); 	// Fonction d'interprétation des évents. 
-												// Traduction de la position de la souris en pixels -> [i,j]
-		//pas besoin de passer l'event en paramètre car c'est une variable locale à la fonction
+		// Traduction de la position de la souris en pixels -> [i,j]
+		
 */
 
 #endif
