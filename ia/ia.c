@@ -7,7 +7,7 @@
 //------------------------- Données internes de l'IA ------------------------//
 
 Strategy m_strategy; // Stratégie choisie
-EColor m_color; // Couleur des pièces de l'IA
+EColor m_color, m_enemyColor; // Couleur des pièces de l'IA
 InfoPiece m_board[10][10]; // Tableau de la structure InfoPiece, qui stocke des pièces et des informations dessus
 SMove m_movements[172]; // Tableau contenant les mouvements possibles à chaque tour
 SMove m_decidedMove; // Mouvement décidé après une réflexion par l'IA
@@ -36,6 +36,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	/* Initialisation du tableau de l'IA avec positionement de pions*/
 	printf("Démarrage de StartGame...\n");
 	m_color = color;
+	m_enemyColor = (m_color == ECblue) ? ECred : ECblue;
 	printf("Couleur choisie : %d\n", m_color);
 	m_strategy = str_default;
 	printf("Stratégie choisie : %d\n", m_strategy);
@@ -44,236 +45,77 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 
 	/* Variables servant à 
 	l'initialisation de m_board */
-	EColor enemyColor = (m_color == ECblue) ? ECred : ECblue;
-	int i, j;
+	
+	int i, j;		
 	SPos pos;	
-
-	/* Penser à réécrire sous la forme : 
-	boardInit = {{12, 0, 0, 5, 6, 7, 8}, 
-				 {11, 2, 3, 6, 8, 9, 10},
-				 {12, 0, 0, 5, 6, 7, 8},
-				 {12, 0, 0, 5, 6, 7, 8}}
-	En pensant que la première ligne dans le code se retrouvera en bas sur le plateau, vu que c'est la ligne 0 */
-	switch(m_strategy){
-
-		case defensive:
-			/* placement du drapeau */
-			boardInit[0][0] = EPflag;
-			/* placement des bombes */
-			boardInit[1][0] = boardInit[0][1] = boardInit[0][4] = boardInit[1][5] = boardInit[0][6] = boardInit[2][8] = EPbomb;
-			/* placement de l'espion */
-			boardInit[2][3] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][5] = boardInit[1][9] = boardInit[0][9] = EPscout;
-			/* placements des démineurs */
-			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][7] = boardInit[0][3] = EPminer;
-			/* placement des sergents */
-			boardInit[2][0] = boardInit[2][6] = boardInit[0][5] = boardInit[0][7] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[3][9] = boardInit[1][4] = boardInit[1][8] = boardInit[0][8] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[2][1] = boardInit[2][2] = boardInit[2][4] = boardInit[2][7] = EPcaptain;
-			/* placement des majors */
-			boardInit[3][2] = boardInit[3][7] = boardInit[1][1] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][9] = boardInit[0][2] = EPcolonel;
-			/* placements du général */
-			boardInit[3][3] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[3][6] = EPmarshal;
-		break;
-
-		case str_default:
-			/* placement du drapeau */
-			boardInit[0][6] = EPflag;
-			/* placement des bombes */
-			boardInit[2][6] = boardInit[2][8] = boardInit[1][6] = boardInit[1][8] = boardInit[0][5] = boardInit[0][7] = EPbomb;
-			/* placement de l'espion */
-			boardInit[1][3] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][3] = boardInit[3][5] = boardInit[3][8] = boardInit[2][1] = boardInit[2][4] = boardInit[0][1] = boardInit[0][9] = EPscout;
-			/* placements des démineurs */
-			boardInit[0][0] = boardInit[0][2] = boardInit[0][3] = boardInit[0][8] = boardInit[3][7] = EPminer;
-			/* placement des sergents */
-			boardInit[1][1] = boardInit[1][7] = boardInit[1][9] = boardInit[0][4] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[3][2] = boardInit[2][7] = boardInit[2][9] = boardInit[1][5] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[3][4] = boardInit[3][9] = boardInit[2][5] = boardInit[1][0] = EPcaptain;
-			/* placement des majors */
-			boardInit[2][2] = boardInit[1][2] = boardInit[1][4] = EPmajor;
-			/* placement des colonels */
-			boardInit[3][1] = boardInit[2][3] = EPcolonel;
-			/* placements du général */
-			boardInit[3][6] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[2][0] = EPmarshal;
-		break;
-
-		case offensive:
-			/* placement du drapeau */
-			boardInit[0][5] = EPflag;
-			/* placement des bombes */
-			boardInit[3][4] = boardInit[3][9] = boardInit[2][3] = boardInit[2][5] = boardInit[2][7] = boardInit[2][8] = EPbomb;
-			/* placement de l'espion */
-			boardInit[2][6] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][5] = boardInit[2][2] = boardInit[1][0] = boardInit[1][8] = boardInit[0][0] = boardInit[0][7] = EPscout;
-			/* placements des démineurs */
-			boardInit[1][1] = boardInit[1][4] = boardInit[1][9] = boardInit[0][1] = boardInit[0][8] = EPminer;
-			/* placement des sergents */
-			boardInit[1][2] = boardInit[1][7] = boardInit[0][2] = boardInit[0][9] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[3][3] = boardInit[2][9] = boardInit[1][6] = boardInit[0][3] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[2][0] = boardInit[1][3] = boardInit[0][4] = boardInit[0][6] = EPcaptain;
-			/* placement des majors */
-			boardInit[3][7] = boardInit[2][4] = boardInit[1][5] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][1] = boardInit[3][8] = EPcolonel;
-			/* placements du général */
-			boardInit[3][6] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[3][2] = EPmarshal;
-		break;
-
-		case protective:
-			/* placement du drapeau */
-			boardInit[0][9] = EPflag;
-			/* placement des bombes */
-			boardInit[0][6] = boardInit[0][8] = boardInit[1][7] = boardInit[1][9] = boardInit[2][8] = boardInit[3][9] = EPbomb;
-			/* placement de l'espion */
-			boardInit[3][7] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][1] = boardInit[3][5] = boardInit[2][0] = boardInit[2][2] = boardInit[2][3] = boardInit[1][1] = boardInit[1][5] = boardInit[1][6] = EPscout;
-			/* placements des démineurs */
-			boardInit[3][3] = boardInit[2][7] = boardInit[0][2] = boardInit[0][3] = boardInit[0][4] = EPminer;
-			/* placement des sergents */
-			boardInit[2][9] = boardInit[1][3] = boardInit[1][8] = boardInit[0][7] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[3][0] = boardInit[3][4] = boardInit[1][4] = boardInit[0][1] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[2][6] = boardInit[1][0] = boardInit[1][2] = boardInit[0][5] = EPcaptain;
-			/* placement des majors */
-			boardInit[2][1] = boardInit[2][5] = boardInit[0][0] = EPmajor;
-			/* placement des colonels */
-			boardInit[3][2] = boardInit[3][6] = EPcolonel;
-			/* placements du général */
-			boardInit[3][8] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[2][4] = EPmarshal;
-		break;
-
-		case searchme:
-			/* placement du drapeau */
-			boardInit[0][7] = EPflag;
-			/* placement des bombes */
-			boardInit[1][0] = boardInit[0][1] = boardInit[0][6] = boardInit[1][7] = boardInit[0][8] = boardInit[1][9] = EPbomb;
-			/* placement de l'espion */
-			boardInit[2][3] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][1] = boardInit[2][4] = boardInit[2][7] = boardInit[2][9] = EPscout;
-			/* placements des démineurs */
-			boardInit[2][8] = boardInit[1][3] = boardInit[1][5] = boardInit[0][2] = boardInit[0][4] = EPminer;
-			/* placement des sergents */
-			boardInit[2][6] = boardInit[1][1] = boardInit[0][0] = boardInit[0][9] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[1][2] = boardInit[3][9] = boardInit[1][8] = boardInit[0][5] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[3][0] = boardInit[2][2] = boardInit[1][4] = boardInit[0][3] = EPcaptain;
-			/* placement des majors */
-			boardInit[3][2] = boardInit[3][7] = boardInit[2][5] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][0] = boardInit[1][6] = EPcolonel;
-			/* placements du général */
-			boardInit[3][3] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[3][6] = EPmarshal;
-		break;
-
-		case agressive:
-			/* placement du drapeau */
-			boardInit[0][0] = EPflag;
-			/* placement des bombes */
-			boardInit[1][0] = boardInit[0][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[3][9] = EPbomb;
-			/* placement de l'espion */
-			boardInit[2][2] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[0][2] = boardInit[0][3] = boardInit[0][4] = boardInit[0][5] = boardInit[0][6] = boardInit[0][7] = EPscout;
-			/* placements des démineurs */
-			boardInit[3][2] = boardInit[2][3] = boardInit[1][3] = boardInit[1][4] = boardInit[0][8] = EPminer;
-			/* placement des sergents */
-			boardInit[3][6] = boardInit[3][7] = boardInit[2][9] = boardInit[0][9] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[1][2] = boardInit[1][7] = boardInit[1][8] = boardInit[1][9] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[2][4] = boardInit[2][6] = boardInit[2][7] = boardInit[1][6] = EPcaptain;
-			/* placement des majors */
-			boardInit[3][3] = boardInit[2][8] = boardInit[1][5] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][1] = boardInit[2][5] = EPcolonel;
-			/* placements du général */
-			boardInit[2][0] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[1][1] = EPmarshal;
-		break;
-
-		case malicious:
-			/* placement du drapeau */
-			boardInit[0][7] = EPflag;
-			/* placement des bombes */
-			boardInit[0][4] = boardInit[1][5] = boardInit[0][6] = boardInit[1][7] = boardInit[0][8] = boardInit[1][9] = EPbomb;
-			/* placement de l'espion */
-			boardInit[2][6] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][4] = boardInit[3][5] = boardInit[3][8] = boardInit[2][2] = boardInit[2][8] = boardInit[1][3] = EPscout;
-			/* placements des démineurs */
-			boardInit[2][3] = boardInit[2][7] = boardInit[1][1] = boardInit[0][0] = boardInit[0][2] = EPminer;
-			/* placement des sergents */
-			boardInit[1][4] = boardInit[1][6] = boardInit[0][5] = boardInit[0][9] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[3][9] = boardInit[2][1] = boardInit[0][1] = boardInit[0][3] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[2][4] = boardInit[1][2] = boardInit[1][0] = boardInit[1][8] = EPcaptain;
-			/* placement des majors */
-			boardInit[3][2] = boardInit[3][7] = boardInit[2][5] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][9] = boardInit[2][0] = EPcolonel;
-			/* placements du général */
-			boardInit[3][6] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[3][3] = EPmarshal;
-		break;
-
-		case bluff:
-			/* placement du drapeau */
-			boardInit[3][3] = EPflag;
-			/* placement des bombes */
-			boardInit[3][2] = boardInit[3][4] = boardInit[3][5] = boardInit[2][3] = boardInit[2][6] = boardInit[0][7] = EPbomb;
-			/* placement de l'espion */
-			boardInit[0][5] = EPspy;
-			/*placement des eclaireurs */
-			boardInit[3][0] = boardInit[3][1] = boardInit[3][7] = boardInit[3][8] = boardInit[3][9] = boardInit[1][7] = boardInit[0][0] = boardInit[0][4] = EPscout;
-			/* placements des démineurs */
-			boardInit[2][7] = boardInit[1][4] = boardInit[1][5] = boardInit[0][2] = boardInit[0][9] = EPminer;
-			/* placement des sergents */
-			boardInit[3][6] = boardInit[1][1] = boardInit[0][1] = boardInit[0][6] = EPsergeant;			
-			/* placement des lieutenants */
-			boardInit[1][0] = boardInit[1][9] = boardInit[0][3] = boardInit[0][8] = EPlieutenant;
-			/* placement des capitaines */
-			boardInit[1][2] = boardInit[1][3] = boardInit[1][6] = boardInit[1][8] = EPcaptain;
-			/* placement des majors */
-			boardInit[2][0] = boardInit[2][5] = boardInit[2][9] = EPmajor;
-			/* placement des colonels */
-			boardInit[2][2] = boardInit[2][8] = EPcolonel;
-			/* placements du général */
-			boardInit[2][1] = EPgeneral;
-			/* placement du maréchal */
-			boardInit[2][4] = EPmarshal;
-		break;
-
-		case risked:
-		break;
+	
+	if (m_strategy == defensive)
+	{
+		EPiece initBoard[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
+						 		   {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
+						 		   {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
+						 		   {2, 2, 7, 9, 2, 2, 10, 7, 2, 5}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == str_default)
+	{
+		EPiece initBoard[4][10] = {{3, 2, 3, 3, 4, 0, 11, 0, 3, 2},
+						 		   {6, 4, 7, 1, 7, 5, 0, 4, 0, 4},
+						 		   {10, 2, 7, 8, 2, 6, 0, 5, 0, 5},
+						 		   {2, 8, 5, 2, 6, 2, 9, 3, 2, 6}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == offensive)
+	{
+		EPiece initBoard[4][10] = {{2, 3, 4, 5, 6, 11, 6, 2, 3, 4},
+						 		   {2, 3, 4, 6, 3, 7, 5, 4, 2, 3},
+								   {6, 8, 2, 0, 7, 0, 1, 0, 0, 5},
+								   {2, 2, 10, 5, 0, 2, 9, 7, 8, 0}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == protective)
+	{
+		EPiece initBoard[4][10] = {{7, 5, 3, 3, 3, 6, 0, 4, 0, 11},
+								   {6, 2, 6, 4, 5, 2, 2, 0, 4, 0},
+								   {2, 7, 2, 2, 10, 7, 6, 3, 0, 4},
+								   {5, 2, 8, 3, 5, 2, 8, 1, 9, 0}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == agressive)
+	{
+		EPiece initBoard[4][10] = {{11, 0, 2, 2, 2, 2, 2, 2, 3, 4},
+								   {0, 10, 5, 3, 3, 7, 6, 5, 5, 5},
+								   {9, 8, 1, 3, 6, 8, 6, 6, 7, 4},
+								   {2, 2, 3, 7, 0, 0, 4, 4, 0, 0}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == searchme)
+	{
+		EPiece initBoard[4][10] = {{4, 0, 3, 6, 3, 5, 0, 11, 0, 4},
+								   {0, 4, 5, 3, 6, 3, 8, 0, 5, 0},
+								   {8, 2, 6, 1, 2, 7, 4, 2, 3, 2},
+								   {6, 2, 7, 9, 2, 2, 10, 7, 2, 5}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == malicious)
+	{
+		EPiece initBoard[4][10] = {{3, 5, 3, 5, 0, 4, 0, 11, 0, 4},
+								   {6, 3, 6, 2, 4, 0, 4, 0, 6, 0},
+								   {8, 5, 2, 3, 6, 7, 1, 3, 2, 8},
+								   {2, 2, 7, 10, 2, 2, 9, 7, 2, 5}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == bluff)
+	{
+		EPiece initBoard[4][10] = {{2, 4, 3, 5, 2, 1, 4, 0, 5, 3},
+								   {5, 4, 6, 6, 3, 3, 6, 2, 6, 5},
+								   {7, 9, 8, 0, 10, 7, 0, 3, 8, 7},
+								   {2, 2, 0, 11, 0, 0, 4, 2, 2, 2}};
+		memcpy(boardInit, initBoard, sizeof(initBoard));
+	}
+	else if (m_strategy == risked)
+	{
+		//
 	}
 
 	/* Initialisation du tableau interne */
@@ -302,7 +144,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 			}
 			else // Sinon, on est dans le camp ennemi
 			{
-				updateSquare(pos, EPnone, enemyColor, false, true);
+				updateSquare(pos, EPnone, m_enemyColor, false, true);
 			}
 		}		
 	}
@@ -332,6 +174,8 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 		}
 		printf("\n-----------------------------------------------------\n");
 	}	
+
+	
 }
 
 void EndGame()
@@ -542,7 +386,6 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 	/* Déclaration des variables internes */
 	int temp, val, newVal, dirLine, dirCol;
 	SPos start, end;
-	EColor enemyColor;
 
 	/* Initialisation des variables contenant les positions
 	initiales et finales du mouvement à analyser */
@@ -562,12 +405,6 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 	dirLine = new_i - i;
 	dirCol = new_j - j;
 	
-	/* Initialisation de la couleur ennemie */
-	if (m_color == ECred)
-		enemyColor = ECblue;
-	else
-		enemyColor = ECred;
-
 	/* Condition principale : si la case sur laquelle on veut se déplacer n'est pas hors des limites du plateau,
 	et si elle ne contient ni un lac ni un allié, alors on peut s'y déplacer */
 	if ((val != lim) && (m_board[new_i][new_j].box.content != EClake) && (m_board[new_i][new_j].box.content != m_color)) 
@@ -589,7 +426,7 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 
 			/* Tant qu'on n'a pas atteint la limite du plateau et que la case cible ne contient ni un lac, 
 			ni un allié, et que la case actuelle ne contient pas un ennemi, le mouvement est possible */		
-			while ((temp != lim) && (m_board[new_i+dirLine][new_j+dirCol].box.content != EClake) && (m_board[new_i+dirLine][new_j+dirCol].box.content != m_color) && (m_board[new_i][new_j].box.content != enemyColor))
+			while ((temp != lim) && (m_board[new_i+dirLine][new_j+dirCol].box.content != EClake) && (m_board[new_i+dirLine][new_j+dirCol].box.content != m_color) && (m_board[new_i][new_j].box.content != m_enemyColor))
 			{
 				/* Rajout du mouvement dans le tableau des mouvements */
 				start.line = i; start.col = j;
@@ -618,33 +455,32 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 //----- decideMove() -----//
 
 // Décision du mouvement à effectuer
-SMove decideMove(const SGameState * const gameState)
+void decideMove(const SGameState * const gameState)
 {
 	// Décision du mouvemennt
 	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 
-	GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
-    GroupMoves normalMoves, riskedMoves;
+	// GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
+ //    GroupMoves normalMoves, riskedMoves;
 
-    evaluateMoves(&normalMoves,&riskedMoves);
-    globalEvaluation(&priorityMoves,riskedMoves);
+ //    evaluateMoves(&normalMoves,&riskedMoves);
+ //    globalEvaluation(&priorityMoves,riskedMoves);
 
-    switch(m_strategy)
-    {
-            case defensive || malicious || searchme :
-                    if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
-                        chooseMove(gameState, normalMoves);
-                    else chooseMove(gameState, riskedMoves);
-            break;
-    }
+ //    switch(m_strategy)
+ //    {
+ //            case defensive || malicious || searchme :
+ //                    if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
+ //                        chooseMove(gameState, normalMoves);
+ //                    else chooseMove(gameState, riskedMoves);
+ //            break;
+ //    }
 
-    /* A décommenter si test de lib 
+     // A décommenter si test de lib 
 	m_decidedMove = m_movements[0];
-	return m_decidedMove; */
 }
 
-//procedure interne a evaluateMoves
+// procedure interne a evaluateMoves
 // Donne l'information sur la piece ennemie voisine pour evaluer le risque encouru
 int attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 {	
@@ -718,7 +554,6 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
 	bool neighbour=1;
-	EColor enemyColor;
 	EPiece enemyPiece;
 	EPiece myPiece;
 
@@ -728,17 +563,11 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 
 	myPiece = m_board[m_movements[i].start.line][m_movements[i].start.col].box.piece;
 
-	/* Initialisation de la couleur ennemie */
-	if (m_color == ECred)
-		enemyColor = ECblue;
-	else
-		enemyColor = ECred;
-
 	/* classification des mouvements */
 	while(i<m_nbMove)
 	{
 		/* si en effectuant le mouvement dans une case vide, je peux directement  être attaqué en haut  au prochain tour */
-		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.piece;
 
@@ -747,7 +576,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué en bas */
-		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line - 1][m_movements[i].end.col].box.piece;
 
@@ -756,7 +585,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case videje peux directement  être attaqué à droite*/
-		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col + 1].box.piece;
 
@@ -765,7 +594,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué par le bas */
-		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col - 1 ].box.piece;
 			
@@ -774,7 +603,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si 0n effectuant le mouvement dans une case contenant une piece ennemie */
-		else if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == enemyColor )
+		else if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == m_enemyColor )
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col].box.piece;
 			neighbour=0;/*il s'agit d'une attaque*/
@@ -804,13 +633,7 @@ SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 {
 	/* Declaration des variables internes à la procédure*/
 	int i = r = n = 0;
-	EColor enemyColor;
-
-	/* Initialisation de la couleur ennemie */
-	if (m_color == ECred)
-		enemyColor = ECblue;
-	else
-		enemyColor = ECred;
+	
 	/* on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués*/
 	if(m_caution>5)
 	
