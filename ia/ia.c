@@ -461,23 +461,23 @@ void decideMove(const SGameState * const gameState)
 	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 
-	// GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
- //    GroupMoves normalMoves, riskedMoves;
+	GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
+	GroupMoves normalMoves, riskedMoves;
 
- //    evaluateMoves(&normalMoves,&riskedMoves);
- //    globalEvaluation(&priorityMoves,riskedMoves);
+	evaluateMoves(&normalMoves,&riskedMoves);
+ 	globalEvaluation(&priorityMoves,riskedMoves);
 
- //    switch(m_strategy)
- //    {
- //            case defensive || malicious || searchme :
- //                    if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
- //                        chooseMove(gameState, normalMoves);
- //                    else chooseMove(gameState, riskedMoves);
- //            break;
- //    }
+ 	switch(m_strategy)
+ 	{
+	       case defensive || malicious || searchme :
+	               if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
+	                   chooseMove(gameState, normalMoves);
+	               else chooseMove(gameState, riskedMoves);
+	       break;
+ 	}
 
      // A décommenter si test de lib 
-	m_decidedMove = m_movements[0];
+     m_decidedMove = m_movements[0];
 }
 
 // procedure interne a evaluateMoves
