@@ -76,18 +76,6 @@ SMove NextMove(SGameState*  gameState){
 	return m_decidedMove;
 }
 
-void decideMove()
-{
-	SMove riskedMoves[170];
-	SMove normalMoves[170];
-	evaluateMoves(riskedMoves, normalMoves);
-
-	if (m_caution > 5)
-		chooseMove(riskedMoves);
-	else
-		chooseMove(normalMoves);
-}
-
 Liste des risques :
 
 - Piquer un pion avec le maréchal, en sachant qu'un pion adverse est à proximité et que l'espion peut être à proximité
@@ -95,4 +83,21 @@ Liste des risques :
 - Un peu risqué : une pièce ennemie se place à côté d'une pièce allié, ne rien faire
 - Plus risqué : dans le même cas, attaquer la pièce
 
-==========================================
+|==========================================|
+|============= DECIDEMOVE() ===============|
+|==========================================|
+
+2 tableaux --> normalMoves et RiskedMoves
+Structure myMove, utilisé dans groupMoves
+
+// Tri et classification des mouvements
+- evaluateMoves(normalMoves, riskedMoves); // Classe les mouvements normaux et risqués, et leur donne un risque
+- riskProbability(riskedMoves); // Calcul sur les mouvements avec ennemis inconnus (valeur de risque 11)
+- globalEvaluation(*priorityMoves, riskedMoves); // Filtrage des doublons : moyenne des risques pour chaque mouvement
+
+// Modification des classifications en fonction de l'état du jeu
+- analyzeGameState(gameState);
+- modifyEvaluation();
+
+// Choix du mouvement en fonction des risques et de la stratégie
+- chooseMove(gameState); // Choix du mouvement
