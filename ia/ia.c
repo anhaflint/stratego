@@ -43,7 +43,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	printf("Stratégie choisie : %d\n", m_strategy);
 	m_caution = 5;
 	printf("Taux de risque initial : %d\n", m_caution);
-	m_nbRoundTrips = 0;
+	m_nbRoundTrips = 1;
 	printf("Nombre d'allers-retours initial : %d\n", m_nbRoundTrips);
 
 	/* Variables servant à 
@@ -487,17 +487,21 @@ void decideMove(const SGameState * const gameState)
 	       break;
  	}
 
+ 	/* A décommenter si test de lib */
+ 	// choosedMove = m_movements[0];
+
  	/* Mise à jour de la variable de nombre d'allers-retours */
 
  	// Si on a fait le mouvement inverse du précédent, on incrémente le nombre
- 	if ((choosedMove.start == m_decidedMove.end)&&(choosedMove.end == m_decidedMove.start))
+ 	if ((choosedMove.start.line == m_decidedMove.end.line)
+ 		&&(choosedMove.start.col == m_decidedMove.end.col)
+ 		&&(choosedMove.end.line == m_decidedMove.start.line)
+ 		&&(choosedMove.end.col == m_decidedMove.start.col))
  		m_nbRoundTrips++;
  	else // Sinon remise à zéro de la variable
- 		m_nbRoundTrips = 0;
+ 		m_nbRoundTrips = 1;
 
  	m_decidedMove = choosedMove;
-    // A décommenter si test de lib 
-    // m_decidedMove = m_movements[0];
 }
 
 // procedure interne a evaluateMoves
@@ -754,30 +758,30 @@ EPiece winnerFight(EPiece A, EPiece B)
 //----------- Fonctions à supprimer si inutilisées à la fin -----------//
 
 // permet de savoir si pour une pièce à une position donnée,si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
-bool limiteUnachieved(SPos position, Direction piecedirection)
-{
-	switch(piecedirection){
-		case left: 
-			if(position.col - 1 < 0)
-				return false;
-			else return true;
-			break;
-		case right:
-			if(position.col + 1 > 9) 
-				return false;
-			else return true;
-			break;
-		case top:
-			if(position.line + 1 > 9) 
-				return false;
-			else return true;
-			break;
-		case bottom:
-			if(position.line - 1 < 0) 
-				return false;
-			else return true;
-			break;
-	}
-	return true;
-}
+// bool limiteUnachieved(SPos position, Direction piecedirection)
+// {
+// 	switch(piecedirection){
+// 		case left: 
+// 			if(position.col - 1 < 0)
+// 				return false;
+// 			else return true;
+// 			break;
+// 		case right:
+// 			if(position.col + 1 > 9) 
+// 				return false;
+// 			else return true;
+// 			break;
+// 		case top:
+// 			if(position.line + 1 > 9) 
+// 				return false;
+// 			else return true;
+// 			break;
+// 		case bottom:
+// 			if(position.line - 1 < 0) 
+// 				return false;
+// 			else return true;
+// 			break;
+// 	}
+// 	return true;
+// }
 
