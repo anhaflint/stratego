@@ -13,6 +13,7 @@ SMove m_movements[172]; // Tableau contenant les mouvements possibles à chaque 
 SMove m_decidedMove; // Mouvement décidé après une réflexion par l'IA
 int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvements
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
+int m_nbRoundTrips; // Nombre d'allers et retours que l'on a fait (pour la règle des 2 cases)
 SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
 EPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces avant un combat
 bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
@@ -42,6 +43,8 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	printf("Stratégie choisie : %d\n", m_strategy);
 	m_caution = 5;
 	printf("Taux de risque initial : %d\n", m_caution);
+	m_nbRoundTrips = 0;
+	printf("Nombre d'allers-retours initial : %d\n", m_nbRoundTrips);
 
 	/* Variables servant à 
 	l'initialisation de m_board */
@@ -174,8 +177,6 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 		}
 		printf("\n-----------------------------------------------------\n");
 	}	
-
-	
 }
 
 void EndGame()
@@ -405,9 +406,17 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 	dirLine = new_i - i;
 	dirCol = new_j - j;
 	
-	/* Condition principale : si la case sur laquelle on veut se déplacer n'est pas hors des limites du plateau,
-	et si elle ne contient ni un lac ni un allié, alors on peut s'y déplacer */
-	if ((val != lim) && (m_board[new_i][new_j].box.content != EClake) && (m_board[new_i][new_j].box.content != m_color)) 
+
+	/* Condition principale : si la case sur laquelle on veut se déplacer n'est pas hors des limites du plateau, si elle ne contient ni un lac ni un allié, et si ce n'est pas un 4e aller-retour, alors on peut s'y déplacer */
+	if ((val != lim) 
+		&& (m_board[new_i][new_j].box.content != EClake) 
+		&& (m_board[new_i][new_j].box.content != m_color)
+		&& (!((m_decidedMove.start.line == new_i)
+			&&(m_decidedMove.start.col == new_j)
+			&&(m_decidedMove.end.line == i)
+			&&(m_decidedMove.end.col == j)
+			&&(m_nbRoundTrips == 3)
+			)))
 	{
 		/* Affectation des positions */
 		start.line = i; start.col = j;
@@ -457,6 +466,7 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 // Décision du mouvement à effectuer
 void decideMove(const SGameState * const gameState)
 {
+	SMove choosedMove;
 	// Décision du mouvemennt
 	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
@@ -470,14 +480,24 @@ void decideMove(const SGameState * const gameState)
  	switch(m_strategy)
  	{
 	       case defensive || malicious || searchme :
-	               if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
-	                   chooseMove(gameState, normalMoves);
-	               else chooseMove(gameState, riskedMoves);
+				if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
+					choosedMove = chooseMove(gameState, normalMoves);
+				else 
+					choosedMove = chooseMove(gameState, riskedMoves);
 	       break;
  	}
 
-     // A décommenter si test de lib 
-     m_decidedMove = m_movements[0];
+ 	/* Mise à jour de la variable de nombre d'allers-retours */
+
+ 	// Si on a fait le mouvement inverse du précédent, on incrémente le nombre
+ 	if ((choosedMove.start == m_decidedMove.end)&&(choosedMove.end == m_decidedMove.start))
+ 		m_nbRoundTrips++;
+ 	else // Sinon remise à zéro de la variable
+ 		m_nbRoundTrips = 0;
+
+ 	m_decidedMove = choosedMove;
+    // A décommenter si test de lib 
+    // m_decidedMove = m_movements[0];
 }
 
 // procedure interne a evaluateMoves
@@ -637,6 +657,7 @@ SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 	/* on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués*/
 	if(m_caution>5)
 	
+	/* FIN Mise à jour de la variable de
 }
 
 //----- saveMove() -----//
@@ -653,6 +674,9 @@ void saveMove()
 
 	// Puis on vide la case d'où vient la pièce
 	updateSquare(m_decidedMove.start, EPnone, ECnone, false, false);
+
+	/* Mise à jour de la variable contenant le nombre d'allers-retours */
+	if ()
 }
 
 //----------- Fonctions utilisées à l'envoi d'un combat par l'arbitre -----------//
