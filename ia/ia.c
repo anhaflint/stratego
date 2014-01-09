@@ -656,8 +656,6 @@ SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 	
 	/* on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués*/
 	if(m_caution>5)
-	
-	/* FIN Mise à jour de la variable de
 }
 
 //----- saveMove() -----//
@@ -674,9 +672,6 @@ void saveMove()
 
 	// Puis on vide la case d'où vient la pièce
 	updateSquare(m_decidedMove.start, EPnone, ECnone, false, false);
-
-	/* Mise à jour de la variable contenant le nombre d'allers-retours */
-	if ()
 }
 
 //----------- Fonctions utilisées à l'envoi d'un combat par l'arbitre -----------//
