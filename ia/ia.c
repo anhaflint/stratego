@@ -601,7 +601,6 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
 	bool neighbour=1;
-	EColor enemyColor;
 	EPiece enemyPiece;
 	EPiece myPiece;
 
@@ -611,17 +610,11 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 
 	myPiece = m_board[m_movements[i].start.line][m_movements[i].start.col].box.piece;
 
-	/* Initialisation de la couleur ennemie */
-	if (m_color == ECred)
-		enemyColor = ECblue;
-	else
-		enemyColor = ECred;
-
 	/* classification des mouvements */
 	while(i<m_nbMove)
 	{
 		/* si en effectuant le mouvement dans une case vide, je peux directement  être attaqué en haut  au prochain tour */
-		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.piece;
 
@@ -630,7 +623,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué en bas */
-		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line - 1][m_movements[i].end.col].box.piece;
 
@@ -639,7 +632,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case videje peux directement  être attaqué à droite*/
-		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col + 1].box.piece;
 
@@ -648,7 +641,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué par le bas */
-		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col - 1 ].box.piece;
 			
@@ -657,7 +650,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 			riskedMoves->lenght_list++;
 		}
 		/* si 0n effectuant le mouvement dans une case contenant une piece ennemie */
-		else if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == enemyColor )
+		else if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == m_enemyColor )
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col].box.piece;
 			neighbour=0;/*il s'agit d'une attaque*/
