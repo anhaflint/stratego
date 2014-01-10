@@ -504,11 +504,34 @@ void decideMove(const SGameState * const gameState)
  	m_decidedMove = choosedMove;
 }
 
+// fonction interne a decideMove
+// calcule la probabilité de risque pour la force des pieces ennemies voisines ou les pieces ennemies à attaquer directement
+float riskProbability( GroupMoves *riskedMoves)
+{
+	int i;  /*compteur*/
+	int numHidedEnemyGlobal; /* nombre de piece ennemie cachée */
+	int numHidedEnemyMovable/* nombre de pièce ennemie cachée qui peuvent bouger */
+	int numHighEnemy; /* nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */
+	int numLowEnemy; /* nombre de piece ennemie de rang inferieur à ma piece de plus bas rang cachée */
+	int numHidedEnemyBomb; /* nombre de bombes ennemies cachées*/
+	int hidedMarshal; /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
+	int numFlag = 1; /* nombre de drapeau */
+	
+
+	for(i=0;i < riskedMoves->lenght_list; i++)
+	{
+		if(riskedMoves->listMoves[i].caution == 11) /* piece des movements risqués dont on n'a pas d'information */
+		{
+			if 
+		}
+	}
+}
+
 // procedure interne a evaluateMoves
 // Donne l'information sur la piece ennemie voisine pour evaluer le risque encouru
-int attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
+float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 {	
-	int forceDifference;// ecart de force entre la piece enemie et la mienne;
+	float forceDifference;// ecart de force entre la piece enemie et la mienne;
 	/*legende: 
 			0  ==> pas de risque pour ce mouvement meme si on ne sait pas si il ya l'enemi present à cote 
 			(forceDifference < 0) ==> mouvement avantageux
@@ -578,6 +601,7 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
 	bool neighbour=1;
+	EColor enemyColor;
 	EPiece enemyPiece;
 	EPiece myPiece;
 
@@ -587,62 +611,103 @@ void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves)
 
 	myPiece = m_board[m_movements[i].start.line][m_movements[i].start.col].box.piece;
 
+	/* Initialisation de la couleur ennemie */
+	if (m_color == ECred)
+		enemyColor = ECblue;
+	else
+		enemyColor = ECred;
+
 	/* classification des mouvements */
 	while(i<m_nbMove)
 	{
 		/* si en effectuant le mouvement dans une case vide, je peux directement  être attaqué en haut  au prochain tour */
-		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.piece;
 
-			riskedMoves->listMoves[r].move = m_movements[i];
-			riskedMoves->listMoves[r].caution=attributionRank(myPiece,enemyPiece,neighbour);
+			riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
+			riskedMoves->listMoves[riskedMoves->lenght_list].caution=attributionRank(myPiece,enemyPiece,neighbour);
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué en bas */
-		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line - 1][m_movements[i].end.col].box.piece;
 
-			riskedMoves->listMoves[r].move = m_movements[i];
-			riskedMoves->listMoves[r].caution=attributionRank(myPiece,enemyPiece,neighbour);
+			riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
+			riskedMoves->listMoves[riskedMoves->lenght_list].caution=attributionRank(myPiece,enemyPiece,neighbour);
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case videje peux directement  être attaqué à droite*/
-		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col + 1].box.piece;
 
-			riskedMoves->listMoves[r].move = m_movements[i];
-			riskedMoves->listMoves[r].caution=attributionRank(myPiece,enemyPiece,neighbour);
+			riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
+			riskedMoves->listMoves[riskedMoves->lenght_list].caution=attributionRank(myPiece,enemyPiece,neighbour);
 			riskedMoves->lenght_list++;
 		}
 		/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué par le bas */
-		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
+		else if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col - 1 ].box.piece;
 			
-			riskedMoves->listMoves[r].move = m_movements[i];
-			riskedMoves->listMoves[r].caution=attributionRank(myPiece,enemyPiece,neighbour);
+			riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
+			riskedMoves->listMoves[riskedMoves->lenght_list].caution=attributionRank(myPiece,enemyPiece,neighbour);
 			riskedMoves->lenght_list++;
 		}
 		/* si 0n effectuant le mouvement dans une case contenant une piece ennemie */
-		else if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == m_enemyColor )
+		else if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == enemyColor )
 		{
 			enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col].box.piece;
 			neighbour=0;/*il s'agit d'une attaque*/
 
-			riskedMoves->listMoves[r].move = m_movements[i];
-			riskedMoves->listMoves[r].caution=attributionRank(myPiece,enemyPiece,neighbour);
-			riskedMoves->lenght_list++;
+			riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
+			riskedMoves->listMoves[riskedMoves->lenght_list].caution=attributionRank(myPiece,enemyPiece,neighbour);
+			riskedMoves->lenght_list++;.
 
 		}
 		else /* si en effectuant le mouvement je ne risque rien */
 		{
-			normalMoves->listMoves[r].move = m_movements[i];
+			normalMoves->listMoves[normalMoves->lenght_list].move = m_movements[i];
 			normalMoves->lenght_list++;
 		}
 	}	
+}
+// procedure interne a decideMove
+// donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi
+void normalClassication(GroupMoves *normalMoves)
+{
+	int i /* compteur */
+	int numEnemy; /* nombres d'ennemi */
+	while(i < normalMoves->lenght_list)
+	{
+		numEnemy=0;
+		if( normalMoves->listMoves[i].move.start.line < 9 && m_board[normalMoves->listMoves[i].move.start.line + 1 ][normalMoves->listMoves[i].move.start.col].box.content == m_enemyPiece)
+			numEnemy++;
+		if( *normalMoves->listMoves[i].move.start.col < 9 && m_board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col + 1 ].box.content == m_enemyPiece)
+			numEnemy++;
+		if(*normalMoves->listMoves[i].move.start.line > 0 && m_board[normalMoves->listMoves[i].move.start.line -1 ][normalMoves->listMoves[i].move.start.col].box.content == m_enemyPiece)
+			numEnemy++;
+		if(*normalMoves->listMoves[i].move.start.col > 0 && m_board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col -1 ].box.content == m_enemyPiece)
+			numEnemy++;
+		*normalMoves->listMoves[i].caution=giveNormalrank(numEnemy);
+	}
+}
+
+// fonction interne a normalClassication
+// classifie les mouvements normaux en fonction du nombre de pièce énnemie environante 
+float giveNormalRank(int numEnemy){
+	if(numEnemy == 0)
+		return 0 ;
+	else if (numEnemy == 1)
+		return 3;
+	else if (numEnemy == 2)
+		return 6;
+	else if (numEnemy == 3)
+		return 8;
+	else if (numEnemy == 4)
+		return 10;
 }
 
 // procedure interne a decideMoves
