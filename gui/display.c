@@ -276,6 +276,20 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 			}
 			break;
 
+		case 12: 
+
+			if(color==1)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[0]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+
+			if(color==2)
+			{
+				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[13]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
+		
+			break;
+
 	}	
 SDL_Flip(layout.Screen); // Rafraichissement
 }
