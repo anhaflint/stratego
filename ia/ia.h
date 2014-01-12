@@ -129,7 +129,9 @@ void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, boo
 /**
 * Déductions et spéculations grâce au board interne, puis mise à jour de celui-ci
 * @param const SGameState * const gameState
-*        l'état du jeu courant
+* 	l'état du jeu courant
+* @param SMove enemyMovement
+* 	Mouvement effectué par l'ennemi ce tour-ci
 */ 
 void updateBoard(const SGameState * const gameState);
 

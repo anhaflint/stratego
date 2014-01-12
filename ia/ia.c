@@ -288,7 +288,7 @@ void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, boo
 }
 
 /* Déductions et spéculations sur les pièces ennemies */
-void updateBoard(const SGameState * const gameState)
+void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 {
 	int nbEnemies = 40; // Nombre d'ennemis restants sur le plateau
 	int nbHiddenEnemies = 0; // Nombre d'ennemis non visibles restant sur le plateau
@@ -393,7 +393,7 @@ void updateBoard(const SGameState * const gameState)
 		{
 			for (j=0; j<11; j++)
 			{
-				/* Si la pièce est un ennemi qu'on ne connaît pas, et qui est une bombe potentielle */
+				/* Si la pièce est un ennemi qu'on ne connaît pas, et qui n'est pas une bombe potentielle */
 				if ((m_board[i][j].box.content == enemyColor)&&(m_board[i][j].box.piece == EPnone)&&(!(m_board[i][j].isBomb)))
 				{
 					nbPossibilities++;
@@ -417,6 +417,14 @@ void updateBoard(const SGameState * const gameState)
 		nbPossibilities = 0;
 	}
 
+	/* Cas 3 : Si l'ennemi a bougé de plus d'une case et qu'il était inconnu, alors
+	on peut aisément conclure que c'est un scout */
+	if (((enemyMovement.start.line - enemyMovement.end.line)/2 != 0)
+		||((enemyMovement.start.col - enemyMovement.end.col)/2 != 0))
+	{
+		updateSquare(enemyMovement.end, EPscout, enemyColor, true, false);
+	}
+	
 	/* D'autres cas à venir sûrement... */
 }
 
@@ -478,7 +486,7 @@ void updateData(const SGameState * const gameState)
 	}
 
 	/* Déductions et spéculations sur les pièces ennemies */
-	updateBoard();
+	updateBoard(gameState, enemyMovement);
 
 	/* Réinitialisation des valeurs */
 	m_myMove = false;
