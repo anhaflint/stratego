@@ -26,7 +26,7 @@ nbPiecesRestantes[EPcolonel]   =2;
 nbPiecesRestantes[EPgeneral]   =1;
 nbPiecesRestantes[EPmarshal]   =1;
 nbPiecesRestantes[EPflag]      =1;
-nbPiecesRestantes[EPnone]      =0;
+nbPiecesRestantes[EPnone]      =40;
 
 
 // INIT TAB PIECES
@@ -145,9 +145,8 @@ while (placement!=0)
                      // SI LA CASE CLIQUEE EST VIDE OU PLEINE
                       posOK=1;
                       printf("Choisissez une autre case, ou une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
-                      (PosPrecedente)->line=PosSelectionnee.line;
-                      (PosPrecedente)->col = PosSelectionnee.col;
-                      printf("HAHAHAHAHA\n");
+                      PosPrecedente->line= PosSelectionnee.line;
+                      PosPrecedente->col = PosSelectionnee.col;
                 }
 
                 // SI ON A UNE MEMOIRE CASE PLEINE - ECHANGE
@@ -193,16 +192,18 @@ while (placement!=0)
               else
               {
                 printf("CAS PIECE - MEM VIDE - CASE PLEINE \n");
-                    printf("Modif. pièce en [%d,%d] \n",PosSelectionnee.line,PosSelectionnee.col);
+                    printf("Modif. pièce en [%d,%d] \n",PosPrecedente->line,PosPrecedente->col);
                     
-                    nbPiecesRestantes[Pieces[PosSelectionnee.line][PosSelectionnee.col]]++;
-                    Pieces[PosSelectionnee.line][PosSelectionnee.col]=PieceSelectionnee;
+                    nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]++;
+                    Pieces[PosPrecedente->line][PosPrecedente->col]=PieceSelectionnee;
 
-                    nbPiecesRestantes[Pieces[PosSelectionnee.line][PosSelectionnee.col]]--;
+                    nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]--;
 
                     // Affichage
-                    Display_PieceInit(Pieces[PosSelectionnee.line][PosSelectionnee.col], PosSelectionnee, layout, color);
+                    Display_PieceInit(Pieces[PosPrecedente->line][PosPrecedente->col], *PosPrecedente, layout, color);
 
+                    PosPrecedente->line=-1;
+                    PosPrecedente->col=-1;
                     pieceOK=0;
                     posOK=0; // Réinit Choix de case
 
