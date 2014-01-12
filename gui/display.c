@@ -49,7 +49,8 @@ for (i=13;i<26;i++){
 	for (i=0;i<10;i++){
 		for (j=0;j<10;j++){
 
-		
+			layout->DisplayTab[i][j].position.h=40;
+			layout->DisplayTab[i][j].position.w=40;
 			layout->DisplayTab[i][j].position.x=156+50*j; //Position relative d'une case 
 			layout->DisplayTab[i][j].position.y=506-50*i;
 
@@ -287,15 +288,15 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[13]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
-		
+			if(color==3) // Effacement de piece
+			{
+			SDL_BlitSurface(layout.Background, &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+			}
 			break;
 
 	}
-if(color==3) // Effacement de piece
-{
-SDL_BlitSurface(layout.Background, &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
-}
-	
+
+
 SDL_Flip(layout.Screen); // Rafraichissement
 }
 

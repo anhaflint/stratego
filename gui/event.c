@@ -9,6 +9,7 @@ PosPrecedente->line =-1;
 PosPrecedente->col=-1;    // Mem Vide = Case Invalide
 int pieceOK=0;
 int posOK=0;
+int remise=0;
 int i,j;
 int nbPiecesRestantes[13];
 int echange;
@@ -78,7 +79,7 @@ while (placement!=0)
             //--------------------------------------------------------------------------------------------------
             // ANALYSE PIECES
             //--------------------------------------------------------------------------------------------------
-      if(pieceOK==0)
+      if(pieceOK==0)   // Si on a pas pris de piece OU que l'on est pas en remise de pièce
        {
 //---- ROUGE------
             if(color==1){
@@ -92,7 +93,7 @@ while (placement!=0)
                
                       printf("Choisissez une case pour la pièce de val. %d\n",PieceSelectionnee);
                     }
-                    else
+                    else if(remise!=1)// si remise, on ne vérifie pas le choix.
                     {
                       printf("INVALIDE : Vous avez placé toutes les pièces de cette valeur : %d \n",PieceSelectionnee );
                       posOK =0; // Dans le cas où la case est choisie en premier on recommance le mouvement
@@ -116,7 +117,7 @@ while (placement!=0)
                
                       printf("Choisissez une case pour la pièce de val. %d \n",PieceSelectionnee );
                     }
-                    else
+                    else if(remise!=1) // si remise, on ne vérifie pas le choix.
                     {
                       printf("INVALIDE : Vous avez placé toutes les pièces de cette valeur : %d \n",PieceSelectionnee );
                       posOK =0; // Dans le cas où la case est choisie en premier on recommance le mouvement
@@ -135,10 +136,11 @@ while (placement!=0)
               printf("ON REMET LA PIECE SELECTIONNEE DANS LE BANDEAU\n");
               nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]++;
               Pieces[PosPrecedente->line][PosPrecedente->col] = EPnone;
-              Display_PieceInit(EPnone, *PosPrecedente, layout, 3);
+              Display_PieceInit(EPnone, *PosPrecedente, layout, 3); // argument 3 pour lancer un bkg
  
               pieceOK = 0;
               posOK = 0;
+              remise =0;
               PosPrecedente->line = -1;
               PosPrecedente->col = -1;
             }
@@ -156,15 +158,17 @@ while (placement!=0)
             // SI LA CASE EST BIEN DANS LA ZONE DE PLACEMENT DU PLATEAU
             if( ( (PosSelectionnee.line != -1)&&(PosSelectionnee.col != -1) ) && (PosSelectionnee.line < 4) )
             {
-                // Si ON A UNE MEMOIRE CASE VIDE
+                // Si ON A UNE MEMOIRE VIDE
                 if (posOK==0)
                 {
                      printf("CAS PAS DE PIECES - MEM VIDE \n");
                      // SI LA CASE CLIQUEE EST VIDE OU PLEINE
                       posOK=1;
+                      remise=1;   // dans le cas d'une remise
                       printf("Choisissez une autre case, ou une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
                       PosPrecedente->line= PosSelectionnee.line;
                       PosPrecedente->col = PosSelectionnee.col;
+
                 }
  
                 // SI ON A UNE MEMOIRE CASE PLEINE - ECHANGE
