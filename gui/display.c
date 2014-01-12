@@ -290,7 +290,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 		
 			break;
 
-	}	
+	}
+if(color==3) // Effacement de piece
+{
+SDL_BlitSurface(layout.Background, &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
+}
+	
 SDL_Flip(layout.Screen); // Rafraichissement
 }
 
