@@ -369,7 +369,7 @@ void updateBoard(const SGameState * const gameState)
 					piecePossible = m_board[i][j].box.piece;
 				}			
 				/* Si on a trouvé plus d'une possibilité, on arrête */
-				else if (nbPossibilities > 1)
+				else if (nbPossibilities > 1) 
 					break;
 			}
 		}
