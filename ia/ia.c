@@ -369,7 +369,7 @@ void updateBoard(const SGameState * const gameState)
 					piecePossible = m_board[i][j].box.piece;
 				}			
 				/* Si on a trouvé plus d'une possibilité, on arrête */
-				else if (nbPossibilities > 1) 
+				else if (nbPossibilities > 1)
 					break;
 			}
 		}
@@ -379,6 +379,9 @@ void updateBoard(const SGameState * const gameState)
 		et le type, on met à jour le board interne */
 		if (nbPossibilities == 1)
 			updateSquare(posPiece, piecePossible, enemyColor, true, (piecePossible == EPbomb ? true : false));
+
+		/* Réinitialisation du nombre de possibilités */
+		nbPossibilities = 0;
 	}
 
 	/* Cas 2 : Si il y a n pièces ennemies cachées, et qu'il y en a n-1 qui ne peuvent pas bouger,
@@ -391,7 +394,7 @@ void updateBoard(const SGameState * const gameState)
 			for (j=0; j<11; j++)
 			{
 				/* Si la pièce est un ennemi qu'on ne connaît pas, et qui est une bombe potentielle */
-				if ((m_board[i][j].box.content == enemyColor)&&(m_board[i][j].box.piece == EPnone)&&(!(m_board[i][j].isBomb))
+				if ((m_board[i][j].box.content == enemyColor)&&(m_board[i][j].box.piece == EPnone)&&(!(m_board[i][j].isBomb)))
 				{
 					nbPossibilities++;
 					posPiece.line = i;
@@ -399,7 +402,7 @@ void updateBoard(const SGameState * const gameState)
 					piecePossible = m_board[i][j].box.piece;
 				}			
 				/* Si on a trouvé plus d'une possibilité, on arrête */
-				else if (nbPossibilities > 1)
+				else if (nbPossibilities > 1) 
 					break;
 			}
 		}
@@ -408,7 +411,10 @@ void updateBoard(const SGameState * const gameState)
 		recherchée est 1, alors on a trouvé la pos de la pièce
 		et le type, on met à jour le board interne */
 		if (nbPossibilities == 1)
-			updateSquare(posPiece, piecePossible, enemyColor, true, false);		
+			updateSquare(posPiece, piecePossible, enemyColor, true, false);
+
+		/* Réinitialisation du nombre de possibilités */
+		nbPossibilities = 0;
 	}
 
 	/* D'autres cas à venir sûrement... */
