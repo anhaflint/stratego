@@ -4,9 +4,30 @@ void Event_InitGameState(SDL_Event *event, int *continuer,int color,BoardLayout 
 
 EPiece PieceSelectionnee;
 SPos PosSelectionnee;
+SPos* PosPrecedente=malloc(sizeof(SPos));
+PosPrecedente->line =-1;
+PosPrecedente->col=-1;    // Mem Vide = Case Invalide
 int pieceOK=0;
 int posOK=0;
 int i,j;
+int nbPiecesRestantes[13];
+int echange;
+
+// INIT Tableau des Pieces Restant à Placer
+nbPiecesRestantes[EPbomb]      =6;
+nbPiecesRestantes[EPspy]       =1;
+nbPiecesRestantes[EPscout]     =8;
+nbPiecesRestantes[EPminer]     =5;
+nbPiecesRestantes[EPsergeant]  =4;
+nbPiecesRestantes[EPlieutenant]=4;
+nbPiecesRestantes[EPcaptain]   =4;
+nbPiecesRestantes[EPmajor]     =3;
+nbPiecesRestantes[EPcolonel]   =2;
+nbPiecesRestantes[EPgeneral]   =1;
+nbPiecesRestantes[EPmarshal]   =1;
+nbPiecesRestantes[EPflag]      =1;
+nbPiecesRestantes[EPnone]      =40;
+
 
 // INIT TAB PIECES
 
@@ -30,7 +51,7 @@ Display_Init(layout,2); // On affiche les pieces bleue latéralement à doite
   printf("Début de la phase de placement Bleu \n");
   }
 
-// Debut phase de placement
+// ------------Debut phase de placement---------------------------------------
 
 int placement=40;           // nombre de pièces à placer
 
@@ -53,10 +74,10 @@ while (placement!=0)
             break;
 
         case SDL_MOUSEBUTTONUP: // Si il y a un clic, on récupère les positions x y du pointeur de la souris
-               
-            //----------------
+            
+            //--------------------------------------------------------------------------------------------------
             // ANALYSE PIECES
-            //----------------
+            //--------------------------------------------------------------------------------------------------
       if(pieceOK==0)
        {
 //---- ROUGE------
@@ -64,13 +85,20 @@ while (placement!=0)
 
               PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,1);
               
-              if (PieceSelectionnee!=EPnone){
-                pieceOK = 1;
-
-                //placement--;
+              if ( PieceSelectionnee!=EPnone ){
+                    if (nbPiecesRestantes[PieceSelectionnee]!=0)
+                    {
+                      pieceOK = 1;
                 
-                printf("Choisissez une case pour la pièce de val. %d \n",PieceSelectionnee );
-                //printf("Il vous reste %d placement à faire \n",placement);
+                      printf("Choisissez une case pour la pièce de val. %d \n",PieceSelectionnee );
+                    }
+                    else
+                    {
+                      printf("INVALIDE : Vous avez placé toutes les pièces de cette valeur : %d \n",PieceSelectionnee );
+                      posOK =0; // Dans le cas où la case est choisie en premier on recommance le mouvement
+                    }
+                
+                
               }          
 
             }
@@ -81,60 +109,137 @@ while (placement!=0)
              PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,2);
 
               if (PieceSelectionnee!=EPnone){
-
-                pieceOK = 1;
+                    if (nbPiecesRestantes[PieceSelectionnee]!=0)
+                    {
+                      pieceOK = 1;
                 
-                printf("Choisissez une case pour la pièce de val. %d \n\n",PieceSelectionnee );
-                //printf("Il vous reste %d placement à faire \n",placement);
-              
+                      printf("Choisissez une case pour la pièce de val. %d \n",PieceSelectionnee );
+                    }
+                    else
+                    {
+                      printf("INVALIDE : Vous avez placé toutes les pièces de cette valeur : %d \n",PieceSelectionnee );
+                      posOK =0; // Dans le cas où la case est choisie en premier on recommance le mouvement
+                    }            
 
               }
 
             }
        }
 
-            //----------------
+            //-------------------------------------------------------------------------------------------------------
             // ANALYSE POS
-            //----------------
-      if (posOK==0)
-      { 
-            PosSelectionnee=Event_IdBoard(event->button.x,event->button.y); // Recupération position sur le plateau
+            //-------------------------------------------------------------------------------------------------------
 
+      PosSelectionnee=Event_IdBoard(event->button.x,event->button.y); // Recupération position sur le plateau
+      
+      // SI ON A PAS CHOISI DE CASE AU PREALABLE
+      if (pieceOK==0)
+      {     
+            // SI LA CASE EST BIEN DANS LA ZONE DE PLACEMENR DU PLATEAU
             if( ( (PosSelectionnee.line != -1)&&(PosSelectionnee.col != -1) ) && (PosSelectionnee.line < 4) )
-            {
+            { 
+                // Si ON A UNE MEMOIRE CASE VIDE
+                if (posOK==0)
+                {
+                     printf("CAS PAS DE PIECES - MEM VIDE \n");
+                     // SI LA CASE CLIQUEE EST VIDE OU PLEINE
+                      posOK=1;
+                      printf("Choisissez une autre case, ou une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+                      PosPrecedente->line= PosSelectionnee.line;
+                      PosPrecedente->col = PosSelectionnee.col;
+                }
+
+                // SI ON A UNE MEMOIRE CASE PLEINE - ECHANGE
+                else if( (PosPrecedente->line!=-1) && (PosPrecedente->col!=-1) )
+                {
+                    printf("CAS PAS DE PIECE - MEM PLEINE \n");
+                    printf("Echange de pièces en [%d,%d] / [%d,%d] \n",PosPrecedente->line,PosPrecedente->col,PosSelectionnee.line,PosSelectionnee.col);
+                    
+                    // Affichage
+
+                    Display_PieceInit(Pieces[PosSelectionnee.line][PosSelectionnee.col], *PosPrecedente, layout, color);
+                    Display_PieceInit(Pieces[PosPrecedente->line][PosPrecedente->col], PosSelectionnee, layout, color);
+
+                    // Echange
+                    echange = Pieces[PosSelectionnee.line][PosSelectionnee.col];
+                    Pieces[PosSelectionnee.line][PosSelectionnee.col]=Pieces[PosPrecedente->line][PosPrecedente->col];
+                    Pieces[PosPrecedente->line][PosPrecedente->col]=echange;
+
+                    PosPrecedente->line=-1 ; // réinit mémoire
+                    PosPrecedente->col=-1;
+
+                    posOK=0; // Réinit Choix de case
+
+                    
+                }
+            }
+
+        }
+        
+      // SI ON A CHOISI UNE CASE AU PREALABLE
+     if ( (pieceOK==1) && ( (PosSelectionnee.line != -1)&&(PosSelectionnee.col != -1) && (PosSelectionnee.line < 4) ) )
+        {
+          // SI LA MEMOIRE CASE EST VIDE
+          if (posOK==0)
+          {      printf("CAS PIECE - MEM VIDE ... \n");           
+                // SI LA CASE CLIQUEE EST VIDE
               if (Pieces[PosSelectionnee.line][PosSelectionnee.col]==EPnone)
               {
-                posOK=1;
-                printf("Choisissez une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+                printf("CAS PIECE - MEM VIDE MAIS CASE VIDE \n");
+              posOK=1;  
               }
+                // ECHANGE CASE MEMOIRE AVEC PIECE PLUS REMISE !
               else
               {
-                printf("Case déjà attribuée\n");
-              }
+                printf("CAS PIECE - MEM VIDE - CASE PLEINE \n");
+                    printf("Modif. pièce en [%d,%d] \n",PosPrecedente->line,PosPrecedente->col);
+                    
+                    nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]++;
+                    Pieces[PosPrecedente->line][PosPrecedente->col]=PieceSelectionnee;
 
-            }
-      }
+                    nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]--;
+
+                    // Affichage
+                    Display_PieceInit(Pieces[PosPrecedente->line][PosPrecedente->col], *PosPrecedente, layout, color);
+
+                    PosPrecedente->line=-1;
+                    PosPrecedente->col=-1;
+                    pieceOK=0;
+                    posOK=0; // Réinit Choix de case
+
+              }
+          }
+        }    
 
             //----------------
             // AJOUT DANS TABLEAU EPiece Pieces
             //----------------
 
-       if ( ((posOK==1) && (pieceOK==1)) || ((pieceOK==1) && (posOK==1)) )
+       if ((posOK==1) && (pieceOK==1))
       { 
             Pieces[PosSelectionnee.line][PosSelectionnee.col]=PieceSelectionnee;
+
+            nbPiecesRestantes[PieceSelectionnee]--;
+            
             posOK=0;
             pieceOK=0;
+            PosPrecedente->line =-1;
+            PosPrecedente->col=-1;
+            
             placement--;
+            
             printf("Ajout de la pièce %d en [%d][%d] | Nb de placement : %d \n\n\n", PieceSelectionnee,PosSelectionnee.line,PosSelectionnee.col,placement);
             Display_PieceInit(PieceSelectionnee, PosSelectionnee, layout, color);
       }
 
-
+  printf("pieceOK : %d , posOK : %d \n",pieceOK,posOK );
            break; // Fin de l'analyse du clic
    }
 }
-Display_Init(layout,3); // On efface l'affichage des tuiles car Placement terminé
-Display_ReinitDisplayBoard(layout);
+Display_Init(layout,3);             // On efface l'affichage latéral des tuiles
+Display_ReinitDisplayBoard(layout); // On efface l'affichage plateau des tuiles
+free(PosPrecedente);
+
 }
 
 
@@ -329,5 +434,60 @@ while(continuer=0)) {
    }
 
 }
+
+
+
+
+
+
+if (posOK==0)
+      { 
+            PosSelectionnee=Event_IdBoard(event->button.x,event->button.y); // Recupération position sur le plateau
+
+            
+            // SI LA CASE EST BIEN DANS LA ZONE DE PLACEMENR DU PLATEAU
+            if( ( (PosSelectionnee.line != -1)&&(PosSelectionnee.col != -1) ) && (PosSelectionnee.line < 4) )
+            { 
+
+              // SI LA CASE CLIQUEE EST VIDE
+              if (Pieces[PosSelectionnee.line][PosSelectionnee.col]==EPnone)
+              {
+                posOK=1;
+                printf("Choisissez une autre case, ou une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+                PosPrecedente=PosSelectionnee;
+              }
+              // SI LA CASE CLIQUEE EST PLEINE
+              else
+              {   
+                  // SI ON A PAS CHOISI DE PIECE ET QUE L'ON A PRIS UNE DEUXIEME AUTRE CASE : Inversion de cases 
+                  if ( (posOK ==1) && (pieceOK==0) && (PosSelectionnee!=PosPrecedente))
+                  {
+                    printf("Echange de pièces en [%d,%d] / [%d,%d] \n",PosPrecedente.line,PosPrecedente.col,PosSelectionnee.line,PosSelectionnee.col);
+                    
+                    // Affichage
+
+                    Display_PieceInit(Pieces[PosSelectionnee.line][PosSelectionnee.col], PosPrecedente, layout, color);
+                    Display_PieceInit(Pieces[PosPrecedente.line][PosPrecedente.col], PosSelectionnee, layout, color);
+
+                    // Echange
+                    echange = Pieces[PosSelectionnee.line][PosSelectionnee.col];
+                    Pieces[PosSelectionnee.line][PosSelectionnee.col]=Pieces[PosPrecedente.line][PosPrecedente.col];
+                    Pieces[PosPrecedente.line][PosPrecedente.col]=echange;
+
+                    posOK=0; // Réinit Choix de case
+                  }
+                  
+                  // SI ON A CHOISI UNE CASE ET QUE ON AVAIT DEJA UNE PIECE : On replace la case du plateau pour celle choisie
+                  if ( (pieceOK==1) && (PosSelectionnee!=PosPrecedente))
+                  {
+                    Pieces[PosSelectionnee.line][PosSelectionnee.col]
+                    pieceOK=0;
+                    printf("Case déjà attribuée\n");
+                  }
+                
+              }
+
+            }
+      }
 */
 
