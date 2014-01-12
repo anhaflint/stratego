@@ -236,8 +236,8 @@ while (placement!=0)
            break; // Fin de l'analyse du clic
    }
 }
-Display_Init(layout,3); // On efface l'affichage des tuiles car Placement terminé
-Display_ReinitDisplayBoard(layout);
+Display_Init(layout,3);             // On efface l'affichage latéral des tuiles
+Display_ReinitDisplayBoard(layout); // On efface l'affichage plateau des tuiles
 free(PosPrecedente);
 
 }
