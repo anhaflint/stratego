@@ -294,6 +294,10 @@ void updateBoard(const SGameState * const gameState)
 	int nbHiddenEnemies = 0; // Nombre d'ennemis non visibles restant sur le plateau
 	int nbMovableEnemies = 33; // Nombre d'ennemis qui peuvent bouger restant sur le plateau
 	int nbMovablesHiddenEnemies; // Nombre d'ennemis qui peuvent bouger non visibles restant sur le plateau
+	int nbNotMovablesHiddenEnemies; // Nombre d'ennemis qui ne peuvent pas bouger et non visibles restants sur le plateau
+	int nbPossibilities; // Nombre de possibilités pour les cas traités
+	SPos posPiece; // Position de la pièce identifiée et à remplacer
+	SPiece piecePossible; // Type de la pièce identifiée
 	int i, j; // Compteurs
 
 	/* On parcourt les tableaux de pièces éliminées
@@ -342,6 +346,72 @@ void updateBoard(const SGameState * const gameState)
 			}
 		}
 	}
+
+	nbNotMovablesHiddenEnemies = nbHiddenEnemies - nbMovablesHiddenEnemies;
+
+	/* Traitement de chaque cas de déduction */
+
+	/* Cas 1 : Si il y a n pièces ennemies cachées, et qu'il y en a n-1 qui peuvent bouger,
+	alors la dernière ne peut pas bouger et on peut déterminer laquelle c'est */
+	if (nbNotMovablesHiddenEnemies == 1)
+	{
+		/* On regarde les positions possibles pour cette pièce */
+		for (i=0; i<11; i++)
+		{
+			for (j=0; j<11; j++)
+			{
+				/* Si la pièce est un ennemi qu'on ne connaît pas, et qui est une bombe potentielle */
+				if ((m_board[i][j].box.content == enemyColor)&&(m_board[i][j].box.piece == EPnone)&&(m_board[i][j].isBomb))
+				{
+					nbPossibilities++;
+					posPiece.line = i;
+					posPiece.col = j;
+					piecePossible = m_board[i][j].box.piece;
+				}			
+				/* Si on a trouvé plus d'une possibilité, on arrête */
+				else if (nbPossibilities > 1)
+					break;
+			}
+		}
+
+		/* Si le nombre de positions possibles pour la pièce
+		recherchée est 1, alors on a trouvé la pos de la pièce
+		et le type, on met à jour le board interne */
+		if (nbPossibilities == 1)
+			updateSquare(posPiece, piecePossible, enemyColor, true, (piecePossible == EPbomb ? true : false));
+	}
+
+	/* Cas 2 : Si il y a n pièces ennemies cachées, et qu'il y en a n-1 qui ne peuvent pas bouger,
+	alors la dernière peut bouger et on peut déterminer laquelle c'est */
+	if (nbMovablesHiddenEnemies == 1)
+	{
+		/* On regarde les positions possibles pour cette pièce */
+		for (i=0; i<11; i++)
+		{
+			for (j=0; j<11; j++)
+			{
+				/* Si la pièce est un ennemi qu'on ne connaît pas, et qui est une bombe potentielle */
+				if ((m_board[i][j].box.content == enemyColor)&&(m_board[i][j].box.piece == EPnone)&&(!(m_board[i][j].isBomb))
+				{
+					nbPossibilities++;
+					posPiece.line = i;
+					posPiece.col = j;
+					piecePossible = m_board[i][j].box.piece;
+				}			
+				/* Si on a trouvé plus d'une possibilité, on arrête */
+				else if (nbPossibilities > 1)
+					break;
+			}
+		}
+
+		/* Si le nombre de positions possibles pour la pièce
+		recherchée est 1, alors on a trouvé la pos de la pièce
+		et le type, on met à jour le board interne */
+		if (nbPossibilities == 1)
+			updateSquare(posPiece, piecePossible, enemyColor, true, false);		
+	}
+
+	/* D'autres cas à venir sûrement... */
 }
 
 // Première phase, mise à jour des données internes
@@ -373,14 +443,14 @@ void updateData(const SGameState * const gameState)
 		for (j=0; j < 10; j++)
 		{
 			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
-			if ((m_board[i][j].box.piece - gameState->board[i][j].piece) < 0)
+			if (((m_board[i][j].box.piece - gameState->board[i][j].piece) < 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyHasMoved = true;
 				enemyMovement.start.line = i;
 				enemyMovement.start.col = j;
 			}
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
-			else if ((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)
+			else if (((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyMovement.end.line = i; 
 				enemyMovement.end.col = j;
