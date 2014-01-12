@@ -287,6 +287,63 @@ void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, boo
 	m_board[position.line][position.col].isBomb = isBomb;
 }
 
+/* Déductions et spéculations sur les pièces ennemies */
+void updateBoard(const SGameState * const gameState)
+{
+	int nbEnemies = 40; // Nombre d'ennemis restants sur le plateau
+	int nbHiddenEnemies = 0; // Nombre d'ennemis non visibles restant sur le plateau
+	int nbMovableEnemies = 33; // Nombre d'ennemis qui peuvent bouger restant sur le plateau
+	int nbMovablesHiddenEnemies; // Nombre d'ennemis qui peuvent bouger non visibles restant sur le plateau
+	int i, j; // Compteurs
+
+	/* On parcourt les tableaux de pièces éliminées
+	afin de déterminer le nombre d'ennemis restants
+	sur le plateau */
+	if (m_color == ECblue)
+	{
+		for(int i=0; i<12; i++)
+		{
+			nbEnemies -= gameState->redOut[i];
+			if ((i != 0)&&(i != 11))
+				nbMovableEnemies -= gameState->redOut[i];
+		}
+	}
+	else
+	{
+		for(int i=0; i<12; i++)
+		{
+			nbEnemies -= gameState->blueOut[i];
+			if ((i != 0)&&(i != 11))
+				nbMovableEnemies -= gameState->blueOut[i];
+		}
+	}
+
+	/* On initialise les compteurs d'ennemis qui peuvent
+	bouger et non visibles, c'est à dire dont la valeur 
+	est EPnone pour nous */
+	nbMovablesHiddenEnemies = nbMovableEnemies;
+
+	/* Parcours du plateau pour déterminer le nombre 
+	d'ennemis non visibles (EPnone) */
+	for (i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			/* Si il y a un ennemi sur la case */
+			if (m_board[i][j].box.content == enemyColor)
+			{
+				/* Si on ne connait pas la pièce */
+				if(m_board[i][j].box.piece == EPnone)
+					nbHiddenEnemies++;
+
+				/* Sinon, si on la voit et qu'elle peut bouger, on décrémente nbMovablesHiddenEnemies */
+				else if ((m_board[i][j].box.piece != EPbomb)&&(m_board[i][j].box.piece != EPflag))
+					nbMovablesHiddenEnemies--;
+			}
+		}
+	}
+}
+
 // Première phase, mise à jour des données internes
 void updateData(const SGameState * const gameState)
 {
@@ -343,6 +400,9 @@ void updateData(const SGameState * const gameState)
 		/* On vide la case d'où provient l'ennemi */
 		updateSquare(enemyMovement.start, EPnone, ECnone, false, false);
 	}
+
+	/* Déductions et spéculations sur les pièces ennemies */
+	updateBoard();
 
 	/* Réinitialisation des valeurs */
 	m_myMove = false;

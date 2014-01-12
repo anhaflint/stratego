@@ -127,8 +127,15 @@ void Penalty();
 void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, bool isBomb);
 
 /**
+* Déductions et spéculations grâce au board interne, puis mise à jour de celui-ci
+* @param const SGameState * const gameState
+*        l'état du jeu courant
+*/ 
+void updateBoard(const SGameState * const gameState);
+
+/**
 * Met à jour les données internes avec les nouvelles données fournies par l'arbitre
-*@param const SGameState * const gameState
+* @param const SGameState * const gameState
 *        l'état du jeu courant
 */
 void updateData(const SGameState * const gameState);
