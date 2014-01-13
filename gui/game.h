@@ -20,18 +20,19 @@ SGameMode DetectGameMode(int argc, char *argv[]); // OK
 // procédures d'initialisation
 // procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation et le gamestate des joueurs (dans le bon sens)	
 void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10]);
-void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig);
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig, int nbCoups);
 void Game_InitGameState(SGameState* gamestate); // voir si on init direct toutes les lignes de couleur
 
 
 // fonctions de verification de mouvements
 int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate); // OK, a verifier pour l'inversion du gamestate
-int Game_CheckMove(SMove move);
+int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position);
 SMove Player_NextMove(const SGameState * const gamestate);
 
 // fonction qui effectue le mouvement
-void Game_DoMove(SGameState* game,SMove move); 
-
+void Game_DoMove(SGameState* game,SMove move, EPlayer player); 
+// fonction qui retourne le gagnant du combat
+SBox Game_Fight(SBox player1, SBox player2);
 
 // procédure de vérification de la fin du jeu
 void Game_End(SGameState gamestate, const EColor color); 

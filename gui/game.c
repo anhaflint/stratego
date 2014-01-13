@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+//#include <math.h>
 #include "game.h"
 
 // Tous les tableaux sont comptés avec le 0,0 en bas à gauche
@@ -57,16 +58,17 @@ void DisplayPlayerGS(SBox board[10][10])
 SGameMode DetectGameMode(int argc, char* argv[])
 {
 	SGameMode gamemode = ERROR;
-	if(argc >4 || argc == 1)
+	if(argc >5 || argc == 1)
 		printf("le nombre d'arguments est incorrect\n");
 	if(argc > 1)
 	{
-		if (*argv[1] == '0')
-			gamemode = IA_IA;
-		else if (*argv[1] == '1')
-			gamemode = IA_HUMAN;
-		else if (*argv[1] == '2')
+		if (*argv[2] == '0')
 			gamemode = HUMAN_HUMAN;
+		else if (*argv[2] == '1')
+			gamemode = IA_HUMAN;
+		else if (*argv[2] == '2')
+			gamemode = IA_IA;
+		
 	}
 	return gamemode;
 
@@ -76,12 +78,19 @@ SGameMode DetectGameMode(int argc, char* argv[])
 /* procédure d'initialisation des variables de la structure joueur 
  * au début de chaque jeu
  * initialise les deux joueurs en même temps 
+ *       Dans le Gamestate des joueurs : 
+ *            - Met toutes les cases qui n'appartiennent pas au joueur avec un contenu vide EPnone
+ *            - Met les lacs
+ *            - Place les couleurs des deux joueurs (couleur du joueur en bas et de l'adversaire en haut)
  * initialise les couleurs des pions dans les plateaux des joueurs mais pas leur valeur
  */
-void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig)
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig, int nbCoups) // possibilité de passer directement *argv[1] pour le nbCoups
 {
 	player1->nbPenalty = 0;
 	player2->nbPenalty = 0;
+	//Maj du nombre de coups
+	player2->nbCoups = nbCoups;
+	player1->nbCoups = nbCoups; 
 	int i, j;
 	srand(time(NULL)); // initialisation de rand
 	if(rand()%2== 0)
@@ -123,11 +132,6 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 					// Couleur des cases vides : Rien
 					player1->Pboard[i][j].content = ECnone;
 					player2->Pboard[i][j].content = ECnone;
-					// Pieces des cases vides : Rien pour l'instant
-					player1->Pboard[i][j].piece = EPnone;
-					player2->Pboard[i][j].piece = EPnone;
-				
-
 					// Lacs
 					if ((j==2)||(j==3)||(j==6)||(j==7))
 					{
@@ -228,9 +232,72 @@ int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
 /* fonction pour vérifier si un mouvement est valide
  * @param : SMove move
  * 			position de début et fin du mouvement à vérifier
+ * @param : EPlayer player
+ *			joueur effectuant le mouvement
+ * @param : SGameState gamestate
+ *			Gamestate du jeu
  * @Return Value : entier pour connaitre la validité du mouvement
+ * 			-1 : mouvement invalide
+ *			0  : mouvement possible et sans attaque
+ *			1  : mouvement possible avec attaque
  */
-int Game_CheckMove(SMove move);
+int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position)
+{
+	int RETOUR = 0; // par défaut déplacement possible sans attaque
+	// on definie des variables au lieu de faire les opérations d'accès à chaque fois
+	int StartLine, EndLine, StartCol, EndCol, i;
+		StartLine = move.start.line;
+		EndLine = move.end.line;
+		StartCol = move.start.col; 
+		EndCol = move.end.col; 
+	// idem
+	unsigned int diffligne, diffcol;
+		diffligne = abs(StartLine - EndLine);
+		diffcol = abs(StartCol - EndCol);
+	// Determination de la couleur de l'adversaire
+	EColor Enemy = (player.Color == ECred) ? ECblue : ECred;
+
+	// verif de la case de destination
+	if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player.Color) || (gamestate.board[EndLine][EndCol].content == EClake))
+		// si il y a un deplacement en diagonale 
+		// ou si le joueur essaie de rester sur la mm case
+		// ou si le joueur essaie de se deplacer sur un de ses pions
+		// ou si le joueur essaie de se deplacer sur un lac
+		return -1; // deplacement invalide
+
+		// Traitement des cas ou on ne peut pas deplacer le pion 
+		switch (position)
+		{
+			case 0 : return -1; // Position de depart invalide
+					break;
+			case 1 : // cas pion général
+					 // Deplacement d'une case seulement
+					if (diffligne + diffcol != 1) return -1;// Deplacement illégal
+					break;
+			case 2 : // cas pion scout
+					if ((diffligne > 0)&&(diffcol == 0)) // deplacement en lignes
+					{
+						for(i = StartLine + 1; i<EndLine; i++) 
+						{
+							if (gamestate.board[i][StartCol].piece != EPnone) return -1; // on ne peut pas déplacer le scout	
+						}
+					}
+					if ((diffligne == 0)&&(diffcol > 0)) // deplacement en colonnes
+					{
+						for (i = StartCol + 1; i<EndCol; i++)
+						{
+							if (gamestate.board[StartLine][i].piece != EPnone) return -1; // on ne peut pas déplacer le scout
+						}
+					}
+					// si on arrive ici on peut deplacer le scout
+					break;
+		}
+		// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
+		if (gamestate.board[EndLine][EndCol].content == Enemy)
+			RETOUR = 1;
+return RETOUR;
+}
+
 
 
 /* procédure pour effectuer le mouvement
@@ -239,7 +306,101 @@ int Game_CheckMove(SMove move);
  * @param SMove move
  * 			mouvement à effectuer (mouvement valide, invalide, ou combat)
  */
-void Game_DoMove(SGameState* game,SMove move); 
+ // use int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
+ // use int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position)
+ /*
+ typedef struct
+{
+	SPos start;
+	SPos end;
+} SMove;
+
+typedef struct
+{
+	int line;
+	int col;
+} SPos;
+*/
+
+void Game_DoMove(SGameState* game,SMove move, EPlayer player)
+{
+	int mvt; 
+	int pos = Game_CheckPosition(move.start, player, *game);
+	mvt = Game_CheckMove(move, player, *game, pos);
+
+	switch(mvt)
+	{
+		case -1: printf("Mouvement invalide\n");
+				 // Game_AddPenalty(player);
+				 break; // On ajoute une pénalité au joueur et on sort
+		// Deplacement seul
+		case 0 : game->board[move.end.line][move.end.col] = game->board[move.start.line][move.start.col]; // la case de destination prend le pion valide
+				 printf("gamestate modifié\n");
+				 break;
+		// Combat
+		case 1 : if((game->board[move.start.line][move.start.col].piece) == (game->board[move.end.line][move.end.col].piece)) 
+				 {
+					// On supprime les deux pions du plateau
+					game->board[move.end.line][move.end.col].piece = EPnone ;
+					game->board[move.end.line][move.end.col].content = ECnone ;
+
+					game->board[move.start.line][move.start.col].piece = EPnone ;
+					game->board[move.start.line][move.start.col].content = ECnone ;
+				 }
+				 else
+				 {	// La case de destination prend le resultat du combat 
+					game->board[move.end.line][move.end.col] = Game_Fight(game->board[move.start.line][move.start.col], game->board[move.end.line][move.end.col]);
+				 }
+				 break; 
+	}
+}
+
+/* Fonction de calcul du gagnant d'un combat
+ * @param : player1 
+ *			Contient la couleur et la valeur du pion du joueur attaquant
+ * @param : player2
+ *			Contient la couleur et la valeur du pion du joueur attaquant
+ */
+SBox Game_Fight(SBox player1, SBox player2)
+{
+	EPiece A, B;
+	A = player1.piece;
+	B = player2.piece; 
+	/* Si la pièce visée est le drapeau,
+	la pièce attaquante gagne d'office */
+	if (B == EPflag)
+		return player1;
+	/* Si l'attaquant est un espion */
+	else if (A == EPspy)
+	{
+		/* Il gagne seulement si la pièce 
+		cible est le maréchal */
+		if (B == EPmarshal)
+			return player1;
+		else
+			return player2;
+	}
+	/* Sinon si l'attaquant est un démineur */
+	else if (A == EPminer)
+	{
+		/* Il gagne si la pièce attaquée est une 
+		bombe, un espion ou un éclaireur */
+		if (B < EPminer)
+			return player1;
+		else
+			return player2;
+	}
+	/* Sinon, dans tous les autres cas */
+	else
+	{
+		/* Si la pièce attaquée est une bombe ou si sa 
+		puissance est supérieure à l'attaquant, elle gagne */
+		if ((B == EPbomb) || (B > A))
+			return player2;
+		else
+			return player1;
+	}
+}
 
 
 /* procédure de vérification de la fin du jeu
@@ -257,7 +418,7 @@ void Game_End(SGameState gamestate, const EColor color);
 void Game_EndMatch(); 	// "Voulez-vous rejouer ?" "O/n" si oui, incrementation d'un compteur de jeux 
 					  	//pour savoir à la fin du match qui a gagné, sinon, on arrête et on donne le gagnant du match
 
-void Game_AddPenalty();	// idée : variable statique ? allouées au début du programme et libérées à la fin
+void Game_AddPenalty(EPlayer player);	// idée : variable statique ? allouées au début du programme et libérées à la fin
 
 /* procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation
  * @param SGameState gamestate
@@ -274,30 +435,23 @@ void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[
 	int k, l; 
 	// k : lignes du tableau 4*10
 	// l : colonnes du tab 4*10
-	if (player->Color == ECred)
-	{// On remplie le bas du gamestate
-		for (k=0; k<4; k++)
-		{
-			for (l=0; l<10; l++)
-			{
-				gamestate->board[k][l].piece = boardInit[k][l];
-			}
-		}
-	}
-	else if ( player->Color == ECblue)
-	{// On remplie le haut du gamestate en retournant le tableau de 4*10 de 180°
-		for (k=0; k<4; k++)
-		{
-			for (l=0; l<10; l++)
-			{
-				gamestate->board[9-k][9-l].piece = boardInit[k][l];
-			}
-		}
-	}
+    for (k=0; k<4; k++)
+    {
+        for (l=0; l<10; l++)
+        {
+        	// Remplissage du gamestate general
+            if (player->Color == ECred) // On remplie le bas du gamestate
+                    gamestate->board[k][l].piece = boardInit[k][l];
+            else if (player->Color == ECblue) // On remplie le haut du gamestate en retournant le tableau de 4*10 de 180°
+                    gamestate->board[9-k][9-l].piece = boardInit[k][l];
+            // Remplissage du gamestate du joueur
+            player->Pboard[k][l].piece =boardInit[k][l];
 
+        }
+    }
 }
 
-/* initialisation du jeu pour le jour humain (placement des pieces)
+/* initialisation du jeu pour le joueur humain (placement des pieces)
  * à ce moment là on ne verifie pas la validité des mouvements car il ne peut pas acceder au tableau du joueur adverse
  * @param const EColor color 
  * 				couleur du joueur 
@@ -313,6 +467,7 @@ void Game_Begin(const EColor color, EPiece boardInit[4][10]);
  *			* conste gamestate :	constance de l'adresse contenue dans le pointeur 
  */
 SMove Player_NextMove(const SGameState * const gamestate);
+// A changer et envoyer un player_gamestate pour le joueur
 
 void game_PvP();	
 void game_IAvsP();
