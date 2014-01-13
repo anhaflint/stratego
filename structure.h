@@ -68,9 +68,9 @@ typedef struct {
 
 typedef enum
 {
-	IA_IA=0,
+	HUMAN_HUMAN=0,
 	IA_HUMAN,
-	HUMAN_HUMAN,
+	IA_IA,
 	ERROR,
 }SGameMode;
 

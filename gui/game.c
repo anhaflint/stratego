@@ -200,22 +200,8 @@ int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
 	 * On regarde si la piece est une piece mobile qui n'est pas un scout : @return value = 1
 	 * si le pion n'est pas une piece mobile, la couleur selectionnée est mauvaise ou si la case est vide : @return value = 0
 	 */
-
-	/* Pas besoin car on regarde directement le gamestate du joueur, qui est déjà dans le sens de display
-	 * A  effacer plus tard ---------------------------------------------------------------------------------------
-	if (player.Color == ECblue) // on regarde différentes parties du tableau du gamestate en fonction de la couleur
-	{ // Bleu, indice i € [6, 9] haut du tableau
-
-	}
-	else // Rouge, indice i € [0,3], bas du tableau
-	{
-		i = 9 - start.line;
-		j = 9 - start.col;
-	}
-	*/
-
-	EColor _color = player.Pboard[i][j].content; // couleur de la piece selectionnée sur le gamestate du joueur
-	EPiece _piece = player.Pboard[i][j].piece;  // piece selectionnée en vrai sur le gamestate du joueur
+	EColor _color = gamestate.board[i][j].content; // couleur de la piece selectionnée sur le gamestate du joueur
+	EPiece _piece = gamestate.board[i][j].piece;  // piece selectionnée en vrai sur le gamestate du joueur
 
 	if (_color == player.Color) // Le joueur cherche bien à bouger ses pions
 	{
@@ -228,6 +214,20 @@ int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
 	return RETURN;
 }
 
+/* fonction retournant le mouvement dans le bon sens pour le gamestate
+ */
+SMove Game_TranslateMove(SMove move, EPlayer player)
+{ // Par défaut le mouvement est pris du côté des rouges
+	if(player.Color == ECblue)
+	{
+		printf("mouvements inversés !!\n");
+		move.start.line = 9-move.start.line;
+		move.end.line = 9-move.end.line;
+		move.start.col = 9-move.start.col; 
+		move.end.col = 9-move.end.col; 
+	}
+	return move;
+}
 
 /* fonction pour vérifier si un mouvement est valide
  * @param : SMove move
@@ -246,6 +246,9 @@ int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int positio
 	int RETOUR = 0; // par défaut déplacement possible sans attaque
 	// on definie des variables au lieu de faire les opérations d'accès à chaque fois
 	int StartLine, EndLine, StartCol, EndCol, i;
+
+	// Determination de la couleur de l'adversaire
+	EColor Enemy = (player.Color == ECred) ? ECblue : ECred;
 		StartLine = move.start.line;
 		EndLine = move.end.line;
 		StartCol = move.start.col; 
@@ -254,8 +257,7 @@ int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int positio
 	unsigned int diffligne, diffcol;
 		diffligne = abs(StartLine - EndLine);
 		diffcol = abs(StartCol - EndCol);
-	// Determination de la couleur de l'adversaire
-	EColor Enemy = (player.Color == ECred) ? ECblue : ECred;
+
 
 	// verif de la case de destination
 	if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player.Color) || (gamestate.board[EndLine][EndCol].content == EClake))
@@ -277,14 +279,14 @@ int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int positio
 			case 2 : // cas pion scout
 					if ((diffligne > 0)&&(diffcol == 0)) // deplacement en lignes
 					{
-						for(i = StartLine + 1; i<EndLine; i++) 
+						for(i = StartLine + 1; i<EndLine-1; i++) 
 						{
 							if (gamestate.board[i][StartCol].piece != EPnone) return -1; // on ne peut pas déplacer le scout	
 						}
 					}
 					if ((diffligne == 0)&&(diffcol > 0)) // deplacement en colonnes
 					{
-						for (i = StartCol + 1; i<EndCol; i++)
+						for (i = StartCol + 1; i<EndCol-1; i++)
 						{
 							if (gamestate.board[StartLine][i].piece != EPnone) return -1; // on ne peut pas déplacer le scout
 						}
@@ -325,9 +327,20 @@ typedef struct
 void Game_DoMove(SGameState* game,SMove move, EPlayer player)
 {
 	int mvt; 
+	printf("move.start.ligne = %d\n", move.start.line);
+	printf("move.start.colonne = %d\n", move.start.col);
+	printf("move.end.ligne = %d\n", move.end.line);
+	printf("move.end.colonne = %d\n", move.end.col);
+	move = Game_TranslateMove(move, player); // Si le joueur est bleu, il faut inverser les indices
+	printf("APRES INVERSION===========================================================================================\n");
+	printf("move.start.ligne = %d\n", move.start.line);
+	printf("move.start.colonne = %d\n", move.start.col);
+	printf("move.end.ligne = %d\n", move.end.line);
+	printf("move.end.colonne = %d\n", move.end.col);	
 	int pos = Game_CheckPosition(move.start, player, *game);
+	printf("pos retourne : %d\n", pos);
 	mvt = Game_CheckMove(move, player, *game, pos);
-
+	printf("mvt retourne : %d\n", mvt);
 	switch(mvt)
 	{
 		case -1: printf("Mouvement invalide\n");
@@ -335,6 +348,8 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer player)
 				 break; // On ajoute une pénalité au joueur et on sort
 		// Deplacement seul
 		case 0 : game->board[move.end.line][move.end.col] = game->board[move.start.line][move.start.col]; // la case de destination prend le pion valide
+				 game->board[move.start.line][move.start.col].piece = EPnone;
+				 game->board[move.start.line][move.start.col].content = ECnone;
 				 printf("gamestate modifié\n");
 				 break;
 		// Combat
@@ -344,13 +359,14 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer player)
 					game->board[move.end.line][move.end.col].piece = EPnone ;
 					game->board[move.end.line][move.end.col].content = ECnone ;
 
-					game->board[move.start.line][move.start.col].piece = EPnone ;
-					game->board[move.start.line][move.start.col].content = ECnone ;
 				 }
 				 else
 				 {	// La case de destination prend le resultat du combat 
 					game->board[move.end.line][move.end.col] = Game_Fight(game->board[move.start.line][move.start.col], game->board[move.end.line][move.end.col]);
 				 }
+				 // On efface la case de départ du mouvement
+				 game->board[move.start.line][move.start.col].piece = EPnone;
+				 game->board[move.start.line][move.start.col].content = ECnone;
 				 break; 
 	}
 }
@@ -430,7 +446,7 @@ void Game_AddPenalty(EPlayer player);	// idée : variable statique ? allouées a
  * @param SBox* board[10][10] 
  *				gamestate du joueur, avec le tableau orienté vers le bas
  */
-void Game_CpyGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10])
+void Game_CpyInitGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10])
 {
 	int k, l; 
 	// k : lignes du tableau 4*10

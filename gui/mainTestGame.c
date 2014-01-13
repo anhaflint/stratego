@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
 	SGameConfig gameConfig;
 	SGameState gameState;
 	int i, j;
-	int returnpos, returnmove;
 	SPos start, end; 
 	SMove move; 
 
@@ -40,9 +39,9 @@ int main(int argc, char* argv[])
 	EPiece initBoard[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
                            {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
                            {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
-                           {2, 2, 7, 9, 2, 2, 10, 7, 2, 5}};
-	Game_CpyGameState(&gameState, &player1, boardInit);
-	Game_CpyGameState(&gameState, &player2, initBoard);
+                           {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
+	Game_CpyInitGameState(&gameState, &player1, boardInit);
+	Game_CpyInitGameState(&gameState, &player2, initBoard);
 	// mise en place de pions sur le gamestate comme si on avait placé de pieces
 	// joueur BLEU,  haut du tableau
 	/*gameState.board[0][0].piece = EPflag; 
@@ -62,12 +61,37 @@ int main(int argc, char* argv[])
     // void Game_DoMove(SGameState* game,SMove move, EPlayer player); 
     // SBox Game_Fight(SBox player1, SBox player2);
 	
+	// Test scout mange espion : OK
+	/*
 	start.line = 3; start.col = 8; // scout
-	end.line = 5; end.col = 8;
+	end.line = 6; end.col = 8;
+	*/
+	
+	// Test piece normale : OK
+	/*
+	start.line = 3; start.col = 1; // Piece n°7
+	end.line = 5; end.col = 1;
+	*/
+
+	// Test selection invalide : OK
+	/*
+	start.line = 4; start.col = 2; // Lac
+	end.line = 5; end.col = 1;
+	*/
+
+	// Test selection vide : OK
+	/*
+	start.line = 4; start.col = 1; // vide
+	end.line = 5; end.col = 1;
+	*/
+
+	// Test déplacement en diagonale : OK 
+	/*
+	start.line = 9; start.col = 9; // Lac
+	end.line = 7; end.col = 8;
+	*/
 		move.start = start; 
 		move.end = end; 
-	returnpos = Game_CheckPosition(start, player2, gameState);
-	returnmove = Game_CheckMove(move, player2, gameState, returnpos);
 
 	printf("-----------JOUEUR 1---: %d--------------\n", gameConfig.ColorPlayer1);
 	DisplayPlayerGS(player1.Pboard);
@@ -76,9 +100,11 @@ int main(int argc, char* argv[])
 	printf("------------GAMESTATE--------------------\n");
 	DisplayGS(gameState);
 	printf("la config est %d\n", gameConfig.Mode);
-	printf("la position de depart est : %d\n", returnpos);
-	printf("le mouvement est : %d\n", returnmove);
 
+
+	Game_DoMove(&gameState, move, player2);
+	printf("------------GAMESTATE--APRES--MOUVEMENT----------------\n");
+	DisplayGS(gameState);
 	return 0;
 }
 
