@@ -676,7 +676,7 @@ float riskProbability( const SGameState * const gameState,GroupMoves *riskedMove
 	{
 		if(riskedMoves->listMoves[i].caution == 11) /* piece des movements risqués dont on n'a pas d'information */
 		{
-			if() 
+			if(m_board[riskedMoves->listMoves[i].move.end.line][riskedMoves->listMoves[i].move.end.col]) 
 		}
 	}
 }
@@ -736,8 +736,8 @@ int getInfoHidedEnemyMovable()
  
 /* Permet d'avoir nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */ 
 int getInfoHighEnemy (const SGameState * const gameState)
- {
- 	int myMaxPiece= EPbomb;
+{
+ 	EPiece myMaxPiece= EPspy;
  	int numHighEnemy;
 
  	/* On indentifie notre pièce de rang supérieur cachée */
@@ -749,20 +749,211 @@ int getInfoHighEnemy (const SGameState * const gameState)
 					myMaxPiece = m_board[i][j].box.piece ;
 
 	if (m_color == ECblue)
+		numHighEnemy = calculateHighEnemy(0,myMaxPiece,gameState->redOut);
+	else
+		numHighEnemy = calculateHighEnemy(0,myMaxPiece,gameState->BlueOut);
+
+	return numHighEnemy;
+}
+
+/* calcule le nombre de piece de rang superieur à une piece */
+int calculateHighEnemy(int numTotal, EPiece piece, unsigned int pieceOut[])
+{
+	int numberEnemyPiece=0;
+
+	
+	if(piece == EPspy)
+	{	
+		numberEnemyPiece = 8 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPscout, pieceOut);
+	}
+	else if(piece == EPscout)
 	{
-		for(int i=0; i<12; i++)
+		numberEnemyPiece = 5 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPminer, pieceOut);
+	}
+	else if(piece == EPminer)
+	{
+		numberEnemyPiece = 4 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPsergeant, pieceOut);
+	}
+	else if(piece == EPsergeant)
+	{
+		numberEnemyPiece = 4 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPlieutenant, pieceOut);
+	}
+	else if(piece == EPlieutenant)
+	{
+		numberEnemyPiece = 4 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPcaptain, pieceOut);
+	}
+	else if(piece == EPcaptain)
+	{
+		numberEnemyPiece = 3 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPmajor, pieceOut);
+	}
+	else if(piece == EPmajor)
+	{
+		numberEnemyPiece = 2 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPcolonel, pieceOut);
+	}
+	else if(piece == EPcolonel)
+	{
+		numberEnemyPiece = 1 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPgeneral, pieceOut);
+	}
+	else if(piece == EPgeneral)
+	{
+		 numberEnemyPiece = 1 - pieceOut[piece + 1];
+		return calculateHighEnemy( numTotal + numberEnemyPiece, EPmarshal, pieceOut);
+	}
+	else if(piece == EPmarshal)
+		numberEnemyPiece = 1 - pieceOut[EPspy];
+
+	return numberEnemyPiece + numTotal;
+}
+
+/* Permet d'avoir nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */ 
+int getInfoLowEnemy()
+{
+	EPiece myMaxPiece= EPspy;
+ 	int numLowEnemy;
+
+ 	/* On indentifie notre pièce de rang supérieur cachée */
+ 	for (i=0; i<10; i++)
+		for(j=0; j<10; j++)
+		/* Pour mes pièces */
+			if (m_board[i][j].box.content == m_color)
+				if((m_board[i][j].box.piece > myMaxPiece && m_board[i][j].isVisible == false) && (m_board[i][j].box.piece != EPflag && m_board[i][j].box.piece != EPnone) )
+					myMaxPiece = m_board[i][j].box.piece ;
+
+	if (m_color == ECblue)
+		numLowEnemy= calculateLowEnemy(0,myMaxPiece,gameState->redOut);
+	else
+		numLowEnemy = calculateLowEnemy(0,myMaxPiece,gameState->BlueOut);
+
+	return numLowEnemy;
+}
+int calculateLowEnemy(int numTotal, EPiece piece, unsigned int pieceOut[])
+{
+	int numberEnemyPiece=0;
+
+	
+	if(piece == EPmarshal)
+	{	
+		numberEnemyPiece = 1 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPgeneral, pieceOut);
+	}
+	else if(piece == EPgeneral)
+	{
+		numberEnemyPiece = 2 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPcolonel, pieceOut);
+	}
+	else if(piece == EPcolonel)
+	{
+		numberEnemyPiece = 3 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPmajor, pieceOut);
+	}
+	else if(piece == EPmajor)
+	{
+		numberEnemyPiece = 4 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPcaptain, pieceOut);
+	}
+	else if(piece == EPcaptain)
+	{
+		numberEnemyPiece = 4 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPlieutenant, pieceOut);
+	}
+	else if(piece == EPlieutenant)
+	{
+		numberEnemyPiece = 4 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPsergeant, pieceOut);
+	}
+	else if(piece == EPsergeant)
+	{
+		numberEnemyPiece = 5 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPminer, pieceOut);
+	}
+	else if(piece == EPminer)
+	{
+		numberEnemyPiece = 8 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPscout, pieceOut);
+	}
+	else if(piece == EPscout)
+	{
+		 numberEnemyPiece = 1 - pieceOut[piece - 1];
+		return calculateLowEnemy( numTotal + numberEnemyPiece, EPspy, pieceOut);
+	}
+	else if(piece == EPspy)
+		numberEnemyPiece = 0;
+
+	return numberEnemyPiece + numTotal;
+}
+
+/* Permet d'avoir nombre de bombes ennemies cachées */
+int getInfoHidedEnemyBomb(const SGameState * const gameState)
+{
+	int numShownBomb = 0; // nombre de bombe ennemie découverte
+	int numHidedBomb = 0; // nombre de bombe ennemie cachée
+
+	for (i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
 		{
-			numHighEnemy += gameState->redOut[];
-			
+			/* Si il y a un ennemi sur la case */
+			if (m_board[i][j].box.content == enemyColor)
+			{
+				/* on calcule le nombre de bombes visibles */
+				if(m_board[i][j].box.piece == EPbomb)
+					numShownBomb++;
+			}
+		}
+	}
+	/*Dans chaque cas le nombre de bombes caché est equivalent au nombre maximal de bombe moins le nombre
+	de bombes visible moins le nombre de bombes éliminés */
+
+	if (m_color == ECblue)
+		numHidedBomb= 6 - numShownBomb - gameState->redOut[EPbomb];
+	else
+		numHidedBomb= 6 - numShownBomb - gameState->BlueOut[EPbomb];
+
+	return numHidedBomb;
+}
+
+/* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
+int isHidedMarshal(const SGameState * const gameState)
+{
+	bool marshalIsVisible = false; // variable permettant de savoir si le maréchal énnemi est visible
+
+	for (i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			/* Si il y a un ennemi sur la case */
+			if (m_board[i][j].box.content == enemyColor)
+			{
+				/* on calcule le nombre de bombes visibles */
+				if(m_board[i][j].box.piece == EPmarshal)
+					marshalIsVisible = true;
+			}
+		}
+	}
+	if (m_color == ECblue)
+	{
+		/* si le maréchal ennemie est visible ou mort */
+		if(gameState->redOut[EPmarshal] == 1 || marshalIsVisible == true)
+			return 0;
+		else
+			return 1;
 	}
 	else
 	{
-		for(int i=0; i<12; i++)
-		{
-			
-		}
-	}
-	}
+		/* si le maréchal ennemie est visible ou mort */
+		if(gameState->BlueOut[EPmarshal] == 1 || marshalIsVisible == true)
+			return 0;
+		else
+			return 1;
+	}	
 }
 
 //-------------------------------------------------------------------------------------------------
