@@ -321,6 +321,28 @@ void Display_ReinitDisplayBoard(BoardLayout layout)
 SDL_Flip(layout.Screen); // Rafraichissement
 }
 
+
+
+
+ //fonction de test de retour EPiece
+void Display_EPieceTest(EPiece Pieces[4][10]){
+
+	int i,j;
+
+	for (i=0;i<4;i++)
+	{
+		for (j=0;j<10;j++)
+		{
+				printf("[%d] ",Pieces[3-i][j] );
+				
+		}
+		printf("\n");
+	}
+
+}
+
+
+
 /*
 void Display_Board(BoardLayout layout, SGameState gamestate){
 

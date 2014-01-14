@@ -62,10 +62,10 @@ int main(int argc, char* argv[])
     // SBox Game_Fight(SBox player1, SBox player2);
 	
 	// Test scout mange espion : OK
-	/*
+	
 	start.line = 3; start.col = 8; // scout
 	end.line = 6; end.col = 8;
-	*/
+	
 	
 	// Test piece normale : OK
 	/*
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
 	// Test déplacement en diagonale : OK 
 	/*
-	start.line = 9; start.col = 9; // Lac
+	start.line = 9; start.col = 9; 
 	end.line = 7; end.col = 8;
 	*/
 		move.start = start; 
@@ -102,8 +102,13 @@ int main(int argc, char* argv[])
 	printf("la config est %d\n", gameConfig.Mode);
 
 
-	Game_DoMove(&gameState, move, player2);
-	printf("------------GAMESTATE--APRES--MOUVEMENT----------------\n");
+	Game_DoMove(&gameState, move, &player2, &player1);
+	printf("-----------------------------------------GAMESTATE--APRES--MOUVEMENT-----------------------------------------\n");
+	printf("-----------JOUEUR 1---: %d--------------\n", gameConfig.ColorPlayer1);
+	DisplayPlayerGS(player1.Pboard);
+	printf("-----------JOUEUR 2----------------------\n");
+	DisplayPlayerGS(player2.Pboard);
+	printf("------------GAMESTATE--------------------\n");
 	DisplayGS(gameState);
 	return 0;
 }

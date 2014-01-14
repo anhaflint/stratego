@@ -54,6 +54,9 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 
 void Display_ReinitDisplayBoard(BoardLayout layout); // Réinit Aff plateau
+
+ //fonction de test de retour EPiece
+void Display_EPieceTest(EPiece Pieces[4][10]);
  
  /*
  //fonction d'affichage du plateau pendant le jeu
