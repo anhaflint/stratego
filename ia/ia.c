@@ -650,7 +650,7 @@ void decideMove(const SGameState * const gameState)
 
 // fonction interne a decideMove
 // calcule la probabilité de risque pour la force des pieces ennemies voisines ou les pieces ennemies à attaquer directement
-float riskProbability( GroupMoves *riskedMoves)
+float riskProbability( const SGameState * const gameState,GroupMoves *riskedMoves)
 {
 	int i;  /*compteur*/
 	int numHidedEnemyGlobal; /* nombre de piece ennemie cachée */
@@ -661,15 +661,112 @@ float riskProbability( GroupMoves *riskedMoves)
 	int hidedMarshal; /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
 	int numFlag = 1; /* nombre de drapeau */
 	
+	/* recuperation des informations */
+
+	numHidedEnemyGlobal = getInfoHidedEnemyGlobal();
+	numHidedEnemyMovable = getInfoHidedEnemyMovable();
+	numHighEnemy = getInfoHighEnemy(const SGameState * const gameState);
+	numLowEnemy = getInfoLowEnemy(const SGameState * const gameState);
+	numHidedEnemyBomb = getInfoHidedEnemyBomb(const SGameState * const gameState);
+	hidedMarshal = isHidedMarshal(const SGameState * const gameState);
+
+	/* calcul effectif des probabilités */
 
 	for(i=0;i < riskedMoves->lenght_list; i++)
 	{
 		if(riskedMoves->listMoves[i].caution == 11) /* piece des movements risqués dont on n'a pas d'information */
 		{
-			if 
+			if() 
 		}
 	}
 }
+// ------fonctions internes à riskProbability----
+
+/*Permet d'avoir le nombre de piece ennemie cachée */
+int getInfoHidedEnemyGlobal()
+{
+	int numHidedEnemy = 0; //Nombre d'ennemis restants sur le plateau
+	/* Parcours du plateau pour déterminer le nombre d'ennemis non visibles (EPnone) */
+	for (i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			/* Si il y a un ennemi sur la case */
+			if (m_board[i][j].box.content == enemyColor)
+			{
+				/* Si on ne connait pas la pièce */
+				if(m_board[i][j].box.piece == EPnone)
+					numHidedEnemy++;
+			}
+		}
+	}
+	return numHidedEnemy;
+}
+
+/* Permet d'avoir nombre de pièce ennemie cachée qui peuvent bouger */
+int getInfoHidedEnemyMovable()
+{
+	int numHidedEnemy; //Nombre d'ennemis restants sur le plateau
+	int numHidedMovableEnemy; //nombre de pièce ennemie cachée qui peuvent bouger
+	int numBomb = 0; // Nombre de bombes visibles */
+	int numFlag = 0; // Nombre de drapeau visible */
+	
+	numHidedEnemy = getInfoHidedEnemyGlobal();
+
+	for (i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			/* Si il y a un ennemi sur la case */
+			if (m_board[i][j].box.content == enemyColor)
+			{
+				/* Si on ne connait pas la pièce */
+				if(m_board[i][j].box.piece == EPbomb)
+					numBomb++;
+				if (m_board[i][j].box.piece == EPflag)
+					numFlag++;
+			}
+		}
+	}
+	// on soutrait du nombre de pièce ennemie cachée, le nombre de bombe cachée et le drapeau caché */
+	numHidedMovableEnemy = numHidedEnemy - ( 6 - numbomb) - ( 1 - numFlag) ;
+
+	return numHidedMovableEnemy;
+}
+ 
+/* Permet d'avoir nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */ 
+int getInfoHighEnemy (const SGameState * const gameState)
+ {
+ 	int myMaxPiece= EPbomb;
+ 	int numHighEnemy;
+
+ 	/* On indentifie notre pièce de rang supérieur cachée */
+ 	for (i=0; i<10; i++)
+		for(j=0; j<10; j++)
+		/* Pour mes pièces */
+			if (m_board[i][j].box.content == m_color)
+				if((m_board[i][j].box.piece > myMaxPiece && m_board[i][j].isVisible == false) && (m_board[i][j].box.piece != EPflag && m_board[i][j].box.piece != EPnone) )
+					myMaxPiece = m_board[i][j].box.piece ;
+
+	if (m_color == ECblue)
+	{
+		for(int i=0; i<12; i++)
+		{
+			numHighEnemy += gameState->redOut[];
+			
+	}
+	else
+	{
+		for(int i=0; i<12; i++)
+		{
+			
+		}
+	}
+	}
+}
+
+//-------------------------------------------------------------------------------------------------
+
 
 // procedure interne a evaluateMoves
 // Donne l'information sur la piece ennemie voisine pour evaluer le risque encouru
