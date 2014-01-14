@@ -62,14 +62,15 @@ typedef struct {
 	unsigned int nbPenalty;	// nombre de pénalités du joueur
 	EColor Color;		// couleur du joueur (const pour éviter la triche)
 	SBox Pboard[10][10]; // tableau qui comprend la copie du gamestate dans le bon sens pour le joueur
+	int nbCoups; 
 }EPlayer;
 
 
 typedef enum
 {
-	IA_IA=0,
+	HUMAN_HUMAN=0,
 	IA_HUMAN,
-	HUMAN_HUMAN,
+	IA_IA,
 	ERROR,
 }SGameMode;
 
