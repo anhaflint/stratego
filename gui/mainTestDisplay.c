@@ -42,8 +42,8 @@ if (SDL_Init(SDL_INIT_VIDEO) == -1) // Si erreur :
 
 while(continuer==1) // Tant que l'on quitte pas la fenêtre
 {
-    Event_InitGameState(&event,&continuer,1,layout,PiecesRouges); //affiche seulement la Position du clic pour le moment
-	Event_InitGameState(&event,&continuer,2,layout,PiecesBleues); //affiche seulement la Position du clic pour le moment
+    Event_InitGameState(&event,&continuer,2,layout,PiecesRouges); //affiche seulement la Position du clic pour le moment
+	Event_InitGameState(&event,&continuer,3,layout,PiecesBleues); //affiche seulement la Position du clic pour le moment
 	printf("Vous avez terminé le test, retour au placement des pions Rouges \n");
 }
 

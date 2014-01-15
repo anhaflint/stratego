@@ -1,6 +1,6 @@
 #include "event.h"
  
-void Event_InitGameState(SDL_Event *event, int *continuer,int color,BoardLayout layout, EPiece Pieces[4][10]){
+void Event_InitGameState(SDL_Event *event, int *continuer,EColor color,BoardLayout layout, EPiece Pieces[4][10]){
  
 EPiece PieceSelectionnee;
 SPos PosSelectionnee;
@@ -46,12 +46,12 @@ for (i=0;i<4;i++)
 
 // Affichage des pièces
  
-if(color==1){
-  Display_Init(layout,1); // On affiche les pieces rouges latéralement à gauche
+if(color==ECred){
+  Display_Init(layout,ECred); // On affiche les pieces rouges latéralement à gauche
   printf("Début de la phase de placement Rouge \n");
 }
-if(color==2){
-Display_Init(layout,2); // On affiche les pieces bleue latéralement à doite
+if(color==ECblue){
+Display_Init(layout,ECblue); // On affiche les pieces bleue latéralement à doite
   printf("Début de la phase de placement Bleu \n");
   }
  
@@ -85,9 +85,9 @@ while (endPlacement!=1)
       if(pieceOK==0)   // Si on a pas pris de piece OU que l'on est pas en remise de pièce
        {
 //---- ROUGE------
-            if(color==1){
+            if(color==ECred){
  
-              PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,1);
+              PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,ECred);
              
               if ( PieceSelectionnee!=EPnone ){
                     if (nbPiecesRestantes[PieceSelectionnee]!=0)
@@ -109,9 +109,9 @@ while (endPlacement!=1)
             }
  
 //---- BLEU------
-            if(color==2){
+            if(color==ECblue){
  
-             PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,2);
+             PieceSelectionnee=Event_IdPiece_Init(event->button.x,event->button.y,ECblue);
  
               if (PieceSelectionnee!=EPnone){
                     if (nbPiecesRestantes[PieceSelectionnee]!=0)
@@ -133,14 +133,14 @@ while (endPlacement!=1)
  
             /* SI LA CASE SELECTIONNEE EST DANS LE BANDEAU ET QU'ON A SELECTIONNE UNE CASE SUR LE PLATEAU AVEC UNE
             PIECE, ON REMET CETTE PIECE DANS LE BANDEAU */
-            if ((posOK == 1)&&(((color == 1)&&(event->button.x < 100))||((color == 2)&&(event->button.x > 700))))
+            if ((posOK == 1)&&(((color == ECred)&&(event->button.x < 100))||((color == ECblue)&&(event->button.x > 700))))
             {
               //printf("");
               printf("Remise de la pièce [%d;%d]\n",PosPrecedente->line,PosPrecedente->col);
               nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]++;
               Pieces[PosPrecedente->line][PosPrecedente->col] = EPnone;
               Display_EPieceTest(Pieces);
-              Display_PieceInit(EPnone, *PosPrecedente, layout, 3); // argument 3 pour lancer un bkg
+              Display_PieceInit(EPnone, *PosPrecedente, layout, ECnone); // argument 3 pour lancer un bkg
  
               pieceOK = 0;
               posOK = 0;
@@ -188,7 +188,7 @@ while (endPlacement!=1)
                     // Affichage
                     if (Pieces[PosPrecedente->line][PosPrecedente->col] == EPnone)
                     {
-                      Display_PieceInit(EPnone,PosSelectionnee, layout, 3); // argument 3 pour lancer un bkg
+                      Display_PieceInit(EPnone,PosSelectionnee, layout, ECnone); // argument 3 pour lancer un bkg
                     }
                     else
                     {
@@ -196,7 +196,7 @@ while (endPlacement!=1)
                     }
                      if (Pieces[PosSelectionnee.line][PosSelectionnee.col] == EPnone)
                     {
-                      Display_PieceInit(EPnone, *PosPrecedente, layout, 3); // argument 3 pour lancer un bkg
+                      Display_PieceInit(EPnone, *PosPrecedente, layout, ECnone); // argument 3 pour lancer un bkg
                     }
                   else
                     {
@@ -296,7 +296,7 @@ while (endPlacement!=1)
 
 }// fin while
 
-Display_Init(layout,3); // On efface l'affichage des tuiles car Placement terminé
+Display_Init(layout,ECnone); // On efface l'affichage des tuiles car Placement terminé
 Display_ReinitDisplayBoard(layout);
 free(PosPrecedente);
  
@@ -315,13 +315,13 @@ free(PosPrecedente);
  
  
  
-EPiece Event_IdPiece_Init(int x,int y,int color){
+EPiece Event_IdPiece_Init(int x,int y,EColor color){
  
 int noPiece;
  
 // TRAITEMENT SUR X
  
-  if (color==1){                 // Si c'est un placement rouge
+  if (color==ECred){                 // Si c'est un placement rouge
  
     if ( (x<10)||(x>50)) {          // Le clic n'est pas centrée sur les pièces en X C [10:50]
  
@@ -329,7 +329,7 @@ int noPiece;
       }       // La coordonnée X ne correspont à aucune pièce.
   }
  
-  if (color==2){               // Si c'est un placement bleu
+  if (color==ECblue){               // Si c'est un placement bleu
    
     if ( (x<710)||(x>750)) {        // Le clic est centrée sur les pièces en X C [710:750]
  

@@ -65,7 +65,7 @@ for (i=13;i<26;i++){
 
 }
 
-void Display_Init(BoardLayout layout,int color){
+void Display_Init(BoardLayout layout,EColor color){
 
 SDL_Rect rectTuilesAPlacer[12];
 SDL_Rect rectImageTuilesAPlacer[12];
@@ -75,21 +75,21 @@ int i;
 		rectTuilesAPlacer[i].h=40;
 		rectTuilesAPlacer[i].w=40;
 		
-		if (color==1)
+		if (color==ECred)
 		{
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
 			rectImageTuilesAPlacer[i]=layout.PiecesLayout[1+i];
 			SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
 		}
-		if (color==2)
+		if (color==ECblue)
 		{
 			rectTuilesAPlacer[i].x=710;
 			rectTuilesAPlacer[i].y=33+45*i;
 			rectImageTuilesAPlacer[i]=layout.PiecesLayout[14+i];
 			SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
 		}
-		if (color==3){  // remise à vide
+		if (color==ECnone){  // remise à vide
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
 			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
@@ -104,18 +104,18 @@ int i;
 
 
 
-void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color){
+void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,EColor color){
 
 	switch (Piece)
 	{
 		case 0: //BOMBE
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[11]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[24]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -124,12 +124,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 11: // FLAG
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[12]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[25]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -139,12 +139,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 1: //SPY
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[1]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[14]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -154,12 +154,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 2: //SCOUT
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[2]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[15]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -168,12 +168,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 3: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[3]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[16]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -182,12 +182,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 4: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[4]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[17]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -196,12 +196,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 5: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[5]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[18]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -210,12 +210,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 6: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[6]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[19]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -224,12 +224,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 7: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[7]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[20]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -238,12 +238,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 8: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[8]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[21]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -252,12 +252,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 9: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[9]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[22]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -266,12 +266,12 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 10: //...
 		
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[10]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[23]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -279,16 +279,16 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,int color
 
 		case 12: 
 
-			if(color==1)
+			if(color==ECred)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[0]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==2)
+			if(color==ECblue)
 			{
 				SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[13]), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
-			if(color==3) // Effacement de piece
+			if(color==ECnone) // Effacement de piece
 			{
 			SDL_BlitSurface(layout.Background, &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position), layout.Screen,  &(layout.DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
