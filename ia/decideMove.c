@@ -1,4 +1,19 @@
+#include <stdbool.h>
+#include "../structure.h"
 #include "decideMove.h"
+
+extern Strategy m_strategy;
+extern EColor m_color, m_enemyColor;
+extern InfoPiece m_board[10][10];
+extern SMove m_movements[172]; 
+extern SMove m_decidedMove; 
+extern int m_nbMove; 
+extern int m_caution; 
+extern int m_nbRoundTrips; 
+extern SPos m_armyPos, m_enemyPos; 
+extern EPiece m_armyPiece, m_enemyPiece; 
+extern bool m_myMove; 
+extern bool m_hisMove;
 
 // Décision du mouvement à effectuer
 void decideMove(const SGameState * const gameState)
@@ -8,24 +23,24 @@ void decideMove(const SGameState * const gameState)
 	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 
-	GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)*/
+	/*GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)
 	GroupMoves normalMoves, riskedMoves;
 
-	evaluateMoves(&normalMoves,&riskedMoves);
+	evaluateMoves(gameState, &normalMoves,&riskedMoves);
  	globalEvaluation(&priorityMoves,riskedMoves);
 
  	switch(m_strategy)
  	{
 	       case defensive || malicious || searchme :
-				if(normalMoves.lenght_list > 0)/* si il ya la possibilité de jouer sans perdre de pion*/
+				if(normalMoves.lenght_list > 0)// si il ya la possibilité de jouer sans perdre de pion
 					choosedMove = chooseMove(gameState, normalMoves);
 				else 
 					choosedMove = chooseMove(gameState, riskedMoves);
 	       break;
- 	}
+ 	}*/
 
  	/* A décommenter si test de lib */
- 	// choosedMove = m_movements[0];
+ 	choosedMove = m_movements[0];
 
  	/* Mise à jour de la variable de nombre d'allers-retours */
 
@@ -47,22 +62,22 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 {
 	int i;  /*compteur*/
 	int numHidedEnemyGlobal; /* nombre de piece ennemie cachée */
-	int numHidedEnemyMovable/* nombre de pièce ennemie cachée qui peuvent bouger */
+	int numHidedEnemyMovable; /* nombre de pièce ennemie cachée qui peuvent bouger */
 	int numHighEnemy; /* nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */
 	int numLowEnemy; /* nombre de piece ennemie de rang inferieur à ma piece de plus bas rang cachée */
 	int numHidedEnemyBomb; /* nombre de bombes ennemies cachées*/
 	int hidedMarshal; /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
 	int numFlag = 1; /* nombre de drapeau */
 	float winProbability; /* Probabilité de gagner l'adversaire */
-	
+	EPiece myPiece = gameState->board[myPosition.line][myPosition.col].piece; /* Notre pièce */
 	/* recuperation des informations */
 
 	numHidedEnemyGlobal = getInfoHidedEnemyGlobal();
-	numHidedEnemyMovable = getInfoHidedEnemyMovable();
-	numHighEnemy = getInfoHighEnemy(const gameState);
-	numLowEnemy = getInfoLowEnemy(const gameState);
-	numHidedEnemyBomb = getInfoHidedEnemyBomb(const gameState);
-	hidedMarshal = isHidedMarshal(const gameState);
+	numHidedEnemyMovable = getInfoHidedEnemyMovable(gameState);
+	numHighEnemy = getInfoHighEnemy(gameState, myPiece);
+	numLowEnemy = getInfoLowEnemy(gameState, myPiece);
+	numHidedEnemyBomb = getInfoHidedEnemyBomb(gameState);
+	hidedMarshal = isHidedMarshal(gameState);
 
 	/* calcul effectif des probabilités */
 
@@ -76,7 +91,7 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 	else
 	{
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPminer)
-			winProbability = (numFlag + numBomb + numLowEnemy) / numHidedEnemyGlobal;
+			winProbability = (numFlag + numHidedEnemyBomb + numLowEnemy) / numHidedEnemyGlobal;
 		else
 			{
 				if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
@@ -128,7 +143,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 				riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
 							
 				if( m_board[enemyPosition.line][enemyPosition.col].box.piece == EPnone)
-					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(const gameState,myPosition,enemyPosition)
+					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(gameState,myPosition,enemyPosition);
 				else
 					riskedMoves->listMoves[riskedMoves->lenght_list].caution = attributionRank(myPiece,enemyPiece,neighbour);
 
@@ -146,7 +161,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 				/* enregistrement d'informations sur le mouvement risqué */
 				riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
 				if( m_board[enemyPosition.line][enemyPosition.col].box.piece == EPnone)
-					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(const gameState,myPosition,enemyPosition)
+					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(gameState,myPosition,enemyPosition);
 				else
 					riskedMoves->listMoves[riskedMoves->lenght_list].caution = attributionRank(myPiece,enemyPiece,neighbour);
 				riskedMoves->lenght_list++;
@@ -164,7 +179,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 				/* enregistrement d'informations sur le mouvement risqué */
 				riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
 				if( m_board[enemyPosition.line][enemyPosition.col].box.piece == EPnone)
-					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(const gameState,myPosition,enemyPosition)
+					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(gameState,myPosition,enemyPosition);
 				else
 					riskedMoves->listMoves[riskedMoves->lenght_list].caution = attributionRank(myPiece,enemyPiece,neighbour);
 				riskedMoves->lenght_list++;
@@ -182,7 +197,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 				/* enregistrement d'informations sur le mouvement risqué */
 				riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
 				if( m_board[enemyPosition.line][enemyPosition.col].box.piece == EPnone)
-					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(const gameState,myPosition,enemyPosition)
+					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(gameState,myPosition,enemyPosition);
 				else
 					riskedMoves->listMoves[riskedMoves->lenght_list].caution = attributionRank(myPiece,enemyPiece,neighbour);
 				riskedMoves->lenght_list++;
@@ -195,12 +210,12 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 
 				/* informations sur l'ennemi */
 				enemyPiece = m_board[m_movements[i].end.line][m_movements[i].end.col].box.piece;
-				enemyPosition.line = m_movements[i].end;
+				enemyPosition.line = m_movements[i].end.line;
 			
 				/* enregistrement d'informations sur le mouvement risqué */
 				riskedMoves->listMoves[riskedMoves->lenght_list].move = m_movements[i];
-				if( m_board[enemyPosition.line[enemyPosition.col].box.piece == EPnone)
-					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(const gameState,myPosition,enemyPosition)
+				if( m_board[enemyPosition.line][enemyPosition.col].box.piece == EPnone)
+					riskedMoves->listMoves[riskedMoves->lenght_list].caution = riskProbability(gameState,myPosition,enemyPosition);
 				else
 					riskedMoves->listMoves[riskedMoves->lenght_list].caution = attributionRank(myPiece,enemyPiece,neighbour);
 				riskedMoves->lenght_list++;
@@ -280,7 +295,7 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 // donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi
 void normalClassication(GroupMoves *normalMoves)
 {
-	int i /* compteur */
+	int i; /* compteur */
 	int numEnemy; /* nombres d'ennemi */
 	while(i < normalMoves->lenght_list)
 	{
@@ -293,7 +308,7 @@ void normalClassication(GroupMoves *normalMoves)
 			numEnemy++;
 		if( normalMoves->listMoves[i].move.start.col > 0 && m_board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col -1 ].box.content == m_enemyPiece)
 			numEnemy++;
-		normalMoves->listMoves[i].caution=giveNormalrank(numEnemy);
+		normalMoves->listMoves[i].caution=giveNormalRank(numEnemy);
 	}
 }
 
@@ -314,7 +329,7 @@ float giveNormalRank(int numEnemy){
 
 // procedure interne a decideMoves
 // evaluation globale des mouvements dupliqués et risqués 
-void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
+/*void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 {
 	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
 	// a faire
@@ -323,8 +338,8 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 {
 	/* Declaration des variables internes à la procédure*/
-	int i = r = n = 0;
+	//int i = r = n = 0;
 	
 	/* on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués*/
-	if(m_caution>5)
-}
+	//*if(m_caution>5)
+//}

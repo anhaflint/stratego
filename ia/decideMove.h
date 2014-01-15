@@ -1,3 +1,6 @@
+#ifndef DECIDEMOVE_H
+#define DECIDEMOVE_H
+
 /**
 * Renvoie le mouvement à faire qui a été décidé par l'IA
 * @param SGameState gameState
@@ -20,7 +23,7 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType);
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués
 * @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
 */
-void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves);
+void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,GroupMoves *riskedMoves);
 
 /**
 * Donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi 
@@ -39,17 +42,19 @@ float giveNormalRank(int numEnemy);
 * A commenter
 *
 */
-void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves);
+/*void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves);*/
 
 /**
 * calcule la probabilité de risque de la force des pieces ennemies voisines inconnues 
 * ou les pieces ennemies inconnues à attaquer directement
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués
 */
-float riskProbability( GroupMoves *riskedMoves);
+float riskProbability( const SGameState * const gameState,SPos myPosition,SPos enemyPosition);
 
 /**
 * A commenter
 *
 */
-SMove chooseMove(const SGameState * const gameState, GroupMoves moves);
+/*SMove chooseMove(const SGameState * const gameState, GroupMoves moves);*/
+
+#endif

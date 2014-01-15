@@ -1,3 +1,6 @@
+#ifndef ANALYZEBOARD_H
+#define ANALYZEBOARD_H
+
 /**
 * Analyse des mouvements possibles sur le plateau par l'IA, stockage en interne
 */
@@ -21,3 +24,5 @@ void analyzeBoard();
 *   Compteur du nombre de mouvements possibles au total
 */
 void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur);
+
+#endif

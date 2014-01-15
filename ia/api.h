@@ -1,49 +1,5 @@
-//----------------------- Structures et énumérations ------------------------//
-
-/* Stockage en interne du plateau, avec
-des informations supplémentaires sur les pièces */
-typedef struct{
-	SBox box;
-	bool isVisible;
-	bool isBomb;
-}InfoPiece;
-
-/* Structure stockant un mouvement et
-son niveau de risque */
-typedef struct{
-	SMove move;
- 	float caution;
-}Mymove;
-
-/* Structure contenant la liste des mouvements
-possibles ainsi que leur nombre */
-typedef struct{
- 	Mymove listMoves[172];
- 	int lenght_list;
-}GroupMoves;
-
-/* Enumération des différentes stratégies
-utilisables par l'IA */
-typedef enum{
-	str_default=0,
-	offensive,
-	defensive,
-	malicious,
-	protective,
-	risked,
-	bluff,
-	agressive,
-	searchme,
-}Strategy;
-
-/* Enumération pour les direction
---> Si inutilisé à la fin, supprimer */
-typedef enum{
-	left=0,
-	right,
-	top,
-	bottom,
-}Direction;
+#ifndef API_H
+#define API_H
 
 //-------------------------- Fonctions de l'API IA --------------------------//
 
@@ -104,3 +60,5 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
  * Indication d'une pénalitée pour règle non respectée -> coup précédent annulé
  */
 void Penalty();
+
+#endif

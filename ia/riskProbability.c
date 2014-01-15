@@ -1,8 +1,24 @@
+#include <stdbool.h>
+#include "../structure.h"
 #include "riskProbability.h"
+
+extern Strategy m_strategy;
+extern EColor m_color, m_enemyColor;
+extern InfoPiece m_board[10][10];
+extern SMove m_movements[172]; 
+extern SMove m_decidedMove; 
+extern int m_nbMove; 
+extern int m_caution; 
+extern int m_nbRoundTrips; 
+extern SPos m_armyPos, m_enemyPos; 
+extern EPiece m_armyPiece, m_enemyPiece; 
+extern bool m_myMove; 
+extern bool m_hisMove;
 
 /*Permet d'avoir le nombre de piece ennemie cachée */
 float getInfoHidedEnemyGlobal()
 {
+	int i, j;
 	float numHidedEnemy = 0; //Nombre d'ennemis restants sur le plateau
 	/* Parcours du plateau pour déterminer le nombre d'ennemis non visibles (EPnone) */
 	for (i=0; i<10; i++)
@@ -43,7 +59,7 @@ float getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece)
 {
 	float numTotal = 0;
 	int i, j;
-	numTotal = calculateHighEnemy(numTotal, myPiece, (m_color == ECblue ?) gameState->redOut[] : gameState->blueOut[]);
+	numTotal = calculateHighEnemy(numTotal, myPiece, (m_color == ECblue ? gameState->redOut : gameState->blueOut));
 
 	for (i=0; i<10; i++)
 		for (j=0; j<10; j++)
@@ -55,7 +71,7 @@ float getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece)
 }
 
 /* calcule le nombre de piece de rang superieur à une piece */
-float calculateHighEnemy(float numTotal, EPiece piece, unsigned int pieceOut[])
+float calculateHighEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[])
 {
 	float numberEnemyPiece=0;
 
@@ -122,7 +138,7 @@ float getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
 {
 	float numTotal = 0;
 	int i, j;
-	numTotal = calculateLowEnemy(numTotal, myPiece, (m_color == ECblue ?) gameState->redOut : gameState->blueOut);
+	numTotal = calculateLowEnemy(numTotal, myPiece, (m_color == ECblue ? gameState->redOut : gameState->blueOut));
 
 	for (i=0; i<10; i++)
 		for (j=0; j<10; j++)
@@ -132,7 +148,7 @@ float getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
 }
 
 /* calcule le nombre de piece de rang superieur à une piece */
-float calculateLowEnemy(float numTotal, EPiece piece, unsigned int pieceOut[])
+float calculateLowEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[])
 {
 	float numberEnemyPiece=0;
 
@@ -194,6 +210,7 @@ float calculateLowEnemy(float numTotal, EPiece piece, unsigned int pieceOut[])
 /* Permet d'avoir nombre de bombes ennemies cachées */
 float getInfoHidedEnemyBomb(const SGameState * const gameState)
 {
+	int i, j;
 	float numShownBomb = 0; // nombre de bombe ennemie découverte
 	float numHidedBomb; // nombre de bombe ennemie cachée
 
@@ -216,7 +233,7 @@ float getInfoHidedEnemyBomb(const SGameState * const gameState)
 	if (m_color == ECblue)
 		numHidedBomb = 6 - numShownBomb - gameState->redOut[EPbomb];
 	else
-		numHidedBomb = 6 - numShownBomb - gameState->BlueOut[EPbomb];
+		numHidedBomb = 6 - numShownBomb - gameState->blueOut[EPbomb];
 
 	return numHidedBomb;
 }
@@ -224,6 +241,7 @@ float getInfoHidedEnemyBomb(const SGameState * const gameState)
 /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
 float isHidedMarshal(const SGameState * const gameState)
 {
+	int i, j;
 	bool marshalIsVisible = false; // variable permettant de savoir si le maréchal énnemi est visible
 
 	for (i=0; (i<10 && !marshalIsVisible); i++)
@@ -250,7 +268,7 @@ float isHidedMarshal(const SGameState * const gameState)
 	else
 	{
 		/* si le maréchal ennemie est visible ou mort */
-		if(gameState->BlueOut[EPmarshal] == 1 || marshalIsVisible)
+		if(gameState->blueOut[EPmarshal] == 1 || marshalIsVisible)
 			return 0;
 		else
 			return 1;

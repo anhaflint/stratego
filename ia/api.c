@@ -1,8 +1,13 @@
-#include <stdbool.h>
 #include <stdio.h> // A enlever à la fin
 #include <string.h> // A peut-être enlever à la fin
+#include <stdbool.h>
 #include "../structure.h"
-#include "ia.h"
+#include "updateData.h"
+#include "analyzeBoard.h"
+#include "decideMove.h"
+#include "riskProbability.h"
+#include "saveMove.h"
+#include "api.h"
 
 //------------------------- Données internes de l'IA ------------------------//
 

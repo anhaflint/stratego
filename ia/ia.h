@@ -133,7 +133,7 @@ void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, boo
 * @param SMove enemyMovement
 * 	Mouvement effectué par l'ennemi ce tour-ci
 */ 
-void updateBoard(const SGameState * const gameState);
+void updateBoard(const SGameState * const gameState, SMove enemyMovement);
 
 /**
 * Met à jour les données internes avec les nouvelles données fournies par l'arbitre
@@ -192,7 +192,7 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType);
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués
 * @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
 */
-void evaluateMoves(GroupMoves *normalMoves,GroupMoves *riskedMoves);
+void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,GroupMoves *riskedMoves);
 
 /**
 * Donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi 
@@ -213,12 +213,21 @@ float giveNormalRank(int numEnemy);
 */
 void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves);
 
+float getInfoHidedEnemyGlobal();
+float getInfoHidedEnemyMovable(const SGameState * const gameState);
+float getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece);
+float calculateHighEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[]);
+float getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece);
+float calculateLowEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[]);
+float getInfoHidedEnemyBomb(const SGameState * const gameState);
+float isHidedMarshal(const SGameState * const gameState);
+
 /**
 * calcule la probabilité de risque de la force des pieces ennemies voisines inconnues 
 * ou les pieces ennemies inconnues à attaquer directement
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués
 */
-float riskProbability( GroupMoves *riskedMoves);
+float riskProbability(const SGameState * const gameState,SPos myPosition,SPos enemyPosition);
 
 /**
 * A commenter
@@ -261,22 +270,3 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos);
 *  Pièce gagnante du combat
 */
 EPiece winnerFight(EPiece A, EPiece B);
-
-//----------- Fonctions à supprimer si inutilisées à la fin -----------//
-
-/**
-* Vérification du mouvement décidé par l'IA
-*/
-void checkMove();
-
-/**
-* permet de savoir si pour une pièce à une position donnée,
-* si on la deplace dans une direction donnée on est hors du tableau de jeu ou pas
-* @param position 
-	est la position qui déplacée dans la direction piecedirection est evaluée pour savoir si oui ou non on sort du tableau
-* @param piecedirection 
-	est la direction qu'on donne à une pièce initialement à la Position position 
-	pour évaluer si à la nouvelle position obtenue reste dans le tableau
-	exemple: position + left = position.col -1 , la nouvelle position à evaluer
-*/
-bool limiteUnachieved(SPos position, Direction piecedirection);

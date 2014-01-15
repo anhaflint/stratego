@@ -1,3 +1,6 @@
+#ifndef SAVEMOVE_H
+#define SAVEMOVE_H
+
 /**
 * Enregistre le plateau si on a fait un déplacement simple
 * @param SGameState gameState
@@ -31,3 +34,5 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos);
 *  Pièce gagnante du combat
 */
 EPiece winnerFight(EPiece A, EPiece B);
+
+#endif

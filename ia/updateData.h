@@ -1,3 +1,6 @@
+#ifndef UPDATEDATA_H
+#define UPDATEDATA_H
+
 /**
 * Mise à jour d'une case dans notre InfoPiece m_board, utilisé dans plusieurs fonctions
 * @param SPos position
@@ -20,7 +23,7 @@ void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, boo
 * @param SMove enemyMovement
 * 	Mouvement effectué par l'ennemi ce tour-ci
 */ 
-void updateBoard(const SGameState * const gameState);
+void updateBoard(const SGameState * const gameState, SMove enemyMovement);
 
 /**
 * Met à jour les données internes avec les nouvelles données fournies par l'arbitre
@@ -28,3 +31,5 @@ void updateBoard(const SGameState * const gameState);
 *        l'état du jeu courant
 */
 void updateData(const SGameState * const gameState);
+
+#endif

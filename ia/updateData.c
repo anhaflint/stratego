@@ -1,4 +1,19 @@
+#include <stdbool.h>
+#include "../structure.h"
 #include "updateData.h"
+
+extern Strategy m_strategy;
+extern EColor m_color, m_enemyColor;
+extern InfoPiece m_board[10][10];
+extern SMove m_movements[172]; 
+extern SMove m_decidedMove; 
+extern int m_nbMove; 
+extern int m_caution; 
+extern int m_nbRoundTrips; 
+extern SPos m_armyPos, m_enemyPos; 
+extern EPiece m_armyPiece, m_enemyPiece; 
+extern bool m_myMove; 
+extern bool m_hisMove;
 
 /* Mise à jour d'une case de notre structure InfoPiece m_board */
 void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, bool isBomb)
@@ -19,7 +34,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 	int nbNotMovablesHiddenEnemies; // Nombre d'ennemis qui ne peuvent pas bouger et non visibles restants sur le plateau
 	int nbPossibilities; // Nombre de possibilités pour les cas traités
 	SPos posPiece; // Position de la pièce identifiée et à remplacer
-	SPiece piecePossible; // Type de la pièce identifiée
+	EPiece piecePossible; // Type de la pièce identifiée
 	int i, j; // Compteurs
 
 	/* On parcourt les tableaux de pièces éliminées
@@ -27,7 +42,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 	sur le plateau */
 	if (m_color == ECblue)
 	{
-		for(int i=0; i<12; i++)
+		for(i=0; i<12; i++)
 		{
 			nbEnemies -= gameState->redOut[i];
 			if ((i != 0)&&(i != 11))
@@ -36,7 +51,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 	}
 	else
 	{
-		for(int i=0; i<12; i++)
+		for(i=0; i<12; i++)
 		{
 			nbEnemies -= gameState->blueOut[i];
 			if ((i != 0)&&(i != 11))

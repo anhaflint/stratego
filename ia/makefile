@@ -13,5 +13,6 @@ mrproper: clean
 	rm -rf main
 
 lib:
-	gcc -fPIC -c ia.c
-	gcc -shared -o libIA.so ia.o
+	gcc -fPIC -c updateData.c analyzeBoard.c decideMove.c RiskProbability.c saveMove.c api.c
+	gcc -shared -o libNonoPorchet.so updateData.o analyzeBoard.o decideMove.o RiskProbability.o saveMove.o api.o
+
