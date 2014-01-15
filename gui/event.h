@@ -14,9 +14,9 @@ void Event_InitGameState(SDL_Event *event, int *continuer,EColor color,BoardLayo
 /* Fonction appellé en boucle pour Analyse du Placement Inital des Pieces
 	Paramètres : -Un Event
 	 			 -un entier responsable de la sortie ou non de la boucle d'appel.
-	 			 -un entier pour traiter le placement des pions de la couleur : 1 : rouge
-	 			 																2 : bleu
-	 			 																3:  réinit
+	 			 -un entier EColor pour traiter le placement des pions de la couleur :  ECred : rouge
+	 			 																		ECblue: bleu
+	 			 																		ECnone: réinit
 	Renvoi : Un tab de pieces pour un joueur
 	*/
 
@@ -34,5 +34,7 @@ SPos Event_IdBoard(int x,int y);
 		// Traduction de la position de la souris en pixels -> [i,j]
 		
 */
+
+//SMove Event_IdMove(SDL_Event *event, int *continuer);
 
 #endif

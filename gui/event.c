@@ -470,8 +470,8 @@ SPos Event_IdBoard(int x,int y){
 }
  
 
-/*
 
+/*
 SMove Event_IdMove(SDL_Event *event, int *continuer)
 {
   SMove Move;
@@ -482,18 +482,29 @@ SMove Event_IdMove(SDL_Event *event, int *continuer)
             printf("Vous quittez le jeu...\n");
             *continuer=0;
             endPlacement=1;         // Placement fini prématurément
-            Move.start=;
-           
+            Move.start.line=-1;
+            Move.start.col=-1;
             break;
  
         case SDL_MOUSEBUTTONUP:
-        
+            Move.start=Event_IdBoard(event->button.x,event->button.y);
         break;
     }
-    Move.start=Event_IdBoard(event->button.x,event->button.y);
-
     SDL_WaitEvent(event);      // Capture d'un évent(clic)
-    Move.end=Event_IdBoard(event->button.x,event->button.y);
+      switch(event->type)
+   {
+        case SDL_QUIT:          // Si l'on quitte la fenêtre, on quitte la boucle, donc le jeu.
+            printf("Vous quittez le jeu...\n");
+            *continuer=0;
+            endPlacement=1;         // Placement fini prématurément
+            Move.end.line=-1;
+            Move.end.col=-1;
+            break;
+ 
+        case SDL_MOUSEBUTTONUP:
+            Move.end=Event_IdBoard(event->button.x,event->button.y);
+        break;
+    }
     return Move;
 }
 
