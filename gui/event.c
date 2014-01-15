@@ -13,6 +13,8 @@ int remise=0;
 int i,j;
 int nbPiecesRestantes[13];
 int echange;
+int endPlacement=0;;
+int attente=0;
  
 // INIT Tableau des Pieces Restant à Placer
 nbPiecesRestantes[EPbomb]      =6;
@@ -40,7 +42,8 @@ for (i=0;i<4;i++)
     }
   }
  
- 
+ Display_EPieceTest(Pieces);
+
 // Affichage des pièces
  
 if(color==1){
@@ -57,7 +60,7 @@ Display_Init(layout,2); // On affiche les pieces bleue latéralement à doite
 int placement=40;           // nombre de pièces à placer
  
  
-while (placement!=0)
+while (endPlacement!=1)
 {       // Tant que le placement n'est pas fini
  
   SDL_WaitEvent(event);      // Capture d'un évent(clic)
@@ -69,7 +72,7 @@ while (placement!=0)
         case SDL_QUIT:          // Si l'on quitte la fenêtre, on quitte la boucle, donc le jeu.
             printf("Vous quittez le jeu...\n");
             *continuer=0;
-            placement=0;         // Placement fini prématurément
+            endPlacement=1;         // Placement fini prématurément
             Pieces=NULL;
            
             break;
@@ -91,11 +94,11 @@ while (placement!=0)
                     {
                       pieceOK = 1;
                
-                      printf("Choisissez une case pour la pièce de val. %d\n",PieceSelectionnee);
+                      printf("Choisissez une case pour la pièce de valeur [%d] \n",PieceSelectionnee );
                     }
                     else if(remise!=1)// si remise, on ne vérifie pas le choix.
                     {
-                      printf("INVALIDE : Vous avez placé toutes les pièces de cette valeur : %d \n",PieceSelectionnee );
+                      printf("INVALIDE : Ttes les pièces de valeur [%d] sont placées\n",PieceSelectionnee );
                       posOK =0; // Dans le cas où la case est choisie en premier on recommance le mouvement
                       pieceOK =0;
                     }
@@ -115,11 +118,11 @@ while (placement!=0)
                     {
                       pieceOK = 1;
                
-                      printf("Choisissez une case pour la pièce de val. %d \n",PieceSelectionnee );
+                      printf("Choisissez une case pour la pièce de valeur [%d] \n",PieceSelectionnee );
                     }
                     else if(remise!=1) // si remise, on ne vérifie pas le choix.
                     {
-                      printf("INVALIDE : Vous avez placé toutes les pièces de cette valeur : %d \n",PieceSelectionnee );
+                      printf("INVALIDE : Ttes les pièces de valeur [%d] sont placées\n",PieceSelectionnee );
                       posOK =0; // Dans le cas où la case est choisie en premier on recommance le mouvement
                       pieceOK=0;
                     }            
@@ -132,15 +135,17 @@ while (placement!=0)
             PIECE, ON REMET CETTE PIECE DANS LE BANDEAU */
             if ((posOK == 1)&&(((color == 1)&&(event->button.x < 100))||((color == 2)&&(event->button.x > 700))))
             {
-              printf("CAS PAS PIECE - MEM PLEINE\n");
-              printf("ON REMET LA PIECE SELECTIONNEE DANS LE BANDEAU\n");
+              //printf("");
+              printf("Remise de la pièce [%d;%d]\n",PosPrecedente->line,PosPrecedente->col);
               nbPiecesRestantes[Pieces[PosPrecedente->line][PosPrecedente->col]]++;
               Pieces[PosPrecedente->line][PosPrecedente->col] = EPnone;
+              Display_EPieceTest(Pieces);
               Display_PieceInit(EPnone, *PosPrecedente, layout, 3); // argument 3 pour lancer un bkg
  
               pieceOK = 0;
               posOK = 0;
               remise =0;
+              placement++;
               PosPrecedente->line = -1;
               PosPrecedente->col = -1;
             }
@@ -161,31 +166,49 @@ while (placement!=0)
                 // Si ON A UNE MEMOIRE VIDE
                 if (posOK==0)
                 {
-                     printf("CAS PAS DE PIECES - MEM VIDE \n");
-                     // SI LA CASE CLIQUEE EST VIDE OU PLEINE
+                     //printf("");
+                     // SI LA CASE CLIQUEE EST NON VIDE
+                      if (Pieces[PosSelectionnee.line][PosSelectionnee.col]!=EPnone)
+                      {
                       posOK=1;
                       remise=1;   // dans le cas d'une remise
-                      printf("Choisissez une autre case, ou une pièce pour la case [%d,%d] \n\n",PosSelectionnee.line,PosSelectionnee.col );
+                      printf("Choisissez une autre case, ou replacer la pièce [%d,%d] dans le volet\n",PosSelectionnee.line,PosSelectionnee.col );
                       PosPrecedente->line= PosSelectionnee.line;
                       PosPrecedente->col = PosSelectionnee.col;
 
+                    }
                 }
  
                 // SI ON A UNE MEMOIRE CASE PLEINE - ECHANGE
                 else if( (PosPrecedente->line!=-1) && (PosPrecedente->col!=-1) )
                 {
-                    printf("CAS PAS DE PIECE - MEM PLEINE \n");
+                    //printf("");
                     printf("Echange de pièces en [%d,%d] / [%d,%d] \n",PosPrecedente->line,PosPrecedente->col,PosSelectionnee.line,PosSelectionnee.col);
                    
                     // Affichage
- 
-                    Display_PieceInit(Pieces[PosSelectionnee.line][PosSelectionnee.col], *PosPrecedente, layout, color);
-                    Display_PieceInit(Pieces[PosPrecedente->line][PosPrecedente->col], PosSelectionnee, layout, color);
+                    if (Pieces[PosPrecedente->line][PosPrecedente->col] == EPnone)
+                    {
+                      Display_PieceInit(EPnone,PosSelectionnee, layout, 3); // argument 3 pour lancer un bkg
+                    }
+                    else
+                    {
+                      Display_PieceInit(Pieces[PosPrecedente->line][PosPrecedente->col], PosSelectionnee, layout, color);
+                    }
+                     if (Pieces[PosSelectionnee.line][PosSelectionnee.col] == EPnone)
+                    {
+                      Display_PieceInit(EPnone, *PosPrecedente, layout, 3); // argument 3 pour lancer un bkg
+                    }
+                  else
+                    {
+                      Display_PieceInit(Pieces[PosSelectionnee.line][PosSelectionnee.col], *PosPrecedente, layout, color);
+                    }
+
  
                     // Echange
                     echange = Pieces[PosSelectionnee.line][PosSelectionnee.col];
                     Pieces[PosSelectionnee.line][PosSelectionnee.col]=Pieces[PosPrecedente->line][PosPrecedente->col];
                     Pieces[PosPrecedente->line][PosPrecedente->col]=echange;
+                    Display_EPieceTest(Pieces);
  
                     PosPrecedente->line=-1 ; // réinit mémoire
                     PosPrecedente->col=-1;
@@ -202,17 +225,16 @@ while (placement!=0)
         {
           // SI LA MEMOIRE CASE EST VIDE
           if (posOK==0)
-          {      printf("CAS PIECE - MEM VIDE ... \n");          
+          {      //printf("");          
                 // SI LA CASE CLIQUEE EST VIDE
               if (Pieces[PosSelectionnee.line][PosSelectionnee.col]==EPnone)
               {
-                printf("CAS PIECE - MEM VIDE MAIS CASE VIDE \n");
+                //printf("");
               posOK=1;  
               }
                 // ECHANGE CASE MEMOIRE AVEC PIECE PLUS REMISE !
               else
               {
-                printf("CAS PIECE - MEM VIDE - CASE PLEINE \n");
                     printf("Modif. pièce en [%d,%d] \n",PosSelectionnee.line,PosSelectionnee.col);
                    
                     nbPiecesRestantes[Pieces[PosSelectionnee.line][PosSelectionnee.col]]++;
@@ -222,7 +244,7 @@ while (placement!=0)
  
                     // Affichage
                     Display_PieceInit(Pieces[PosSelectionnee.line][PosSelectionnee.col], PosSelectionnee, layout, color);
- 
+                    Display_EPieceTest(Pieces);
                     PosPrecedente->line=-1;
                     PosPrecedente->col=-1;
                     pieceOK=0;
@@ -239,6 +261,7 @@ while (placement!=0)
        if ((posOK==1) && (pieceOK==1))
       {
             Pieces[PosSelectionnee.line][PosSelectionnee.col]=PieceSelectionnee;
+            Display_EPieceTest(Pieces);
  
             nbPiecesRestantes[PieceSelectionnee]--;
            
@@ -253,15 +276,31 @@ while (placement!=0)
             Display_PieceInit(PieceSelectionnee, PosSelectionnee, layout, color);
       }
  
-  printf("pieceOK : %d , posOK : %d \n",pieceOK,posOK );
+  //printf("pieceOK : %d , posOK : %d \n",pieceOK,posOK );
            break; // Fin de l'analyse du clic
+      
+
+      case SDL_KEYDOWN:
+          if (placement==0)           // Condition d'arrêt du placement
+          {
+            endPlacement=1;
+          }
+          break;
+
    }
-}
+  if ( (placement==0)&&(attente==0) )
+  {
+  printf("Votre placement est terminé, appuyer sur une touche pour continuer.\n");
+  attente=1;
+  }
+
+}// fin while
+
 Display_Init(layout,3); // On efface l'affichage des tuiles car Placement terminé
 Display_ReinitDisplayBoard(layout);
 free(PosPrecedente);
  
-}
+}//fin fonction
  
  
  
@@ -430,7 +469,35 @@ SPos Event_IdBoard(int x,int y){
  
 }
  
+
+/*
+
+SMove Event_IdMove(SDL_Event *event, int *continuer)
+{
+  SMove Move;
+    SDL_WaitEvent(event);      // Capture d'un évent(clic)
+      switch(event->type)
+   {
+        case SDL_QUIT:          // Si l'on quitte la fenêtre, on quitte la boucle, donc le jeu.
+            printf("Vous quittez le jeu...\n");
+            *continuer=0;
+            endPlacement=1;         // Placement fini prématurément
+            Move.start=;
+           
+            break;
  
+        case SDL_MOUSEBUTTONUP:
+        
+        break;
+    }
+    Move.start=Event_IdBoard(event->button.x,event->button.y);
+
+    SDL_WaitEvent(event);      // Capture d'un évent(clic)
+    Move.end=Event_IdBoard(event->button.x,event->button.y);
+    return Move;
+}
+
+*/
  
  
 /*
