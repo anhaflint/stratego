@@ -1,19 +1,5 @@
-#include <stdbool.h>
-#include "../structure.h"
+#include "resources.h"
 #include "decideMove.h"
-
-extern Strategy m_strategy;
-extern EColor m_color, m_enemyColor;
-extern InfoPiece m_board[10][10];
-extern SMove m_movements[172]; 
-extern SMove m_decidedMove; 
-extern int m_nbMove; 
-extern int m_caution; 
-extern int m_nbRoundTrips; 
-extern SPos m_armyPos, m_enemyPos; 
-extern EPiece m_armyPiece, m_enemyPiece; 
-extern bool m_myMove; 
-extern bool m_hisMove;
 
 // Décision du mouvement à effectuer
 void decideMove(const SGameState * const gameState)
@@ -329,17 +315,17 @@ float giveNormalRank(int numEnemy){
 
 // procedure interne a decideMoves
 // evaluation globale des mouvements dupliqués et risqués 
-/*void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
-{
-	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
-	// a faire
-}
+// void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
+// {
+// 	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
+// 	// a faire
+// }
 
-SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
-{
+// SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
+// {
 	/* Declaration des variables internes à la procédure*/
-	//int i = r = n = 0;
+	// int i = r = n = 0;
 	
-	/* on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués*/
-	//*if(m_caution>5)
-//}
+	// on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués
+// 	if(m_caution>5)
+// }

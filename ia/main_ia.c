@@ -75,6 +75,49 @@ void initBoard(InfoPiece board[10][10])
 	}
 }
 
+// void drawGameState(SGameState gamestate)
+// {
+// 	int i, j;
+// 	printf("  |");
+// 	for (i=0; i<10; i++)
+// 	{
+// 		couleur("33");
+// 		printf(" %d  ", i);
+// 		couleur("0");
+// 		printf("|");
+// 	}
+// 	printf("\n");
+// 	printf("-----------------------------------------------------\n");
+// 	for (i=0; i<10; i++)
+// 	{
+// 		couleur("33");
+// 		printf("%d ", 9-i);
+// 		couleur("0");
+// 		printf("|");
+
+// 		for (j = 0; j < 10; ++j)
+// 		{
+// 			if (gamestate.board[9-i][j].content == ECred)
+// 				couleur("31");			
+// 			if (gamestate.board[9-i][j].content == ECblue)
+// 				couleur("36");
+// 			if (gamestate.board[9-i][j].content == EClake)
+// 				couleur("30");
+
+// 			if (gamestate.board[9-i][j].piece >= 10)
+// 				printf(" %d", gamestate.board[9-i][j].piece);		
+// 			else
+// 				printf(" %d ", gamestate.board[9-i][j].piece);
+
+// 			couleur("0");
+// 			printf(" |");
+				
+// 		}
+// 		printf("\n-----------------------------------------------------\n");
+// 	}
+// 	couleur("0");
+// }
+
 void drawBoard(InfoPiece board[10][10])
 {
 	int i, j;

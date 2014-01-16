@@ -13,6 +13,6 @@ mrproper: clean
 	rm -rf main
 
 lib:
-	gcc -fPIC -c updateData.c analyzeBoard.c decideMove.c RiskProbability.c saveMove.c api.c
-	gcc -shared -o libNonoPorchet.so updateData.o analyzeBoard.o decideMove.o RiskProbability.o saveMove.o api.o
+	gcc -fPIC -c updateData.c analyzeBoard.c decideMove.c riskProbability.c saveMove.c api.c
+	gcc -shared -o libNonoPorchet.so updateData.o analyzeBoard.o decideMove.o riskProbability.o saveMove.o api.o
 

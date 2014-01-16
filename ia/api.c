@@ -199,7 +199,7 @@ SMove NextMove(const SGameState * const gameState)
 {
 	printf("NextMove\n");
 	updateData(gameState); // Première phase, mise à jour des données internes
-	analyzeBoard(); // Analyse du plateau => Mise à jour des dplcmts possibles
+	analyzeBoard(gameState); // Analyse du plateau => Mise à jour des dplcmts possibles
 	decideMove(gameState); // Décision du mouvement à faire
 	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
 		saveMove(); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
@@ -227,9 +227,9 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 		for (j = 0; j < 10; ++j)
 		{
 			if (m_board[9-i][j].box.piece >= 10)
-				printf(" %d", m_board[9-i][j].box.piece);		
+				printf(" %d|%d", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);		
 			else
-				printf(" %d ", m_board[9-i][j].box.piece);			
+				printf(" %d|%d ", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);			
 			printf(" |");				
 		}
 		printf("\n-----------------------------------------------------\n");

@@ -1,22 +1,8 @@
-#include <stdbool.h>
-#include "../structure.h"
+#include "resources.h"
 #include "analyzeBoard.h"
 
-extern Strategy m_strategy;
-extern EColor m_color, m_enemyColor;
-extern InfoPiece m_board[10][10];
-extern SMove m_movements[172]; 
-extern SMove m_decidedMove; 
-extern int m_nbMove; 
-extern int m_caution; 
-extern int m_nbRoundTrips; 
-extern SPos m_armyPos, m_enemyPos; 
-extern EPiece m_armyPiece, m_enemyPiece; 
-extern bool m_myMove; 
-extern bool m_hisMove;
-
 // Analyse du plateau => Mise à jour des déplacements possibles
-void analyzeBoard()
+void analyzeBoard(const SGameState * const gameState)
 {
 	unsigned int i, j, compteur = 0;
 	for (i=0; i<10; i++)
@@ -25,19 +11,19 @@ void analyzeBoard()
 		{
 			/* Si la pièce est une pièce appartenant à l'IA et qu'elle est
 			déplaçable, on regarde les cases aux alentours */
-			if ((m_board[i][j].box.content == m_color) && (m_board[i][j].box.piece != EPbomb) && (m_board[i][j].box.piece != EPflag))
+			if ((gameState->board[i][j].content == m_color) && (gameState->board[i][j].piece != EPbomb) && (gameState->board[i][j].piece != EPflag))
 			{				
 				// Analyse du mouvement vers le bas
-				addAnalyzedMove(i, j, i-1, j, 1, 0, &compteur);
+				addAnalyzedMove(gameState, i, j, i-1, j, 1, 0, &compteur);
 
 				// Analyse du mouvement vers le haut
-				addAnalyzedMove(i, j, i+1, j, 1, 9, &compteur);
+				addAnalyzedMove(gameState, i, j, i+1, j, 1, 9, &compteur);
 
 				// Analyse du mouvement vers la gauche
-				addAnalyzedMove(i, j, i, j-1, 0, 0, &compteur);
+				addAnalyzedMove(gameState, i, j, i, j-1, 0, 0, &compteur);
 
 				// Analyse du mouvement vers la droite
-				addAnalyzedMove(i, j, i, j+1, 0, 9, &compteur);
+				addAnalyzedMove(gameState, i, j, i, j+1, 0, 9, &compteur);
 			}
 		}
 	}
@@ -46,7 +32,7 @@ void analyzeBoard()
 }
 
 // Sous-fonction de l'analyse du plateau
-void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur)
+void addAnalyzedMove(const SGameState * const gameState, unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur)
 {	
 	/* Déclaration des variables internes */
 	int temp, val, newVal, dirLine, dirCol;
@@ -73,8 +59,8 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 
 	/* Condition principale : si la case sur laquelle on veut se déplacer n'est pas hors des limites du plateau, si elle ne contient ni un lac ni un allié, et si ce n'est pas un 4e aller-retour, alors on peut s'y déplacer */
 	if ((val != lim) 
-		&& (m_board[new_i][new_j].box.content != EClake) 
-		&& (m_board[new_i][new_j].box.content != m_color)
+		&& (gameState->board[new_i][new_j].content != EClake) 
+		&& (gameState->board[new_i][new_j].content != m_color)
 		&& (!((m_decidedMove.start.line == new_i)
 			&&(m_decidedMove.start.col == new_j)
 			&&(m_decidedMove.end.line == i)
@@ -92,14 +78,14 @@ void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int i
 		(*compteur)++;
 
 		/* Si la pièce étudiée est un éclaireur, on regarde tous les déplacements possibles en ligne */
-		if (m_board[i][j].box.piece == EPscout)
+		if (gameState->board[i][j].piece == EPscout)
 		{
 			/* On utilise une variable temp pour parcourir toute la ligne */
 			temp = newVal;	
 
 			/* Tant qu'on n'a pas atteint la limite du plateau et que la case cible ne contient ni un lac, 
 			ni un allié, et que la case actuelle ne contient pas un ennemi, le mouvement est possible */		
-			while ((temp != lim) && (m_board[new_i+dirLine][new_j+dirCol].box.content != EClake) && (m_board[new_i+dirLine][new_j+dirCol].box.content != m_color) && (m_board[new_i][new_j].box.content != m_enemyColor))
+			while ((temp != lim) && (gameState->board[new_i+dirLine][new_j+dirCol].content != EClake) && (gameState->board[new_i+dirLine][new_j+dirCol].content != m_color) && (gameState->board[new_i][new_j].content != m_enemyColor))
 			{
 				/* Rajout du mouvement dans le tableau des mouvements */
 				start.line = i; start.col = j;

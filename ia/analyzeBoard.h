@@ -3,11 +3,15 @@
 
 /**
 * Analyse des mouvements possibles sur le plateau par l'IA, stockage en interne
+* @param const SGameState * const gameState
+*	Etat du jeu courant
 */
-void analyzeBoard();
+void analyzeBoard(const SGameState * const gameState);
 
 /**
 * Analyse le mouvement de (i,j) à (new_i, new_j), vérifiant si c'est en ligne
+* @param const SGameState * const gameState
+*	Etat du jeu courant
 * @param unsigned int i
 *   Ligne sur laquelle est la pièce dont le mouvement est à analyser
 * @param unsigned int j
@@ -23,6 +27,6 @@ void analyzeBoard();
 * @param unsigned int* compteur
 *   Compteur du nombre de mouvements possibles au total
 */
-void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur);
+void addAnalyzedMove(const SGameState * const gameState, unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur);
 
 #endif

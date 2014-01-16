@@ -1,19 +1,6 @@
-#include <stdbool.h>
-#include "../structure.h"
+#include "resources.h"
 #include "updateData.h"
-
-extern Strategy m_strategy;
-extern EColor m_color, m_enemyColor;
-extern InfoPiece m_board[10][10];
-extern SMove m_movements[172]; 
-extern SMove m_decidedMove; 
-extern int m_nbMove; 
-extern int m_caution; 
-extern int m_nbRoundTrips; 
-extern SPos m_armyPos, m_enemyPos; 
-extern EPiece m_armyPiece, m_enemyPiece; 
-extern bool m_myMove; 
-extern bool m_hisMove;
+#include <stdio.h>
 
 /* Mise à jour d'une case de notre structure InfoPiece m_board */
 void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, bool isBomb)
@@ -159,6 +146,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 	if (((enemyMovement.start.line - enemyMovement.end.line)/2 != 0)
 		||((enemyMovement.start.col - enemyMovement.end.col)/2 != 0))
 	{
+		printf("COCORICO (%d, %d)->(%d, %d)\n", enemyMovement.start.line, enemyMovement.end.line, enemyMovement.start.col, enemyMovement.end.col);
 		updateSquare(enemyMovement.end, EPscout,m_enemyColor, true, false);
 	}
 	
@@ -187,6 +175,13 @@ void updateData(const SGameState * const gameState)
 	m_nbMove = 0; // A déplacer dans la fonction précédant l'envoi de mouvement
 	bool enemyHasMoved = false; // Permet de savoir si l'ennemi a fait un déplacement simple
 
+	/* Initialisation de la variable de mouvement, pour le cas où l'on jouerait
+	en premier et enemyMovement serait analysé */
+	enemyMovement.start.line = 0;
+	enemyMovement.start.col = 0;
+	enemyMovement.end.line = 0;
+	enemyMovement.end.col = 0;
+
 	/* On analyse les changements qu'il y a eu depuis notre dernier tour, 
 	on stocke ça dans le tableau de positions adéquat */
 	for (i=0; i < 10; i++)
@@ -199,12 +194,14 @@ void updateData(const SGameState * const gameState)
 				enemyHasMoved = true;
 				enemyMovement.start.line = i;
 				enemyMovement.start.col = j;
+				printf("Piece %d n'est plus en (%d,%d)\n", m_board[i][j].box.piece, i, j);
 			}
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
 			else if (((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyMovement.end.line = i; 
 				enemyMovement.end.col = j;
+				printf("Piece %d est maintenant en (%d,%d)\n", gameState->board[i][j].piece, i, j);
 			}
 		}
 	}
