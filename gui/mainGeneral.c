@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <SDL/SDL.h>
 
 #include "../structure.h"
@@ -9,11 +10,37 @@
 #include "../stratego.h"
 #include "../ia/couleurs.h"
 
+
 //gcc -Wall mainTestGame.c  game.c -o test
 // gcc -Wall mainGeneral.c game.c display.c event.c -lSDL -o testGeneral
 
 
 
+
+
+//--------------------------------------------------------------------------------------------
+// Fonctions auxiliaires
+//--------------------------------------------------------------------------------------------
+void pause()
+{
+    int continuer = 1;
+    SDL_Event event;
+ 
+    while (continuer)
+    {
+        SDL_WaitEvent(&event);
+        switch(event.type)
+        {
+            case SDL_MOUSEBUTTONUP:
+                continuer = 0;
+        }
+    }
+}
+
+
+//--------------------------------------------------------------------------------------------
+// Debut Fonctions TEST
+//--------------------------------------------------------------------------------------------
 
 int main(int argc, char* argv[])
 {
@@ -138,8 +165,17 @@ int main(int argc, char* argv[])
 
 	printf("-----------JOUEUR 1---: %d--------------\n", gameConfig.ColorPlayer1);
 	DisplayPlayerGS(player1.Pboard);
+	
+	Display_BoardPlayer(layout,player1);
+	pause(); // Permet de laisser la fenêtre affichée à l'écran
+
 	printf("-----------JOUEUR 2----------------------\n");
 	DisplayPlayerGS(player2.Pboard);
+
+		Display_BoardPlayer(layout,player2);
+	pause(); // Permet de laisser la fenêtre affichée à l'écran
+
+
 	printf("------------GAMESTATE--------------------\n");
 	DisplayGS(gameState);
 	printf("la config est %d\n", gameConfig.Mode);
@@ -150,4 +186,6 @@ int main(int argc, char* argv[])
 	DisplayGS(gameState);*/
 	return 0;
 }
+
+
 

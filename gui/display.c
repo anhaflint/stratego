@@ -36,7 +36,7 @@ for (i=13;i<26;i++){
 
  	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre notamment son nom
 
- 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background en 0,0 sur l'écran
+ 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background en 0,0 sur l'écran 
  	
  	// Rafraichissement
  	SDL_Flip(layout->Screen);
@@ -339,6 +339,34 @@ void Display_EPieceTest(EPiece Pieces[4][10]){
 		printf("\n");
 	}
 
+}
+
+void Display_BoardPlayer(BoardLayout layout, EPlayer player)
+
+{
+
+	int i,j;
+	SPos posPiece;
+
+	for (i=0;i<10;i++)
+	{
+		for (j=0;j<10;j++)
+		{		
+				// Cas d'une pièce vide
+			if( (player.Pboard[i][j].content==ECnone)&&(player.Pboard[i][j].piece=EPnone) )
+			{
+				SDL_BlitSurface(layout.Background, &(layout.DisplayTab[i][j].position), layout.Screen, &(layout.DisplayTab[i][j].position));
+			}
+			else
+			{
+				posPiece.line=i;
+				posPiece.col=j;
+				Display_PieceInit(player.Pboard[i][j].piece, posPiece, layout ,player.Pboard[i][j].content);
+			}
+		
+		}		
+	}
+	SDL_Flip(layout.Screen); // Rafraichissement
 }
 
 

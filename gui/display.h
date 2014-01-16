@@ -58,15 +58,11 @@ void Display_ReinitDisplayBoard(BoardLayout layout); // Réinit Aff plateau
  //fonction de test de retour EPiece
 void Display_EPieceTest(EPiece Pieces[4][10]);
  
- /*
- //fonction d'affichage du plateau pendant le jeu
- * @param SDL_Surface* window 
- *		surface sur laquelle on va blitter les éléments dans la fonction
- * @param SGameState gamestate
- * 		état du jeu à afficher
- //
+void Display_BoardPlayer(BoardLayout layout, EPlayer player);
 
-void Display_Board(BoardLayout layout, SGameState gamestate);
+/*
+
+
 
 void Display_Fight(SDL_Surface* piece, BoardLayout layout);
 //
