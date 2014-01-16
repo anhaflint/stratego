@@ -31,7 +31,7 @@ void pause()
         SDL_WaitEvent(&event);
         switch(event.type)
         {
-            case SDL_MOUSEBUTTONUP:
+            case SDL_KEYDOWN:
                 continuer = 0;
         }
     }
@@ -69,11 +69,11 @@ int main(int argc, char* argv[])
 	SGameState gameState;
 	int i, j;
 	SPos start, end; 
-	SMove move; 
+	SMove move;
 
 	EPlayer player1, player2;
-	EPiece boardInit1[4][10]; // faux placement de pions pour tester cpygamestate
-	EPiece boardInit2[4][10];
+	//EPiece boardInit1[4][10]; // faux placement de pions pour tester cpygamestate
+	//EPiece boardInit2[4][10];
 	/*for(i=0; i<4; i++)
 	{
 		for(j=0; j<10; j++)
@@ -86,19 +86,24 @@ int main(int argc, char* argv[])
 	gameConfig.Mode = DetectGameMode(argc, argv);
 	// initialisation des joueurs
 	Game_InitPlayer(&player1, &player2, &gameConfig, 300);
-	Event_InitGameState(&event, &continuer, ECred, layout, boardInit1); // Rouge // A MODIFIER PAR UN ECOLOR ET 2
-	Event_InitGameState(&event, &continuer, ECblue, layout, boardInit2); // BLEU  // A MODIFIER PAR UN ECOLOR ET 3
+	//Event_InitGameState(&event, &continuer, ECred, &layout, boardInit1); // Rouge // A MODIFIER PAR UN ECOLOR ET 2
+	//Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit2); // BLEU  // A MODIFIER PAR UN ECOLOR ET 3
 	
 	// initialisation du gamestate
 	if (gameConfig.Mode == 3) return EXIT_FAILURE;
 
 	Game_InitGameState(&gameState);
 	// remplissage du gamestate avec les pions placés par les joueurs
-	/* EPiece initBoard[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
+	EPiece boardInit1[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
                            {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
                            {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
                            {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
-	*/
+	
+    EPiece boardInit2[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
+                           {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
+                           {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
+                           {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
+	
 	if(player1.Color == ECred) 
 	{
 		Game_CpyInitGameState(&gameState, &player1, boardInit1);
@@ -132,10 +137,10 @@ int main(int argc, char* argv[])
     // SBox Game_Fight(SBox player1, SBox player2);
 	
 	// Test scout mange espion : OK
-	
+	/*
 	start.line = 3; start.col = 8; // scout
 	end.line = 6; end.col = 8;
-	
+	*/
 	
 	// Test piece normale : OK
 	/*
@@ -160,19 +165,26 @@ int main(int argc, char* argv[])
 	start.line = 9; start.col = 9; 
 	end.line = 7; end.col = 8;
 	*/
-		move.start = start; 
+	/*	move.start = start; 
 		move.end = end; 
-
+	*/
 	printf("-----------JOUEUR 1---: %d--------------\n", gameConfig.ColorPlayer1);
 	DisplayPlayerGS(player1.Pboard);
 	
-	Display_BoardPlayer(layout,player1);
-	pause(); // Permet de laisser la fenêtre affichée à l'écran
+	//Display_BoardPlayer(layout,player1);
+
+	while(player1.nbCoups!=0)
+	{
+		Display_BoardPlayer(&layout,player1);
+		move=Event_IdMove(&event, &continuer);
+		Game_DoMove(&gameState, move, &player1, &player2);
+		player1.nbCoups--;
+	}
 
 	printf("-----------JOUEUR 2----------------------\n");
 	DisplayPlayerGS(player2.Pboard);
 
-		Display_BoardPlayer(layout,player2);
+		Display_BoardPlayer(&layout,player2);
 	pause(); // Permet de laisser la fenêtre affichée à l'écran
 
 
@@ -180,10 +192,11 @@ int main(int argc, char* argv[])
 	DisplayGS(gameState);
 	printf("la config est %d\n", gameConfig.Mode);
 
-	/*
-	Game_DoMove(&gameState, move, &player2, &player1);
+
+	
+	//Game_DoMove(&gameState, move, &player1, &player2);
 	printf("------------GAMESTATE--APRES--MOUVEMENT----------------\n");
-	DisplayGS(gameState);*/
+	DisplayGS(gameState);
 	return 0;
 }
 

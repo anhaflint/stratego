@@ -10,7 +10,7 @@
 // ------------------------------------------fonctions à utiliser pour gèrer un joueur humain----------------------------------------
 
 
-void Event_InitGameState(SDL_Event *event, int *continuer,EColor color,BoardLayout layout, EPiece Pieces[4][10]);
+void Event_InitGameState(SDL_Event *event, int *continuer,EColor color,BoardLayout *layout, EPiece Pieces[4][10]);
 /* Fonction appellé en boucle pour Analyse du Placement Inital des Pieces
 	Paramètres : -Un Event
 	 			 -un entier responsable de la sortie ou non de la boucle d'appel.
@@ -35,6 +35,6 @@ SPos Event_IdBoard(int x,int y);
 		
 */
 
-//SMove Event_IdMove(SDL_Event *event, int *continuer);
+SMove Event_IdMove(SDL_Event *event, int *continuer);
 
 #endif

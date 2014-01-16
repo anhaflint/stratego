@@ -1,6 +1,6 @@
 #include "event.h"
  
-void Event_InitGameState(SDL_Event *event, int *continuer,EColor color,BoardLayout layout, EPiece Pieces[4][10]){
+void Event_InitGameState(SDL_Event *event, int *continuer,EColor color,BoardLayout* layout, EPiece Pieces[4][10]){
  
 EPiece PieceSelectionnee;
 SPos PosSelectionnee;
@@ -47,11 +47,11 @@ for (i=0;i<4;i++)
 // Affichage des pièces
  
 if(color==ECred){
-  Display_Init(layout,ECred); // On affiche les pieces rouges latéralement à gauche
+  Display_Init(*layout,ECred); // On affiche les pieces rouges latéralement à gauche
   printf("Début de la phase de placement Rouge \n");
 }
 if(color==ECblue){
-Display_Init(layout,ECblue); // On affiche les pieces bleue latéralement à doite
+Display_Init(*layout,ECblue); // On affiche les pieces bleue latéralement à doite
   printf("Début de la phase de placement Bleu \n");
   }
  
@@ -296,8 +296,8 @@ while (endPlacement!=1)
 
 }// fin while
 
-Display_Init(layout,ECnone); // On efface l'affichage des tuiles car Placement terminé
-Display_ReinitDisplayBoard(layout);
+Display_Init(*layout,ECnone); // On efface l'affichage des tuiles car Placement terminé
+Display_ReinitDisplayBoard(*layout);
 free(PosPrecedente);
  
 }//fin fonction
@@ -471,44 +471,55 @@ SPos Event_IdBoard(int x,int y){
  
 
 
-/*
+
 SMove Event_IdMove(SDL_Event *event, int *continuer)
 {
   SMove Move;
+  int moveStart;
+  int moveOK;
+  moveStart=0;
+  moveOK=0;
+ while(moveStart!=1) 
+{
     SDL_WaitEvent(event);      // Capture d'un évent(clic)
       switch(event->type)
    {
         case SDL_QUIT:          // Si l'on quitte la fenêtre, on quitte la boucle, donc le jeu.
             printf("Vous quittez le jeu...\n");
             *continuer=0;
-            endPlacement=1;         // Placement fini prématurément
             Move.start.line=-1;
             Move.start.col=-1;
             break;
  
         case SDL_MOUSEBUTTONUP:
             Move.start=Event_IdBoard(event->button.x,event->button.y);
+            moveStart=1;
         break;
     }
-    SDL_WaitEvent(event);      // Capture d'un évent(clic)
+    
+}
+while(moveOK!=1)
+{
+  SDL_WaitEvent(event);      // Capture d'un évent(clic)
       switch(event->type)
    {
         case SDL_QUIT:          // Si l'on quitte la fenêtre, on quitte la boucle, donc le jeu.
             printf("Vous quittez le jeu...\n");
             *continuer=0;
-            endPlacement=1;         // Placement fini prématurément
             Move.end.line=-1;
             Move.end.col=-1;
             break;
  
         case SDL_MOUSEBUTTONUP:
             Move.end=Event_IdBoard(event->button.x,event->button.y);
+            moveOK=1;
         break;
     }
+}
+
     return Move;
 }
 
-*/
  
  
 /*

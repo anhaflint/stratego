@@ -11,9 +11,9 @@
 typedef struct
 {
 SDL_Rect     position;  	//Position relative d'une case ainsi que sa surface "image" associé 
-SDL_Surface  *cellaff;		//																	
+EPiece  	 cellaff;		//																	
 }Cell;						// Utile pour connaître le remplissage de chaqune des cases | NULL => Background
-							//															| tuileA ou tuileT
+							//															| tuiles
 
 
 typedef struct
@@ -50,7 +50,7 @@ void Display_Init(BoardLayout layout,EColor color);
 										// a quel stade du jeu on est (init ou pas) sinon le joueur peut reprendre ses pions après qu'ils
 										// aient été éliminés ! il faut donc deux fonctions
  
-void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout layout,EColor color); // affichage d'une piece
+void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color); // affichage d'une piece
 
 
 void Display_ReinitDisplayBoard(BoardLayout layout); // Réinit Aff plateau
@@ -58,7 +58,7 @@ void Display_ReinitDisplayBoard(BoardLayout layout); // Réinit Aff plateau
  //fonction de test de retour EPiece
 void Display_EPieceTest(EPiece Pieces[4][10]);
  
-void Display_BoardPlayer(BoardLayout layout, EPlayer player);
+void Display_BoardPlayer(BoardLayout *layout, EPlayer player);
 
 /*
 
