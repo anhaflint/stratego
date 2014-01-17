@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include "resources.h"
 #include "updateData.h"
-#include <stdio.h>
 
 /* Mise à jour d'une case de notre structure InfoPiece m_board */
 void updateSquare(SPos position, EPiece piece, EColor color, bool isVisible, bool isBomb)
@@ -146,7 +146,6 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 	if (((enemyMovement.start.line - enemyMovement.end.line)/2 != 0)
 		||((enemyMovement.start.col - enemyMovement.end.col)/2 != 0))
 	{
-		printf("COCORICO (%d, %d)->(%d, %d)\n", enemyMovement.start.line, enemyMovement.end.line, enemyMovement.start.col, enemyMovement.end.col);
 		updateSquare(enemyMovement.end, EPscout,m_enemyColor, true, false);
 	}
 	
@@ -189,7 +188,7 @@ void updateData(const SGameState * const gameState)
 		for (j=0; j < 10; j++)
 		{
 			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
-			if (((m_board[i][j].box.piece - gameState->board[i][j].piece) < 0)&&(!(m_board[i][j].isVisible)))
+			if (((m_board[i][j].box.content - gameState->board[i][j].content) > 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyHasMoved = true;
 				enemyMovement.start.line = i;
@@ -197,7 +196,7 @@ void updateData(const SGameState * const gameState)
 				printf("Piece %d n'est plus en (%d,%d)\n", m_board[i][j].box.piece, i, j);
 			}
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
-			else if (((m_board[i][j].box.piece - gameState->board[i][j].piece) > 0)&&(!(m_board[i][j].isVisible)))
+			else if (((m_board[i][j].box.content - gameState->board[i][j].content) < 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyMovement.end.line = i; 
 				enemyMovement.end.col = j;

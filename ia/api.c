@@ -19,8 +19,6 @@ SMove m_decidedMove; // Mouvement décidé après une réflexion par l'IA
 int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvements
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
 int m_nbRoundTrips; // Nombre d'allers et retours que l'on a fait (pour la règle des 2 cases)
-SPos m_armyPos, m_enemyPos; // Variables sauvegardant la position des pièces avant un combat
-EPiece m_armyPiece, m_enemyPiece; // Variables sauvegardant le type des pièces avant un combat
 bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
 bool m_hisMove; // Variable pour connaître le mouvement que l'ennemi a fait au tour précédent : false = mouvement normal et true = attaque
 
