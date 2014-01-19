@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../structure.h"
 #include "game.h"
@@ -14,11 +15,15 @@ int main(int argc, char* argv[])
 {
 	SGameConfig gameConfig;
 	SGameState gameState;
-	int i, j;
+	//int i, j;
 	SPos start, end; 
 	SMove move; 
+	char* vainqueur;
 
 	EPlayer player1, player2;
+	Game_Start(&player1, &player2);
+
+	/*
 	EPiece boardInit[4][10]; // faux placement de pions pour tester cpygamestate
 	for(i=0; i<4; i++)
 	{
@@ -27,24 +32,33 @@ int main(int argc, char* argv[])
 			boardInit[i][j] = j;
 		}
 	}
-
-	gameConfig.Mode = DetectGameMode(argc, argv);
+	*/
+/*	strcpy(gameConfig.Player1Name, "Joueur1");
+	strcpy(gameConfig.Player2Name, "Joueur2");
+	player1.winnings += 14;
+	player2.winnings += 14; 
+	vainqueur = Game_End(player1, player2, gameConfig);
+	*/
+	// gameConfig.Mode = DetectGameMode(argc, argv);
 	// initialisation des joueurs
 	Game_InitPlayer(&player1, &player2, &gameConfig, 300);
+	player2.Color = ECred;
+	player1.Color = ECblue;
 	// initialisation du gamestate
-	if (gameConfig.Mode == 3) return EXIT_FAILURE;
+	// if (gameConfig.Mode == 3) return EXIT_FAILURE;
 
 	Game_InitGameState(&gameState);
 	// remplissage du gamestate avec les pions placés par les joueurs
 	EPiece initBoard[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
-                           {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
-                           {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
-                           {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
-	Game_CpyInitGameState(&gameState, &player1, boardInit);
+						 		{0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
+						 		{4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
+						 		{2, 2, 7, 9, 2, 2, 10, 7, 2, 5}};
+	Game_CpyInitGameState(&gameState, &player1, initBoard);
 	Game_CpyInitGameState(&gameState, &player2, initBoard);
-	// mise en place de pions sur le gamestate comme si on avait placé de pieces
+	
+/*	// mise en place de pions sur le gamestate comme si on avait placé de pieces
 	// joueur BLEU,  haut du tableau
-	/*gameState.board[0][0].piece = EPflag; 
+	gameState.board[0][0].piece = EPflag; 
 	gameState.board[0][1].piece = EPbomb;
 	gameState.board[1][0].piece = EPbomb; 
 	gameState.board[1][1].piece = EPscout;
@@ -56,15 +70,15 @@ int main(int argc, char* argv[])
 	gameState.board[8][0].piece = EPbomb; 
 	gameState.board[8][8].piece = EPscout;
 	gameState.board[6][5].piece = EPmajor; 
-    */
+*/    
     // int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position);
     // void Game_DoMove(SGameState* game,SMove move, EPlayer player); 
     // SBox Game_Fight(SBox player1, SBox player2);
 	
 	// Test scout mange espion : OK
 	
-	start.line = 3; start.col = 8; // scout
-	end.line = 6; end.col = 8;
+	start.line = 3 ; start.col = 4; // scout
+	end.line = 6; end.col = 4;
 	
 	
 	// Test piece normale : OK
@@ -110,6 +124,8 @@ int main(int argc, char* argv[])
 	DisplayPlayerGS(player2.Pboard);
 	printf("------------GAMESTATE--------------------\n");
 	DisplayGS(gameState);
+
+	//printf("le gagnant est : %s\n", vainqueur);
 	return 0;
 }
 

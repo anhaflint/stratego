@@ -73,7 +73,47 @@ SGameMode DetectGameMode(int argc, char* argv[])
 	return gamemode;
 
 }
+/*
+	EPbomb=0, // 6
+	EPspy, // 1
+	EPscout, // 8
+	EPminer, // 5
+	EPsergeant, // 4
+	EPlieutenant, // 4
+	EPcaptain, //4
+	EPmajor, // 3
+	EPcolonel, // 2
+	EPgeneral, // 1
+	EPmarshal, // 1
+	EPflag, // 1
+	EPnone,// 12
+	*/
+/* fonction qui verifie le placement des pions du joueur lors de l'initialisation de son gamestate (placement)
+ */
+int Game_CheckTab(EPiece boardInit[4][10])
+{
+	int ref[12] = {6, 1, 8, 5, 4, 4, 4, 3, 2, 1, 1, 1};
+	int check[12], i, j;
+	for(i=0; i<12; i++) check[i] = 0; // initialisation des compteurs de pieces
 
+	for(i=0; i<4; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			// Cas où le joueur a placé des pieces de la mauvaise couleur ou des pieces qui n'existent pas
+			if((boardInit[i][j]<0)||(boardInit[i][j]>11)) return 0;
+
+			check[boardInit[i][j]]++; // on incrémente le compteur de la piece dans le tableau de compteurs
+		}
+	}
+	for(i=0; i<12; i++) 
+	{
+		if(check[i] != ref[i]) 
+			return 0;
+	}
+	return 1;
+
+}
 
 /* procédure d'initialisation des variables de la structure joueur 
  * au début de chaque jeu
@@ -289,18 +329,38 @@ int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int positio
 					if (diffligne + diffcol != 1) return -1;// Deplacement illégal
 					break;
 			case 2 : // cas pion scout
-					if ((diffligne > 0)&&(diffcol == 0)) // deplacement en lignes
+					if (diffcol == 0) // deplacement en lignes
 					{
-						for(i = StartLine + 1; i<EndLine-1; i++) 
+						if ((StartLine - EndLine) < 0)
 						{
-							if (gamestate.board[i][StartCol].piece != EPnone) return -1; // on ne peut pas déplacer le scout	
+							for(i = StartLine + 1; i<EndLine; i++) 
+							{
+								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
+							}
+						}
+						else
+						{
+							for(i = StartLine - 1; i>EndLine; i--) 
+							{
+								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
+							}
 						}
 					}
-					if ((diffligne == 0)&&(diffcol > 0)) // deplacement en colonnes
+					if (diffligne == 0) // deplacement en colonnes
 					{
-						for (i = StartCol + 1; i<EndCol-1; i++)
+						if((StartCol - EndCol) < 0)
 						{
-							if (gamestate.board[StartLine][i].piece != EPnone) return -1; // on ne peut pas déplacer le scout
+							for (i = StartCol + 1; i<EndCol; i++)
+							{
+								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
+							}
+						}
+						else
+						{
+							for (i = StartCol -1; i>EndCol; i--)
+							{
+								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
+							}
 						}
 					}
 					// si on arrive ici on peut deplacer le scout
@@ -320,25 +380,12 @@ return RETOUR;
  * @param SMove move
  * 			mouvement à effectuer (mouvement valide, invalide, ou combat)
  */
- // use int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate)
- // use int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position)
- /*
- typedef struct
-{
-	SPos start;
-	SPos end;
-} SMove;
-
-typedef struct
-{
-	int line;
-	int col;
-} SPos;
-*/
 void Game_RazSBox(SBox *box)
 {
+	printf("on a supprime le pion %d\n", box->piece);
 	box->piece = EPnone;
 	box->content = ECnone; 
+
 }
 
 
@@ -354,18 +401,36 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Ot
 	 */
 	SMove AdvMove, GSMove;  
 	SBox FightResult;
-		printf("move.start.ligne = %d\n", move.start.line);
+	/*	printf("move.start.ligne = %d\n", move.start.line);
 		printf("move.start.colonne = %d\n", move.start.col);
 		printf("move.end.ligne = %d\n", move.end.line);
 		printf("move.end.colonne = %d\n", move.end.col);
+	*/
+
 	GSMove = Game_TranslateMove(move, *MovingPlayer, 1); // Si le joueur est bleu, il faut inverser les indices
 	AdvMove = Game_TranslateMove(move, *MovingPlayer, 2); // utile quand on va changer le GS des adversaires
-		printf("APRES INVERSION===========================================================================================\n");
+	// Stockage des accès tableaux dans des variables pour optimiser le tps
+	int GSMoveEndLine, GSMoveEndCol, GSMoveStartLine, GSMoveStartCol; 
+		GSMoveEndLine = GSMove.end.line;
+		GSMoveEndCol = GSMove.end.col;
+		GSMoveStartLine = GSMove.start.line;
+		GSMoveStartCol = GSMove.start.col;
+	int MoveEndLine, MoveEndCol, MoveStartLine, MoveStartCol; 
+		MoveEndLine = move.end.line;
+		MoveEndCol = move.end.col;
+		MoveStartLine = move.start.line;
+		MoveStartCol = move.start.col;
+	int AdvEndLine, AdvEndCol, AdvStartLine, AdvStartCol;  
+		AdvEndLine = AdvMove.end.line;
+		AdvEndCol = AdvMove.end.col;
+		AdvStartLine = AdvMove.start.line;
+		AdvStartCol = AdvMove.start.col;
+	/*	printf("APRES INVERSION===========================================================================================\n");
 		printf("move.start.ligne = %d\n", GSMove.start.line);
 		printf("move.start.colonne = %d\n", GSMove.start.col);
 		printf("move.end.ligne = %d\n", GSMove.end.line);
 		printf("move.end.colonne = %d\n", GSMove.end.col);	
-
+	*/
 	int pos = Game_CheckPosition(GSMove.start, *MovingPlayer, *game);
 		printf("pos retourne : %d\n", pos);
 	int mvt = Game_CheckMove(GSMove, *MovingPlayer, *game, pos);
@@ -378,88 +443,90 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Ot
 
 		// Deplacement seul
 		case 0 : // Changement du gamestate général avec toutes les valeurs de pions : on utilise move inversé pour EPblue
-				 game->board[GSMove.end.line][GSMove.end.col] = game->board[GSMove.start.line][GSMove.start.col]; // la case de destination prend le pion valide
-				 Game_RazSBox(&(game->board[GSMove.start.line][GSMove.start.col]));
+				 game->board[GSMoveEndLine][GSMoveEndCol] = game->board[GSMoveStartLine][GSMoveStartCol]; // la case de destination prend le pion valide
+				 Game_RazSBox(&(game->board[GSMoveStartLine][GSMoveStartCol]));
 				 printf("gamestate général modifié\n");
 
 				 //Modification du tableau du joueur : on utilise move tel qu'il a été rentré
-				 MovingPlayer->Pboard[move.end.line][move.end.col] = MovingPlayer->Pboard[move.start.line][move.start.col];
-				 Game_RazSBox(&(MovingPlayer->Pboard[move.start.line][move.start.col]));
+				 MovingPlayer->Pboard[MoveEndLine][MoveEndCol] = MovingPlayer->Pboard[MoveStartLine][MoveStartCol];
+				 Game_RazSBox(&(MovingPlayer->Pboard[MoveStartLine][MoveStartCol]));
 				 printf("gamestate joueur modifié\n");
 
 				 //Modification du tableau de l'adversaire : on utilise AdvMove = move inversé pour chaque GS adverse
-				 Other->Pboard[AdvMove.end.line][AdvMove.end.col] = Other->Pboard[AdvMove.start.line][AdvMove.start.col];
-				 Game_RazSBox(&(Other->Pboard[AdvMove.start.line][AdvMove.start.col]));
+				 Other->Pboard[AdvEndLine][AdvEndCol] = Other->Pboard[AdvStartLine][AdvStartCol];
+				 Game_RazSBox(&(Other->Pboard[AdvStartLine][AdvStartCol]));
 				 printf("gamestate adverse modifié\n");
 
 				 break;
 		// Combat
-		case 1 : if((game->board[move.start.line][move.start.col].piece) == (game->board[move.end.line][move.end.col].piece)) 
+		case 1 : if((game->board[GSMoveStartLine][GSMoveStartCol].piece) == (game->board[GSMoveEndLine][GSMoveEndCol].piece)) 
 				 {
+				 	printf("les deux pions sont egaux\n");
 				 	// On MaJ les deux tableaux de pièces éliminées dans le gamestate
-				 	game->redOut[(game->board[move.start.line][move.start.col].piece)]++;
-				 	game->blueOut[(game->board[move.start.line][move.start.col].piece)]++;
+				 	game->redOut[(game->board[MoveStartLine][MoveStartCol].piece)]++;
+				 	game->blueOut[(game->board[MoveStartLine][MoveStartCol].piece)]++;
 					// On supprime les deux pions du Gamestate général (GSMove)
-					Game_RazSBox(&(game->board[GSMove.end.line][GSMove.end.col]));
+					Game_RazSBox(&(game->board[GSMoveEndLine][GSMoveEndCol]));
 					// On supprime les deux pions dans le GS du joueur (move)
-					Game_RazSBox(&(MovingPlayer->Pboard[move.end.line][move.end.col]));
+					Game_RazSBox(&(MovingPlayer->Pboard[MoveEndLine][MoveEndCol]));
 					// On supprime les deux pions dans le GS de l'adversaire
-					Game_RazSBox(&(Other->Pboard[AdvMove.end.line][AdvMove.end.col]));
+					Game_RazSBox(&(Other->Pboard[AdvEndLine][AdvEndCol]));
 
 				 }
 				 else
 				 {	
 				 	// La case de destination prend le resultat du combat 
-				 	FightResult = Game_Fight(game->board[GSMove.start.line][GSMove.start.col], game->board[GSMove.end.line][GSMove.end.col]);
-				 	
+				 	FightResult = Game_Fight(game->board[GSMoveStartLine][GSMoveStartCol], game->board[GSMoveEndLine][GSMoveEndCol]);
+				 	printf("on passe dans le else, les pions sont différents\n");
+				 	printf("l\'attaquant est : %d, le defendant est %d\n", game->board[GSMoveStartLine][GSMoveStartCol].piece, game->board[GSMoveEndLine][GSMoveEndCol].piece );
 				 	// MaJ des pièces éliminées
 				 	switch(FightResult.content)
 				 	{
 				 		case ECred: // Le gagnant est rouge, on cherche la piece bleue
-				 						if(game->board[GSMove.start.line][GSMove.start.col].content == ECblue) // La piece attaquante et perdante est bleue
-				 							game->blueOut[game->board[GSMove.start.line][GSMove.start.col].piece] ++; // La piece a éliminer est l'attaquante
+				 						if(game->board[GSMoveStartLine][GSMoveStartCol].content == ECblue) // La piece attaquante et perdante est bleue
+				 							game->blueOut[game->board[GSMoveStartLine][GSMoveStartCol].piece] ++; // La piece a éliminer est l'attaquante
 				 						else
-				 							game->blueOut[game->board[GSMove.end.line][GSMove.end.col].piece] ++; // La piece à éliminer est l'attaquée
+				 							game->blueOut[game->board[GSMoveEndLine][GSMoveEndCol].piece] ++; // La piece à éliminer est l'attaquée
 				 						break;
 				 		case ECblue: // Le gagnant est bleu, on cherche la piece rouge
-				 						if (game->board[GSMove.start.line][GSMove.start.col].content == ECred) // L'attaquant est perdant et rouge
-				 							game->redOut[game->board[GSMove.start.line][GSMove.start.col].piece]++; // La piece a eliminer est l'attaquante
+				 						if (game->board[GSMoveStartLine][GSMoveStartCol].content == ECred) // L'attaquant est perdant et rouge
+				 							game->redOut[game->board[GSMoveStartLine][GSMoveStartCol].piece]++; // La piece a eliminer est l'attaquante
 				 						else
-				 							game->redOut[game->board[GSMove.end.line][GSMove.end.col].piece]++; // La piece a eliminer est l'attaquée
+				 							game->redOut[game->board[GSMoveEndLine][GSMoveEndCol].piece]++; // La piece a eliminer est l'attaquée
 				 		default : break;
 				 	}
 
 				 	// Gamestate Général
-					game->board[GSMove.end.line][GSMove.end.col] = FightResult ;
+					game->board[GSMoveEndLine][GSMoveEndCol] = FightResult ;
 
 					// Changement GS joueur
 					if(FightResult.content == MovingPlayer->Color) // Si le pion attaquant est gagnant
 					{
-						MovingPlayer->Pboard[move.end.line][move.end.col] = FightResult; // On garde la valeur de son pion dans le gamestate
+						MovingPlayer->Pboard[MoveEndLine][MoveEndCol] = FightResult; // On garde la valeur de son pion dans le gamestate
 					}
 					else
 					{
-						MovingPlayer->Pboard[move.end.line][move.end.col].piece = EPnone; // On affiche seulement la couleur de la piece gagnante dans le GS du joueur
-						MovingPlayer->Pboard[move.end.line][move.end.col].content = FightResult.content; 
+						MovingPlayer->Pboard[MoveEndLine][MoveEndCol].piece = EPnone; // On affiche seulement la couleur de la piece gagnante dans le GS du joueur
+						MovingPlayer->Pboard[MoveEndLine][MoveEndCol].content = FightResult.content; 
 					}
 
 					// Changement GS adversaire
 					if(FightResult.content == Other->Color) // Si le pion attaqué est gagnant
 					{
-						Other->Pboard[AdvMove.end.line][AdvMove.end.col] = FightResult; // On garde la valeur de son pion dans son gamestate
+						Other->Pboard[AdvEndLine][AdvEndCol] = FightResult; // On garde la valeur de son pion dans son gamestate
 					}
 					else
 					{
-						Other->Pboard[AdvMove.end.line][AdvMove.end.col].piece = EPnone; // On affiche seulement la couleur de la piece gagnante dans le GS de l'adversaire
-						Other->Pboard[AdvMove.end.line][AdvMove.end.col].content = FightResult.content; 
+						Other->Pboard[AdvEndLine][AdvEndCol].piece = EPnone; // On affiche seulement la couleur de la piece gagnante dans le GS de l'adversaire
+						Other->Pboard[AdvEndLine][AdvEndCol].content = FightResult.content; 
 					}
 				 }
 				 // On efface la case de départ du mouvement
-				 Game_RazSBox(&(game->board[GSMove.start.line][GSMove.start.col]));
+				 Game_RazSBox(&(game->board[GSMoveStartLine][GSMoveStartCol]));
 				 // On supprime le pion de depart dans le GS du joueur
-				 Game_RazSBox(&(MovingPlayer->Pboard[move.start.line][move.start.col]));
+				 Game_RazSBox(&(MovingPlayer->Pboard[MoveStartLine][MoveStartCol]));
 				 // On supprime les deux pions dans le GS de l'adversaire
-				 Game_RazSBox(&(Other->Pboard[AdvMove.start.line][AdvMove.start.col]));				 
+				 Game_RazSBox(&(Other->Pboard[AdvStartLine][AdvStartCol]));				 
 				 break; 
 	}
 }
@@ -512,6 +579,26 @@ SBox Game_Fight(SBox player1, SBox player2)
 }
 
 
+/* initialisation du jeu pour le joueur humain (placement des pieces)
+ * à ce moment là on ne verifie pas la validité des mouvements car il ne peut pas acceder au tableau du joueur adverse
+ * @param const EColor color 
+ * 				couleur du joueur 
+ * @param EPiece boardInit[4][10]
+ * 				tableau dans lequel le joueur va placer ses pions (on ne peut pas lui donner le gamestate)
+ */
+void Game_Begin(EPlayer *player, SGameState *game);
+
+/* fonction de demande du prochain mouvement au joueur humain
+ * @param const SGameState * const gamestate
+ * 			etat du jeu pour donner le mouvement à effectuer
+ *			const SGameState* :		constance de la valeur pointée
+ *			* conste gamestate :	constance de l'adresse contenue dans le pointeur 
+ */
+SMove Player_NextMove(const SGameState * const gamestate);
+// A changer et envoyer un player_gamestate pour le joueur
+
+
+
 /* procédure de vérification de la fin du jeu
  * @param : SGameState gamestate
  * 			permet de vérifier les pions présents sur le plateau
@@ -520,7 +607,23 @@ SBox Game_Fight(SBox player1, SBox player2)
  * condition de fin d'un jeu : un joueur n'a plus de drapeau (perdu) ou plus de pieces mobiles
  * par exemple si plus que des bombes + flag en jeu, ou si toutes les pièces mobiles sont entourées par des bombes
  */
-void Game_End(SGameState gamestate, const EColor color); 
+ //	EColor Enemy = (player.Color == ECred) ? ECblue : ECred;
+char* Game_End(EPlayer player1, EPlayer player2, SGameConfig config)
+{
+	/* Si le joueur a gagné plus de fois ou a le mm nombre de victoires que le joueur 1
+	 * 		si ils ont gagné le mm nombre de fois on renvoie null
+	 *		sinon on renvoie le joueur1
+	 * Sinon on renvoie le joueur 2
+	 */
+	return (player1.winnings >= player2.winnings)? ((player1.winnings == player2.winnings)? NULL : config.Player1Name): config.Player2Name; 
+}
+void Game_Start(EPlayer *player1, EPlayer *player2)
+{
+	printf("Attention, le jeu va commencer !!!\n");
+	player1->winnings = 0;
+	player2->winnings = 0; 
+	printf("Nombre de victoires des joueurs initialisé---------------\n");
+}
 
 
 
@@ -541,42 +644,28 @@ void Game_AddPenalty(EPlayer player);	// idée : variable statique ? allouées a
  */
 void Game_CpyInitGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10])
 {
-	int k, l; 
-	// k : lignes du tableau 4*10
-	// l : colonnes du tab 4*10
-    for (k=0; k<4; k++)
-    {
-        for (l=0; l<10; l++)
-        {
-        	// Remplissage du gamestate general
-            if (player->Color == ECred) // On remplie le bas du gamestate
-                    gamestate->board[k][l].piece = boardInit[k][l];
-            else if (player->Color == ECblue) // On remplie le haut du gamestate en retournant le tableau de 4*10 de 180°
-                    gamestate->board[9-k][9-l].piece = boardInit[k][l];
-            // Remplissage du gamestate du joueur
-            player->Pboard[k][l].piece =boardInit[k][l];
+	if(Game_CheckTab(boardInit))
+	{
+		int k, l; 
+		// k : lignes du tableau 4*10
+		// l : colonnes du tab 4*10
+	    for (k=0; k<4; k++)
+	    {
+	        for (l=0; l<10; l++)
+	        {
+	        	// Remplissage du gamestate general
+	            if (player->Color == ECred) // On remplie le bas du gamestate
+	                    gamestate->board[k][l].piece = boardInit[k][l];
+	            else if (player->Color == ECblue) // On remplie le haut du gamestate en retournant le tableau de 4*10 de 180°
+	                    gamestate->board[9-k][9-l].piece = boardInit[k][l];
+	            // Remplissage du gamestate du joueur
+	            player->Pboard[k][l].piece =boardInit[k][l];
 
-        }
-    }
+	        }
+	    }
+	}
 }
 
-/* initialisation du jeu pour le joueur humain (placement des pieces)
- * à ce moment là on ne verifie pas la validité des mouvements car il ne peut pas acceder au tableau du joueur adverse
- * @param const EColor color 
- * 				couleur du joueur 
- * @param EPiece boardInit[4][10]
- * 				tableau dans lequel le joueur va placer ses pions (on ne peut pas lui donner le gamestate)
- */
-void Game_Begin(const EColor color, EPiece boardInit[4][10]);
-
-/* fonction de demande du prochain mouvement au joueur humain
- * @param const SGameState * const gamestate
- * 			etat du jeu pour donner le mouvement à effectuer
- *			const SGameState* :		constance de la valeur pointée
- *			* conste gamestate :	constance de l'adresse contenue dans le pointeur 
- */
-SMove Player_NextMove(const SGameState * const gamestate);
-// A changer et envoyer un player_gamestate pour le joueur
 
 void game_PvP();	
 void game_IAvsP();

@@ -1,5 +1,5 @@
 #ifndef _GAME_H
-#define _GAME_H
+	#define _GAME_H
 
 #include "../structure.h"
 
@@ -11,46 +11,42 @@
 
 // procédure d'affichage 
 void DisplayGS(SGameState gamestate); // OK, peut etre donner la couleur en parametre pour voir comment c'est affiché pour le joueur
-void DisplayPlayerGS(SBox board[10][10]);
+void DisplayPlayerGS(SBox board[10][10]); // OK
 
 // fonction de detection du mode de jeu
 SGameMode DetectGameMode(int argc, char *argv[]); // OK
 
-
 // procédures d'initialisation
 // procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation et le gamestate des joueurs (dans le bon sens)	
-void Game_CpyInitGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10]);
-void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig, int nbCoups);
-void Game_InitGameState(SGameState* gamestate); // voir si on init direct toutes les lignes de couleur
-void Game_RazSBox(SBox *box);
-
+void Game_CpyInitGameState(SGameState* gamestate, EPlayer* player, EPiece boardInit[4][10]); // OK
+void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig, int nbCoups); // OK
+void Game_InitGameState(SGameState* gamestate); // OK
+int Game_CheckTab(EPiece boardInit[4][10]); // OK
+void Game_RazSBox(SBox *box); // OK
 
 // fonctions de verification de mouvements
-int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate); // OK, a verifier pour l'inversion du gamestate
-int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position);
+int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate); // OK
+int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position); // OK ?  A Tester encore plus
 SMove Player_NextMove(const SGameState * const gamestate);
-SMove Game_TranslateMove(SMove move, EPlayer player, int etat); 
+SMove Game_TranslateMove(SMove move, EPlayer player, int etat);  // OK
 
 // fonction qui effectue le mouvement
-void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other); 
+void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other); // OK 
 // fonction qui retourne le gagnant du combat
-SBox Game_Fight(SBox player1, SBox player2);
-
+SBox Game_Fight(SBox player1, SBox player2); // OK
 
 // procédure de vérification de la fin du jeu
-void Game_End(SGameState gamestate, const EColor color); 
+// renvoie le gagnant
+char* Game_End(EPlayer player1, EPlayer player2, SGameConfig config); // OK
+// Init le nombre de victoire des joueurs
+void Game_Start(EPlayer *player1, EPlayer *player2);
 void Game_EndMatch();
 
 // fonction de gestion des pénalités
 void Game_AddPenalty();	// idée : variable statique ? allouées au début du programme et libérées à la fin
 
-
-
 // initialisation du jeu pour le joueur humain (placement des pieces)
-void Game_Begin(const EColor color, EPiece boardInit[4][10]);
-
-
-
+void Game_Begin(EPlayer *player, SGameState *game);
 
 void game_PvP();	
 void game_IAvsP();
