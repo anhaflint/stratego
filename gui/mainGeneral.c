@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
 	{
 		Display_BoardPlayer(&layout,player1);
 		DisplayPlayerGS(player1.Pboard);
-		move=Event_IdMove(&event,gameState,player1, &continuer);
+		move=Event_IdMove(&event,player1, &continuer);
 		Game_DoMove(&gameState, move, &player1, &player2);
 		player1.nbCoups--;
 	}

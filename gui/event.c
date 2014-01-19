@@ -428,7 +428,7 @@ SPos Event_IdBoard(int x,int y){
 
 
 
-SMove Event_IdMove(SDL_Event *event, SGameState gameState, EPlayer player,int *continuer)
+SMove Event_IdMove(SDL_Event *event, EPlayer player,int *continuer)
 {
   SMove Move;
   int moveStart;
@@ -450,7 +450,7 @@ SMove Event_IdMove(SDL_Event *event, SGameState gameState, EPlayer player,int *c
         case SDL_MOUSEBUTTONUP:
 
             Move.start=Event_IdBoard(event->button.x,event->button.y);
-            if (gameState.board[Move.start.line][Move.start.col].content==player.Color) moveStart=1;
+            if (player.Pboard[Move.start.line][Move.start.col].content==player.Color) moveStart=1;
 
         break;
     }
