@@ -30,6 +30,7 @@ nbPiecesRestantes[EPgeneral]   =1;
 nbPiecesRestantes[EPmarshal]   =1;
 nbPiecesRestantes[EPflag]      =1;
 nbPiecesRestantes[EPnone]      =40;
+
  
  
 // INIT TAB PIECES
@@ -47,22 +48,26 @@ for (i=0;i<4;i++)
 // Affichage des pièces
  
 if(color==ECred){
-  Display_Init(*layout,ECred); // On affiche les pieces rouges latéralement à gauche
+  Display_Init(*layout,ECred,nbPiecesRestantes); // On affiche les pieces rouges latéralement à gauche
   printf("Début de la phase de placement Rouge \n");
 }
 if(color==ECblue){
-Display_Init(*layout,ECblue); // On affiche les pieces bleue latéralement à doite
+Display_Init(*layout,ECblue,nbPiecesRestantes); // On affiche les pieces bleue latéralement à doite
   printf("Début de la phase de placement Bleu \n");
   }
  
 // ------------Debut phase de placement---------------------------------------
  
 int placement=40;           // nombre de pièces à placer
+
  
  
 while (endPlacement!=1)
 {       // Tant que le placement n'est pas fini
  
+
+  Display_Init(*layout,color,nbPiecesRestantes); // On affiche les pieces rouges latéralement à gauche
+
   SDL_WaitEvent(event);      // Capture d'un évent(clic)
  
  
@@ -79,6 +84,9 @@ while (endPlacement!=1)
  
         case SDL_MOUSEBUTTONUP: // Si il y a un clic, on récupère les positions x y du pointeur de la souris
            
+
+              Display_Init(*layout,color,nbPiecesRestantes); // On affiche les pieces rouges latéralement à gauche
+
             //--------------------------------------------------------------------------------------------------
             // ANALYSE PIECES
             //--------------------------------------------------------------------------------------------------
@@ -296,7 +304,7 @@ while (endPlacement!=1)
 
 }// fin while
 
-Display_Init(*layout,ECnone); // On efface l'affichage des tuiles car Placement terminé
+Display_Init(*layout,ECnone,nbPiecesRestantes); // On efface l'affichage des tuiles car Placement terminé
 Display_ReinitDisplayBoard(*layout);
 free(PosPrecedente);
  
@@ -351,59 +359,7 @@ int noPiece;
     }
  
   }
- 
-   switch(noPiece){
- 
-          case 0:
-            return EPspy;
-            break;
- 
-          case 1:
-            return EPscout;
-            break;
- 
-          case 2:
-            return EPminer;
-            break;
- 
-          case 3:
-            return EPsergeant;
-            break;
- 
-          case 4:
-            return EPlieutenant;
-            break;
- 
-          case 5:
-            return EPcaptain;
-            break;
- 
-          case 6:
-            return EPmajor;
-            break;
- 
-          case 7:
-            return EPcolonel;
-            break;
- 
-          case 8:
-            return EPgeneral;
-            break;
-           
-          case 9:
-            return EPmarshal;
-            break;
- 
-          case 10:
-            return EPbomb;
-            break;
- 
-          case 11:
-            return EPflag;
-            break;
- 
-        }
-        return EPnone;
+    return noPiece;
 }
  
  
@@ -472,7 +428,7 @@ SPos Event_IdBoard(int x,int y){
 
 
 
-SMove Event_IdMove(SDL_Event *event, int *continuer)
+SMove Event_IdMove(SDL_Event *event, SGameState gameState, EPlayer player,int *continuer)
 {
   SMove Move;
   int moveStart;
@@ -492,8 +448,10 @@ SMove Event_IdMove(SDL_Event *event, int *continuer)
             break;
  
         case SDL_MOUSEBUTTONUP:
+
             Move.start=Event_IdBoard(event->button.x,event->button.y);
-            moveStart=1;
+            if (gameState.board[Move.start.line][Move.start.col].content==player.Color) moveStart=1;
+
         break;
     }
     

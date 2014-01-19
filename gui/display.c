@@ -11,25 +11,83 @@ void BoardLayout_Init(BoardLayout* layout){
 int i,j;
 
 
-//Init Rectangle découpe Patron Pièces Bleu
+//Init Rectangle découpe Patron Pièces Rouges
 for (i=0;i<13;i++){
+
+	if(i==0)
+	{	
+
+		layout->PiecesLayout[i].x=11*40;
+		layout->PiecesLayout[i].y=0;
+		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
+		layout->PiecesLayout[i].h=40;
+	}
+	else if(i==11)
+	{
+
+		layout->PiecesLayout[i].x=12*40;
+		layout->PiecesLayout[i].y=0;
+		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
+		layout->PiecesLayout[i].h=40;
+	}
+	else if(i==12)
+	{
+
+		layout->PiecesLayout[i].x=0*40;
+		layout->PiecesLayout[i].y=0;
+		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
+		layout->PiecesLayout[i].h=40;
+	}
+	else
+	{
+
 	layout->PiecesLayout[i].x=i*40;			// On part du point (0,0) du Patron
 	layout->PiecesLayout[i].y=0;			// On avance suivant x de 40 px
 	layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
 	layout->PiecesLayout[i].h=40;
+	}
 }
 
-//Init Rectangle découpe Patron Pièces Rouges
+//Init Rectangle découpe Patron Pièces Bleues
 for (i=13;i<26;i++){
+
+
+	if(i==13)
+	{
+		layout->PiecesLayout[i].x=11*40;
+		layout->PiecesLayout[i].y=40;
+		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
+		layout->PiecesLayout[i].h=40;
+	}
+	else if(i==24)
+	{
+		layout->PiecesLayout[i].x=12*40;
+		layout->PiecesLayout[i].y=40;
+		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
+		layout->PiecesLayout[i].h=40;
+	}
+	else if(i==25)
+	{
+		layout->PiecesLayout[i].x=0*40;
+		layout->PiecesLayout[i].y=40;
+		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
+		layout->PiecesLayout[i].h=40;
+	}
+	else
+	{
 	layout->PiecesLayout[i].x=(i-13)*40;	// On part du point (0,40) du Patron
 	layout->PiecesLayout[i].y=40;			// On avance tj suivant x de 40 px
 	layout->PiecesLayout[i].w=40;		
 	layout->PiecesLayout[i].h=40;
+	}
 }
 
 	layout->Patron=SDL_LoadBMP("images/piecestest.bmp");   // Charge image Patron Pièces
 	
 	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
+
+	layout->Placement=SDL_LoadBMP("images/endTuile.bmp");   // Charge image grisée
+	SDL_SetAlpha(layout->Placement, SDL_SRCALPHA, 192);
 
 
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran : 800x600
@@ -65,10 +123,9 @@ for (i=13;i<26;i++){
 
 }
 
-void Display_Init(BoardLayout layout,EColor color){
+void Display_Init(BoardLayout layout,EColor color, int nbPiecesRestantes[13]){
 
 SDL_Rect rectTuilesAPlacer[12];
-SDL_Rect rectImageTuilesAPlacer[12];
 int i;
 
 	for (i=0;i<12;i++){
@@ -79,15 +136,15 @@ int i;
 		{
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
-			rectImageTuilesAPlacer[i]=layout.PiecesLayout[1+i];
-			SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+
 		}
 		if (color==ECblue)
 		{
 			rectTuilesAPlacer[i].x=710;
 			rectTuilesAPlacer[i].y=33+45*i;
-			rectImageTuilesAPlacer[i]=layout.PiecesLayout[14+i];
-			SDL_BlitSurface(layout.Patron, &rectImageTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i+13]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+
 		}
 		if (color==ECnone){  // remise à vide
 			rectTuilesAPlacer[i].x=10;
@@ -96,7 +153,11 @@ int i;
 			rectTuilesAPlacer[i].x=710;
 			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
 
-		}	
+		}
+		if (nbPiecesRestantes[i]==0)
+		{
+			SDL_BlitSurface(layout.Placement, NULL, layout.Screen, &rectTuilesAPlacer[i]);
+		}
 	}
  	SDL_Flip(layout.Screen); // Rafraichissement
 
@@ -106,198 +167,20 @@ int i;
 
 void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color){
 
-	switch (Piece)
-	{
-		case 0: //BOMBE
-			
 			if(color==ECred)
 			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[11]), layout->Screen, &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
+				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[Piece]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
 			if(color==ECblue)
 			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[24]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 11: // FLAG
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[12]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[25]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-
-		case 1: //SPY
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[1]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[14]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-
-		case 2: //SCOUT
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[2]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[15]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 3: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[3]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[16]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 4: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[4]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[17]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 5: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[5]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[18]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 6: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[6]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[19]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 7: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[7]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[20]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 8: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[8]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[21]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 9: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[9]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[22]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 10: //...
-		
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[10]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[23]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-		case 12: 
-
-			if(color==ECred)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[0]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
-			}
-
-			if(color==ECblue)
-			{
-				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[13]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
+				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[Piece+13]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 			if(color==ECnone) // Effacement de piece
 			{
 			SDL_BlitSurface(layout->Background, &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
-			break;
-
-	}
-
 
 SDL_Flip(layout->Screen); // Rafraichissement
 }
@@ -356,20 +239,20 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 		{		
 				// Cas d'une pièce vide
 			if( (player.Pboard[i][j].content==ECnone)&&(player.Pboard[i][j].piece==EPnone) )
-			{	
+			{	printf("C 0 P 12 Case [%d|%d] en [%d][%d] \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j);
 				// Si la case ne comprend déjà le fond
-				if (layout->DisplayTab[i][j].cellaff!=12)
-				{	
+
+					printf("ON EFFACE \n" );
 					SDL_BlitSurface(layout->Background, &(layout->DisplayTab[i][j].position), layout->Screen, &(layout->DisplayTab[i][j].position));
 					layout->DisplayTab[i][j].cellaff=12;
-				}
+				
 				
 			}
 			else
-			{	printf("Case [%d|%d] en [%d][%d] \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j);
+			{	printf("A Case [%d|%d] en [%d][%d] \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j);
 				// Si la case ne comprend déjà la bonne pièce
-				if  ( (player.Pboard[i][j].content!=player.Color) || (layout->DisplayTab[i][j].cellaff!=player.Pboard[i][j].piece))
-				{ printf("ET J\'AFFICHE \n");
+				if  ((player.Pboard[i][j].content!=player.Color)||(layout->DisplayTab[i][j].cellaff!=player.Pboard[i][j].piece))
+				{ printf("B \n");
 				posPiece.line=i;
 				posPiece.col=j;
 				Display_PieceInit(player.Pboard[i][j].piece, posPiece, layout ,player.Pboard[i][j].content);

@@ -35,6 +35,6 @@ SPos Event_IdBoard(int x,int y);
 		
 */
 
-SMove Event_IdMove(SDL_Event *event, int *continuer);
+SMove Event_IdMove(SDL_Event *event, SGameState gameState, EPlayer player,int *continuer);
 
 #endif

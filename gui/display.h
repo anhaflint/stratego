@@ -21,6 +21,7 @@ typedef struct
 	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
 	SDL_Surface *Patron;			// Stockage du patron d'images
 	SDL_Surface *Background;    // Image de fond 
+	SDL_Surface	*Placement;
 	SDL_Surface *Screen;		// Surface de l'ecran
 	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
 	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
@@ -38,7 +39,7 @@ void BoardLayout_Init(BoardLayout* layout);
 //-----------------------------------------------------------------------------------------------
 
 
-void Display_Init(BoardLayout layout,EColor color); 	
+void Display_Init(BoardLayout layout,EColor color,int nbPiecesRestantes[13]); 	
 										// Affichage du départ : tuiles sur les cotes
 									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour les rouges
 										//													   à droite pour les bleus
@@ -49,6 +50,7 @@ void Display_Init(BoardLayout layout,EColor color);
 										// on ne peut pas utiliser les tab redOut et blueOut pour le début car il faudrait pouvoir tester
 										// a quel stade du jeu on est (init ou pas) sinon le joueur peut reprendre ses pions après qu'ils
 										// aient été éliminés ! il faut donc deux fonctions
+										// Entier pour affichage du filtre noir, entier de la pièce à masquer car plus de pieces placables
  
 void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color); // affichage d'une piece
 
