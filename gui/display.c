@@ -137,16 +137,24 @@ int i;
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
 			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
-
+				if (nbPiecesRestantes[i]==0)
+				{
+					SDL_BlitSurface(layout.Placement, NULL, layout.Screen, &rectTuilesAPlacer[i]);
+				}
 		}
-		if (color==ECblue)
+
+		else if (color==ECblue)
 		{
 			rectTuilesAPlacer[i].x=710;
 			rectTuilesAPlacer[i].y=33+45*i;
 			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i+13]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+			if (nbPiecesRestantes[i]==0)
+				{
+					SDL_BlitSurface(layout.Placement, NULL, layout.Screen, &rectTuilesAPlacer[i]);
+				}
 
 		}
-		if (color==ECnone){  // remise à vide
+		else if (color==ECnone){  // remise à vide
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
 			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
@@ -154,10 +162,7 @@ int i;
 			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
 
 		}
-		if (nbPiecesRestantes[i]==0)
-		{
-			SDL_BlitSurface(layout.Placement, NULL, layout.Screen, &rectTuilesAPlacer[i]);
-		}
+		
 	}
  	SDL_Flip(layout.Screen); // Rafraichissement
 
@@ -180,7 +185,7 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor c
 			{
 			SDL_BlitSurface(layout->Background, &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
-			layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
+			//layout->DisplayTab[posPiece.line][posPiece.col].cellaff=Piece;
 
 SDL_Flip(layout->Screen); // Rafraichissement
 }
@@ -249,7 +254,7 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 				
 			}
 			else
-			{	printf("A Case [%d|%d] en [%d][%d] \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j);
+			{	printf("A Case [%d|%d] en [%d][%d] et cellaff = %d  et color = %d \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j,layout->DisplayTab[i][j].cellaff,player.Color);
 				// Si la case ne comprend déjà la bonne pièce
 				if  ((player.Pboard[i][j].content!=player.Color)||(layout->DisplayTab[i][j].cellaff!=player.Pboard[i][j].piece))
 				{ printf("B \n");

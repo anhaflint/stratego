@@ -78,7 +78,6 @@ while (endPlacement!=1)
             printf("Vous quittez le jeu...\n");
             *continuer=0;
             endPlacement=1;         // Placement fini prématurément
-            Pieces=NULL;
            
             break;
  
