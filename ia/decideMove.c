@@ -256,23 +256,23 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 	{
 		/* cas ou la piece ennemie est le drapeau ou l'espion */
 		if (enemyPiece == EPflag || (enemyPiece == EPspy && myPiece != EPspy))
-			return -12;
+			return (-12 * 2);
 		/* cas ou la piece ennemie est la bombe et que la notre est un demineur */
 		else if (enemyPiece == EPbomb && myPiece == EPminer)
-			return -11;
+			return (-11 * 2);
 		/* cas ou la piece ennemie est une bombe */
 		else if( enemyPiece == EPbomb )
-			return 10;
+			return (10 * 2);
 		/* cas ou la piece ennemie est un marechal et la mienne un espion*/
 		else if (enemyPiece == EPmarshal && myPiece == EPspy)
-			return 12;// le maximun warning 
+			return (12 * 2);// le maximun warning 
 		/* cas où la piece de l'ennemi et la mienne est egale */
 		else if (enemyPiece == myPiece)
-			return 10;
+			return (10 * 2);
 		else
 		{
 			forceDifference = enemyPiece - myPiece;
-		return forceDifference;
+		return (forceDifference * 2);
 		} 
 	}
 }
@@ -315,11 +315,105 @@ float giveNormalRank(int numEnemy){
 
 // procedure interne a decideMoves
 // evaluation globale des mouvements dupliqués et risqués 
-// void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
-// {
-// 	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
-// 	// a faire
-// }
+void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves[])
+{
+	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
+	// a faire
+	int i = j = 0; /* compteurs */
+	GroupMoves buffer; /* tableau temporel utile pour le classement des mouvements */
+
+	priorityMoves->lenght_list=0;
+
+	for(i = 0; i < riskedMoves.lenght_list; i++)
+	{	
+		/* si on s'occupe du tyableau de mouvement pour la première fois */
+		if(i == 0)
+		{
+			findOccurences(riskedMoves.listMoves[i].move,riskedMoves.listMoves,&buffer);
+			priorityMoves->listMoves[j].caution = globalProbability(buffer);
+			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
+			priorityMoves->lenght_list++;
+		}
+		/* si le mouvement actuel n'a pas été pris en compte par le traitement précédent */
+		else if (!isMovePresent(riskedMoves->listMoves[i].move,buffer))
+		{
+			emptyList(&buffer);
+			findOccurences(riskedMoves.listMoves[i],riskedMoves.listMoves,&buffer);
+			priorityMoves->listMoves[j].caution = globalProbability(buffer);
+			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
+			priorityMoves->lenght_list++;
+		}
+	}
+}
+
+// procedure interne à globalEvaluation
+// cherche toutes les occurences d'un mouvement dans la liste de mouvements risqués et remplit le buffer 
+ void findOccurences(Smove movement,GroupMoves riskedMoves,GroupMoves *buffer)
+ {
+ 	int i = 0; /* compteurs */
+
+ 	buffer->lenght_list=0;
+ 	for(i=0;i < riskedMoves.lenght_list; i<++)
+ 	{
+ 		if(riskedMoves[i].listMoves[i].move == mouvement)
+ 		{
+ 			buffer->listMoves[buffer->lenght_list]=riskedMoves.listMoves[i];
+ 			buffer->lenght_list++;
+		}
+ 	}
+ }
+
+ // procedure interne à globalEvaluation
+ // permet de donner le taux de risque global pour un mouvement
+float globalProbability(GroupMoves buffer){
+
+	int i=0 /* compteurs */
+	float sumCautionNeighbour=0; /* somme des risques pour les mouvements risqué lies au ennemis environants */
+	float cautionAttack; /* rique éventuel du mouvement d'attaque */
+
+	for(i=0;i<buffer.lenght_list;i++)
+	{
+		/* mouvement d'attaque */
+		if(buffer.listMoves[i].caution > 12 || buffer.listMoves[i].caution < -12)
+			cautionAttack = buffer.listMoves[i].caution;
+		else sumCautionNeighbour += buffer.listMoves[i].caution;
+	}
+
+	finalCaution = ((sumCautionNeighbour / (buffer.lenght_list - 1) + (cautionAttack / 2) / 2 );
+
+	return finalCaution;
+}
+
+// procedure interne a globalEvaluation
+// permet de savoir si un mouvement est présent dans une liste de mouvement 
+bool isMovePresent(SMove mouvement, GroupMoves buffer)
+{
+	int i; /* compteur */
+
+	for(i=0;i<buffer.lenght_list;i++)
+	{
+		if(buffer.listMoves[i].move == mouvement)
+			return true;
+	}
+	return false;
+}
+
+// procedure interne a globalEvaluation
+// permet d'initialiser un tableau de mouvement
+void emptyList(GroupMoves *buffer)
+{
+	int i=0; /* compteur*/
+	while(i<buffer->lenght_list)
+	{
+		buffer->listMoves[i].move.start.line=0;
+		buffer->listMoves[i].move.end.line=0;
+		buffer->listMoves[i].move.start.col=0;
+		buffer->listMoves[i].move.end.col=0;
+		buffer->listMoves[i].caution=0;
+		i++;
+	}
+	buffer->lenght_list = 0;
+}
 
 // SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 // {
