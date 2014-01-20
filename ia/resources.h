@@ -12,7 +12,6 @@ extern SMove m_decidedMove;
 extern int m_nbMove; 
 extern int m_caution; 
 extern int m_nbRoundTrips;
-extern bool m_myMove; 
-extern bool m_hisMove;
+extern bool m_myMove;
 
 #endif

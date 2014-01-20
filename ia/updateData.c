@@ -58,14 +58,14 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 		for(j=0; j<10; j++)
 		{
 			/* Si il y a un ennemi sur la case */
-			if (m_board[i][j].box.content ==m_enemyColor)
+			if (m_board[i][j].box.content == m_enemyColor)
 			{
 				/* Si on ne connait pas la pièce */
 				if(m_board[i][j].box.piece == EPnone)
 					nbHiddenEnemies++;
 
 				/* Sinon, si on la voit et qu'elle peut bouger, on décrémente nbMovablesHiddenEnemies */
-				else if ((m_board[i][j].box.piece != EPbomb)&&(m_board[i][j].box.piece != EPflag))
+				else if ((m_board[i][j].box.piece != EPbomb) && (m_board[i][j].box.piece != EPflag))
 					nbMovablesHiddenEnemies--;
 			}
 		}
@@ -193,14 +193,12 @@ void updateData(const SGameState * const gameState)
 				enemyHasMoved = true;
 				enemyMovement.start.line = i;
 				enemyMovement.start.col = j;
-				printf("Piece %d n'est plus en (%d,%d)\n", m_board[i][j].box.piece, i, j);
 			}
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
 			else if (((m_board[i][j].box.content - gameState->board[i][j].content) < 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyMovement.end.line = i; 
-				enemyMovement.end.col = j;
-				printf("Piece %d est maintenant en (%d,%d)\n", gameState->board[i][j].piece, i, j);
+				enemyMovement.end.col = j;				
 			}
 		}
 	}
@@ -223,5 +221,4 @@ void updateData(const SGameState * const gameState)
 
 	/* Réinitialisation des valeurs */
 	m_myMove = false;
-	m_hisMove = false;
 }

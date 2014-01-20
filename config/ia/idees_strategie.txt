@@ -25,8 +25,6 @@ Troisième phase : Parmi les déplacements possibles, détermination des déplac
 - Quatrième phase : Envoi du déplacement à l'arbitre
 
 (A) Réflexion pour attaque d'un ennemi
-- Ne pas attaquer si bombe potentielle (calcul de proba)
-- Ne pas attaquer si pièce plus forte potentielle (calcul de proba)
 - Attaquer tout de suite si pièce la plus forte dans le jeu
 
 (B) Classement des manoeuvres risquées, du plus risqué au moins risqué :
@@ -83,6 +81,13 @@ Liste des risques :
 - Un peu risqué : une pièce ennemie se place à côté d'une pièce allié, ne rien faire
 - Plus risqué : dans le même cas, attaquer la pièce
 
+Typiquement :
+
+- Mouvement risqué : 
+ = Bouger une pièce à côté d'une pièce ennemie inconnu ou supérieure
+ = Attaquer une pièce ennemie inconnue
+ = Attaquer une pièce ennemie (inconnue ou pas) et prendre le risque de se faire avoir après
+
 |==========================================|
 |============= DECIDEMOVE() ===============|
 |==========================================|
@@ -101,3 +106,25 @@ Structure myMove, utilisé dans groupMoves
 
 // Choix du mouvement en fonction des risques et de la stratégie
 - chooseMove(gameState); // Choix du mouvement
+
+
+Arbre de la fonction :
+
+decideMove()
+---- evaluateMoves()
+-------- riskProbability()
+------------ getInfoHidedEnemyGlobal()
+------------ getInfoHidedEnemyMovable()
+------------ getInfoHighEnemy()
+---------------- calculateHighEnemy()
+------------ getInfoLowEnemy()
+---------------- calculateLowEnemy
+------------ getInfoHidedEnemyBomb()
+------------ isHidedMarshal()
+-------- attributionRank()
+---- globalEvaluation()
+-------- findOccurences()
+-------- globalProbability()
+-------- emptyList()
+-------- isMovePresent()
+---- chooseMove()
