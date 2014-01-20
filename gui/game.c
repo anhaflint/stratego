@@ -3,6 +3,7 @@
 #include <time.h>
 //#include <math.h>
 #include "game.h"
+#include "analyze.c"
 
 // Tous les tableaux sont comptés avec le 0,0 en bas à gauche
 // Tous les indices donnés en commentaires sont comptés à partir de 0 (indice 3 = 4eme ligne du tableau)
@@ -143,13 +144,13 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 		player1->Color = ECblue;
 		player2->Color = ECred;
 	}
-	// Mise a jour de la couleur du joueur 1 dans la config du jeu
-	gameconfig->ColorPlayer1 = player1->Color;
+
 	// Remplissage des tableaux des joueurs
 	for (i=0; i<10; i++)
 	{
 		for (j=0; j<10; j++)
-		{
+		{	
+
 			if (i < 4) // Mise a jour des couleurs des pions dans le gamestate
 			{
 				// bas des plateaux des joueurs sont de la couleur du joeur
@@ -293,14 +294,17 @@ SMove Game_TranslateMove(SMove move, EPlayer player, int etat)
  *			0  : mouvement possible et sans attaque
  *			1  : mouvement possible avec attaque
  */
-int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position)
+
+
+int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int position)
 {
 	int RETOUR = 0; // par défaut déplacement possible sans attaque
 	// on definie des variables au lieu de faire les opérations d'accès à chaque fois
 	int StartLine, EndLine, StartCol, EndCol, i;
 
 	// Determination de la couleur de l'adversaire
-	EColor Enemy = (player.Color == ECred) ? ECblue : ECred;
+	EColor Enemy = (player->Color == ECred) ? ECblue : ECred;
+	// Determination de variables pour éviter les accès mémoire trop fréquents
 		StartLine = move.start.line;
 		EndLine = move.end.line;
 		StartCol = move.start.col; 
@@ -309,20 +313,27 @@ int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int positio
 	unsigned int diffligne, diffcol;
 		diffligne = abs(StartLine - EndLine);
 		diffcol = abs(StartCol - EndCol);
+	// On stocke le mouvement précédent du joueur
+	// sera utile dans le calcul des pénalités
+	// MovingPlayer->previousMove = move; 
 
 
 	// verif de la case de destination
-	if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player.Color) || (gamestate.board[EndLine][EndCol].content == EClake))
 		// si il y a un deplacement en diagonale 
 		// ou si le joueur essaie de rester sur la mm case
 		// ou si le joueur essaie de se deplacer sur un de ses pions
 		// ou si le joueur essaie de se deplacer sur un lac
-		return -1; // deplacement invalide
-
-		// Traitement des cas ou on ne peut pas deplacer le pion 
+	/*
+	if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player->Color) || (gamestate.board[EndLine][EndCol].content == EClake))
+	{
+		player->nbPenalty++;
+		return -1; // deplacement invalide		
+	}
+		// Traitement des cas où on ne peut pas deplacer le pion 
 		switch (position)
 		{
-			case 0 : return -1; // Position de depart invalide
+			case 0 : player->nbPenalty++; // On choisi d'incrémenter le compteur de pénalités ici plutot que dans checkpos
+					return -1; // Position de depart invalide
 					break;
 			case 1 : // cas pion général
 					 // Deplacement d'une case seulement
@@ -369,6 +380,63 @@ int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int positio
 		// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
 		if (gamestate.board[EndLine][EndCol].content == Enemy)
 			RETOUR = 1;
+		*/
+if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (player->Pboard[EndLine][EndCol].content == player->Color) || (player->Pboard[EndLine][EndCol].content == EClake))
+	{
+		player->nbPenalty++;
+		return -1; // deplacement invalide		
+	}
+		// Traitement des cas où on ne peut pas deplacer le pion 
+		switch (position)
+		{
+			case 0 : player->nbPenalty++; // On choisi d'incrémenter le compteur de pénalités ici plutot que dans checkpos
+					return -1; // Position de depart invalide
+					break;
+			case 1 : // cas pion général
+					 // Deplacement d'une case seulement
+					if (diffligne + diffcol != 1) return -1;// Deplacement illégal
+					break;
+			case 2 : // cas pion scout
+					if (diffcol == 0) // deplacement en lignes
+					{
+						if ((StartLine - EndLine) < 0)
+						{
+							for(i = StartLine + 1; i<EndLine; i++) 
+							{
+								if ((player->Pboard[i][StartCol].piece != EPnone)||(player->Pboard[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
+							}
+						}
+						else
+						{
+							for(i = StartLine - 1; i>EndLine; i--) 
+							{
+								if ((player->Pboard[i][StartCol].piece != EPnone)||(player->Pboard[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
+							}
+						}
+					}
+					if (diffligne == 0) // deplacement en colonnes
+					{
+						if((StartCol - EndCol) < 0)
+						{
+							for (i = StartCol + 1; i<EndCol; i++)
+							{
+								if ((player->Pboard[StartLine][i].piece != EPnone)||(player->Pboard[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
+							}
+						}
+						else
+						{
+							for (i = StartCol -1; i>EndCol; i--)
+							{
+								if ((player->Pboard[StartLine][i].piece != EPnone)||(player->Pboard[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
+							}
+						}
+					}
+					// si on arrive ici on peut deplacer le scout
+					break;
+		}
+		// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
+		if (player->Pboard[EndLine][EndCol].content == Enemy)
+			RETOUR = 1;
 return RETOUR;
 }
 
@@ -390,7 +458,7 @@ void Game_RazSBox(SBox *box)
 
 
 
-void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other)
+int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other)
 {
 	/* @variable : move 
 	 *				mouvement tel qu'il est rentré par le joueur, dans le sens de son tableau personnel
@@ -401,11 +469,13 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Ot
 	 */
 	SMove AdvMove, GSMove;  
 	SBox FightResult;
+	unsigned int RETOUR;
 	/*	printf("move.start.ligne = %d\n", move.start.line);
 		printf("move.start.colonne = %d\n", move.start.col);
 		printf("move.end.ligne = %d\n", move.end.line);
 		printf("move.end.colonne = %d\n", move.end.col);
 	*/
+	MovingPlayer->nbCoups --;
 
 	GSMove = Game_TranslateMove(move, *MovingPlayer, 1); // Si le joueur est bleu, il faut inverser les indices
 	AdvMove = Game_TranslateMove(move, *MovingPlayer, 2); // utile quand on va changer le GS des adversaires
@@ -433,12 +503,12 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Ot
 	*/
 	int pos = Game_CheckPosition(GSMove.start, *MovingPlayer, *game);
 		printf("pos retourne : %d\n", pos);
-	int mvt = Game_CheckMove(GSMove, *MovingPlayer, *game, pos);
+	int mvt = Game_CheckMove(GSMove, MovingPlayer, *game, pos);
 		printf("mvt retourne : %d\n", mvt);
 	switch(mvt)
 	{
 		case -1: printf("Mouvement invalide\n");
-				 // Game_AddPenalty(player);
+				 RETOUR = 0; // Dans le jeu, le joueur passe son tour
 				 break; // On ajoute une pénalité au joueur et on sort
 
 		// Deplacement seul
@@ -456,7 +526,7 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Ot
 				 Other->Pboard[AdvEndLine][AdvEndCol] = Other->Pboard[AdvStartLine][AdvStartCol];
 				 Game_RazSBox(&(Other->Pboard[AdvStartLine][AdvStartCol]));
 				 printf("gamestate adverse modifié\n");
-
+				 RETOUR = 1; // le mouvement a été effectué
 				 break;
 		// Combat
 		case 1 : if((game->board[GSMoveStartLine][GSMoveStartCol].piece) == (game->board[GSMoveEndLine][GSMoveEndCol].piece)) 
@@ -526,9 +596,11 @@ void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Ot
 				 // On supprime le pion de depart dans le GS du joueur
 				 Game_RazSBox(&(MovingPlayer->Pboard[MoveStartLine][MoveStartCol]));
 				 // On supprime les deux pions dans le GS de l'adversaire
-				 Game_RazSBox(&(Other->Pboard[AdvStartLine][AdvStartCol]));				 
+				 Game_RazSBox(&(Other->Pboard[AdvStartLine][AdvStartCol]));		
+				 RETOUR = 1; // le mouvement a été effectué		 
 				 break; 
 	}
+	return RETOUR;
 }
 
 /* Fonction de calcul du gagnant d'un combat
@@ -579,14 +651,14 @@ SBox Game_Fight(SBox player1, SBox player2)
 }
 
 
-/* initialisation du jeu pour le joueur humain (placement des pieces)
- * à ce moment là on ne verifie pas la validité des mouvements car il ne peut pas acceder au tableau du joueur adverse
- * @param const EColor color 
- * 				couleur du joueur 
- * @param EPiece boardInit[4][10]
- * 				tableau dans lequel le joueur va placer ses pions (on ne peut pas lui donner le gamestate)
+/* initialisation d'un jeu
  */
-void Game_Begin(EPlayer *player, SGameState *game);
+void Game_Begin(EPlayer *player1, EPlayer *player2, SGameState *game, SGameConfig *gameconfig, int nbCoups)
+{
+	Game_InitGameState(game);
+	Game_InitPlayer(player1, player2, gameconfig, nbCoups);
+	gameconfig->nbJeux ++; // on a démarré un jeu de plus
+}
 
 /* fonction de demande du prochain mouvement au joueur humain
  * @param const SGameState * const gamestate
@@ -594,7 +666,11 @@ void Game_Begin(EPlayer *player, SGameState *game);
  *			const SGameState* :		constance de la valeur pointée
  *			* conste gamestate :	constance de l'adresse contenue dans le pointeur 
  */
-SMove Player_NextMove(const SGameState * const gamestate);
+//SMove Player_NextMove(EPlayer player, SDL_Event *event, int *continuer)
+//{
+
+//}
+
 // A changer et envoyer un player_gamestate pour le joueur
 
 
@@ -608,14 +684,56 @@ SMove Player_NextMove(const SGameState * const gamestate);
  * par exemple si plus que des bombes + flag en jeu, ou si toutes les pièces mobiles sont entourées par des bombes
  */
  //	EColor Enemy = (player.Color == ECred) ? ECblue : ECred;
-char* Game_End(EPlayer player1, EPlayer player2, SGameConfig config)
+ 	// "Voulez-vous rejouer ?" "O/n" si oui, incrementation d'un compteur de jeux 
+	//pour savoir à la fin du match qui a gagné, sinon, on arrête et on donne le gagnant du match
+int Game_EndMatch(EPlayer player1, EPlayer player2, SGameConfig config, SGameState gamestate, int nbCoups)
 {
-	/* Si le joueur a gagné plus de fois ou a le mm nombre de victoires que le joueur 1
+	/* Si le joueur 1 a gagné plus de fois ou a le mm nombre de victoires que le joueur 2
 	 * 		si ils ont gagné le mm nombre de fois on renvoie null
 	 *		sinon on renvoie le joueur1
 	 * Sinon on renvoie le joueur 2
 	 */
-	return (player1.winnings >= player2.winnings)? ((player1.winnings == player2.winnings)? NULL : config.Player1Name): config.Player2Name; 
+	unsigned int FINI = 0;
+	if((config.nbJeux == 3)&&((player1.winnings + player2.winnings)==3))// On a joué tous les jeux
+	{
+		FINI = (player1.winnings >= player2.winnings)? ((player1.winnings == player2.winnings)? 0 : 1): 2; 
+	}
+	return FINI; 
+}
+/* fonction de vérification de fin d'un jeu
+ * @return value : 
+ *		0 : 
+ */
+int Game_GotWinner(EPlayer player1, EPlayer player2, SGameState gamestate, int nbCoups)
+{
+	int GAGNANT = 0; // par défaut pas de gagnant
+
+	// On ne regarde le gagnant que si un coup a déjà été joué par un des joueurs
+	if((player1.nbCoups != nbCoups)||(player2.nbCoups != nbCoups))
+	{
+		// On regarde si le drapeau d'un joueur a été éliminé
+		if(player1.Color == ECred) // joueur1 rouge, joueur2 bleu
+		{
+			if((gamestate.redOut[11] == 1)||(player1.nbPenalty == 3)) // le drapeau rouge est éliminé, player1 a perdu
+				GAGNANT = 2; // joueur2 gagne
+			else
+				if((gamestate.blueOut[11] == 1)||(player2.nbPenalty == 3))// le drapeau bleu est éliminé, le player1 a perdu
+					GAGNANT = 1; // joueur1 gagne
+
+		}
+		else // le joueur 1 bleu, joueur2 rouge
+		{
+			if((gamestate.redOut[11] == 1)||(player2.nbPenalty == 3)) // le drapeau rouge est éliminé, player1 a gagné
+				GAGNANT = 1; 
+			else
+				if((gamestate.blueOut[11] == 1)||(player1.nbPenalty == 3)) // le drapeau bleu est éliminé, le player1 a perdu
+					GAGNANT = 2; 
+		}
+	}
+	return GAGNANT; 
+
+	// On regarde si les joueurs ont encore des pièces mobiles
+
 }
 void Game_Start(EPlayer *player1, EPlayer *player2)
 {
@@ -625,10 +743,6 @@ void Game_Start(EPlayer *player1, EPlayer *player2)
 	printf("Nombre de victoires des joueurs initialisé---------------\n");
 }
 
-
-
-void Game_EndMatch(); 	// "Voulez-vous rejouer ?" "O/n" si oui, incrementation d'un compteur de jeux 
-					  	//pour savoir à la fin du match qui a gagné, sinon, on arrête et on donne le gagnant du match
 
 void Game_AddPenalty(EPlayer player);	// idée : variable statique ? allouées au début du programme et libérées à la fin
 

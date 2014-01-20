@@ -83,6 +83,7 @@ typedef struct
 	char Player2Name[16];
 	SGameMode Mode; 
 	EColor ColorPlayer1;
+	unsigned nbJeux;
 }SGameConfig;
 
 //----------------------- Structures et énumérations ------------------------//
