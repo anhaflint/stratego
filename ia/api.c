@@ -238,6 +238,7 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	if (m_myMove)
 	{
 		analyseFight(armyPiece, enemyPiece, armyPos, enemyPos);
+		m_myMove = false;
 	}
 	else
 	{
