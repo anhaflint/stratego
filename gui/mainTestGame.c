@@ -176,22 +176,22 @@ int main(int argc, char* argv[])
 		if(player1.Color == ECred)
 		{ // Si le premier joueur est rouge alors : 
 			//Le joueur rouge saisi le placement de ses pions et valide
-				Event_InitGameState(&event, &continuer, ECred, &layout, boardInit);
+				//Event_InitGameState(&event, &continuer, ECred, &layout, boardInit);
 				// Copie du placement des pions du joueur dans les gamestates
 				Game_CpyInitGameState(&gamestate, &player1, boardInit);
 			//Le joueur bleu saisi le placement de ses pions et valide
-				Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit);
+				//Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit);
 				Game_CpyInitGameState(&gamestate, &player2, boardInit);
 
 		}
 		else // Le joueur 1 est bleu
 		{
 			//Le joueur rouge saisi le placement de ses pions et valide
-				Event_InitGameState(&event, &continuer, ECred, &layout, boardInit);
+				//Event_InitGameState(&event, &continuer, ECred, &layout, boardInit);
 				// Copie du placement des pions du joueur dans les gamestates
 				Game_CpyInitGameState(&gamestate, &player2, boardInit);
 			//Le joueur bleu saisi le placement de ses pions et valide
-				Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit);
+				//Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit);
 				Game_CpyInitGameState(&gamestate, &player1, boardInit);
 		}
 

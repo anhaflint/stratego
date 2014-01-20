@@ -714,19 +714,19 @@ int Game_GotWinner(EPlayer player1, EPlayer player2, SGameState gamestate, int n
 		// On regarde si le drapeau d'un joueur a été éliminé
 		if(player1.Color == ECred) // joueur1 rouge, joueur2 bleu
 		{
-			if((gamestate.redOut[11] == 1)||(player1.nbPenalty == 3)) // le drapeau rouge est éliminé, player1 a perdu
+			if((gamestate.redOut[11] == 1)||(player1.nbPenalty == 3)||(player1.nbCoups == 0)) // le drapeau rouge est éliminé, player1 a perdu
 				GAGNANT = 2; // joueur2 gagne
 			else
-				if((gamestate.blueOut[11] == 1)||(player2.nbPenalty == 3))// le drapeau bleu est éliminé, le player1 a perdu
+				if((gamestate.blueOut[11] == 1)||(player2.nbPenalty == 3)||(player2.nbCoups == 0))// le drapeau bleu est éliminé, le player1 a perdu
 					GAGNANT = 1; // joueur1 gagne
 
 		}
 		else // le joueur 1 bleu, joueur2 rouge
 		{
-			if((gamestate.redOut[11] == 1)||(player2.nbPenalty == 3)) // le drapeau rouge est éliminé, player1 a gagné
+			if((gamestate.redOut[11] == 1)||(player2.nbPenalty == 3)||(player2.nbCoups == 0)) // le drapeau rouge est éliminé, player1 a gagné
 				GAGNANT = 1; 
 			else
-				if((gamestate.blueOut[11] == 1)||(player1.nbPenalty == 3)) // le drapeau bleu est éliminé, le player1 a perdu
+				if((gamestate.blueOut[11] == 1)||(player1.nbPenalty == 3)||(player1.nbCoups == 0)) // le drapeau bleu est éliminé, le player1 a perdu
 					GAGNANT = 2; 
 		}
 	}
