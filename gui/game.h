@@ -2,6 +2,8 @@
 	#define _GAME_H
 
 #include "../structure.h"
+#include <SDL/SDL.h>
+#include "display.h"
 
 //--------------------------------------------fonctions de gestion de jeu et arbitrage------------------------------------------------
 // valables pour un joueur humain ou inhumain (pica)
@@ -26,27 +28,30 @@ void Game_RazSBox(SBox *box); // OK
 
 // fonctions de verification de mouvements
 int Game_CheckPosition(SPos start, EPlayer player, SGameState gamestate); // OK
-int Game_CheckMove(SMove move, EPlayer player, SGameState gamestate, int position); // OK ?  A Tester encore plus
-SMove Player_NextMove(const SGameState * const gamestate);
+int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int position); // OK ?  A Tester encore plus
+SMove Player_NextMove(EPlayer player, SDL_Event *event, int *continuer);
 SMove Game_TranslateMove(SMove move, EPlayer player, int etat);  // OK
 
 // fonction qui effectue le mouvement
-void Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other); // OK 
+int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other); // OK 
 // fonction qui retourne le gagnant du combat
 SBox Game_Fight(SBox player1, SBox player2); // OK
 
 // procédure de vérification de la fin du jeu
 // renvoie le gagnant
-char* Game_End(EPlayer player1, EPlayer player2, SGameConfig config); // OK
-// Init le nombre de victoire des joueurs
-void Game_Start(EPlayer *player1, EPlayer *player2);
-void Game_EndMatch();
+int Game_GotWinner(EPlayer player1, EPlayer player2, SGameState gamestate, int nbCoups);
+int analyzeBoard(EPlayer player);
+void addAnalyzedMove(unsigned int i, unsigned int j, int new_i, int new_j, int is_i, int lim, unsigned int* compteur, EColor enemyColor);
+
+// Init le nombre de victoire des joueurs pour tout un MATCH
+void Game_Start(EPlayer *player1, EPlayer *player2); // OK
+int Game_EndMatch(EPlayer player1, EPlayer player2, SGameConfig config, SGameState gamestate, int nbCoups);
 
 // fonction de gestion des pénalités
 void Game_AddPenalty();	// idée : variable statique ? allouées au début du programme et libérées à la fin
 
 // initialisation du jeu pour le joueur humain (placement des pieces)
-void Game_Begin(EPlayer *player, SGameState *game);
+void Game_Begin(EPlayer *player1, EPlayer *player2, SGameState *game, SGameConfig *gameconfig, int nbCoups);
 
 void game_PvP();	
 void game_IAvsP();
