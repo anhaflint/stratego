@@ -84,10 +84,15 @@ for (i=13;i<26;i++){
 
 	layout->Patron=SDL_LoadBMP("images/piecestest.bmp");   // Charge image Patron Pièces
 	
+	layout->J1=SDL_LoadBMP("images/j1.bmp");   // Charge image J1
+	layout->J2=SDL_LoadBMP("images/j2.bmp");   // Charge image J2
+	
 	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
 
 	layout->Placement=SDL_LoadBMP("images/endTuile.bmp");   // Charge image grisée
 	SDL_SetAlpha(layout->Placement, SDL_SRCALPHA, 192);
+
+	layout->Penalty=SDL_LoadBMP("images/penality.bmp");
 
 
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran : 800x600
@@ -272,9 +277,147 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 	SDL_Flip(layout->Screen); // Rafraichissement
 }
 
+void Display_Penalty(BoardLayout *layout,EPlayer player)
+{
+	
+	SDL_Rect rectPenalty;
+	rectPenalty.w=40;
+	rectPenalty.h=40;
+
+	if ((player.nbPenalty>0)&&(player.nbPenalty<=3))
+	{
+		if(player.Color==2)
+		{
+			rectPenalty.x=150+(30*player.nbPenalty);
+			rectPenalty.y=554;
+		}
+
+		if(player.Color==3)
+		{
+			rectPenalty.x=800-(190+30*player.nbPenalty);
+			rectPenalty.y=554;
+		}
+		SDL_SetColorKey(layout->Penalty, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Penalty->format, 0, 0, 255));
+		SDL_BlitSurface(layout->Penalty, NULL, layout->Screen, &(rectPenalty));
+		SDL_Flip(layout->Screen);
+	}
+	else
+	{
+		int i;
+		for (i = 1; i < 4; i++)
+		{
+		if(player.Color==2)
+		{
+			rectPenalty.x=150+30*i;
+			rectPenalty.y=554;
+		}
+
+		if(player.Color==3)
+		{
+			rectPenalty.x=800-(190+30*i);
+			rectPenalty.y=554;
+		}
+
+		SDL_BlitSurface(layout->Background, &(rectPenalty) , layout->Screen, &(rectPenalty));
+		SDL_Flip(layout->Screen);
+		}
+
+	}
+
+}
+void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff)
+
+{
+	SDL_Rect rectJ;
+	rectJ.w=80;
+	rectJ.h=40;
+
+	if (aff==1)
+	{
+		if(player.Color==2)
+		{
+			rectJ.x=120;
+			rectJ.y=556;
+			SDL_SetColorKey(layout->J1, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J1->format, 0, 0, 0));
+			SDL_BlitSurface(layout->J1, NULL, layout->Screen, &rectJ);
+		}
+
+		if(player.Color==3)
+		{
+			rectJ.x=800-200; //120-80
+			rectJ.y=556;
+			SDL_SetColorKey(layout->J2, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J2->format, 0, 0, 0));
+			SDL_BlitSurface(layout->J2, NULL, layout->Screen, &rectJ);
+		}
+		
+		SDL_Flip(layout->Screen);
+	}
+	else
+	{
+
+			rectJ.x=120;
+			rectJ.y=556;
+		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
+
+			rectJ.x=800-200; // 120-80
+			rectJ.y=556;
+		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
+		SDL_Flip(layout->Screen);
+		}
+}
+
+void Display_lateralPieces(BoardLayout layout,EColor color)
+{
+	SDL_Rect rectTuilesAPlacer[12];
+int i;
+
+	for (i=0;i<12;i++){
+		rectTuilesAPlacer[i].h=40;
+		rectTuilesAPlacer[i].w=40;
+		
+		if (color==ECred)
+		{
+			rectTuilesAPlacer[i].x=10;
+			rectTuilesAPlacer[i].y=33+45*i;
+			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+
+		}
+
+		else if (color==ECblue)
+		{
+			rectTuilesAPlacer[i].x=710;
+			rectTuilesAPlacer[i].y=33+45*i;
+			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i+13]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+
+
+		}
+		else if (color==ECnone){  // remise à vide
+			rectTuilesAPlacer[i].x=10;
+			rectTuilesAPlacer[i].y=33+45*i;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+			rectTuilesAPlacer[i].x=710;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+
+		}
+		
+	}
+ 	SDL_Flip(layout.Screen); // Rafraichissement
+}
+
 
 
 /*
+void Display_killedPieces(BoardLayout *layout,SGameState gamestate)
+{
+
+}
+
+	unsigned int redOut[11];	// Tableau de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+	unsigned int blueOut[11];	// Tableau de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+} SGameState;
+
+
+
 void Display_Board(BoardLayout layout, SGameState gamestate){
 
 
@@ -288,16 +431,6 @@ void Display_Fight(SDL_Surface* piece){
 
 
 }
-
-
-void Display_Piece(SGameState gamestate, SPos posPiece, BoardLayout layout){
-
-
-
-
-
-}
-
 
 
 

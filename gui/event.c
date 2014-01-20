@@ -444,6 +444,8 @@ SMove Event_IdMove(SDL_Event *event, EPlayer player,int *continuer)
             *continuer=0;
             Move.start.line=-1;
             Move.start.col=-1;
+            moveStart=1;
+            moveOK=1;
             break;
  
         case SDL_MOUSEBUTTONUP:
@@ -465,6 +467,7 @@ while(moveOK!=1)
             *continuer=0;
             Move.end.line=-1;
             Move.end.col=-1;
+            moveOK=1;
             break;
  
         case SDL_MOUSEBUTTONUP:
