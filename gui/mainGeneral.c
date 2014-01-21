@@ -175,6 +175,7 @@ int main(int argc, char* argv[])
 	
 	//Display_BoardPlayer(layout,player1);
 	Display_lateralPieces(layout,player1.Color);
+	Display_lateralPieces(layout,player2.Color);
 	
 	while( (player1.nbCoups!=0) || (continuer==0) )
 	{
@@ -183,6 +184,8 @@ int main(int argc, char* argv[])
 		// TEST SUPPRESSION TERMINEE Display_affPlayer(&layout,player2,0);
 
 		Display_BoardPlayer(&layout,player1);
+		Display_killedPieces(&layout,player1,gameState);
+		Display_killedPieces(&layout,player2,gameState);
 		DisplayPlayerGS(player1.Pboard);
 		move=Event_IdMove(&event,player1, &continuer);
 		Game_DoMove(&gameState, move, &player1, &player2);
