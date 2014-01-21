@@ -11,7 +11,8 @@
 typedef struct
 {
 SDL_Rect     position;  	//Position relative d'une case ainsi que sa surface "image" associé 
-EPiece  	 cellaff;		//																	
+EPiece  	 cellaff;
+EColor		 cellcol;		//																	
 }Cell;						// Utile pour connaître le remplissage de chaqune des cases | NULL => Background
 							//															| tuiles
 

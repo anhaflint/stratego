@@ -122,6 +122,7 @@ for (i=13;i<26;i++){
 
 			layout->DisplayTab[i][j].cellaff=12;	//Rien n'est encore afficher sur le plateau.
 													//toute cellule ne possède aucun remplissage => Background
+			layout->DisplayTab[i][j].cellcol=ECnone;
 		}
 
 	}
@@ -255,18 +256,20 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 					printf("ON EFFACE \n" );
 					SDL_BlitSurface(layout->Background, &(layout->DisplayTab[i][j].position), layout->Screen, &(layout->DisplayTab[i][j].position));
 					layout->DisplayTab[i][j].cellaff=12;
+					layout->DisplayTab[i][j].cellcol=ECnone;
 				
 				
 			}
 			else
 			{	printf("A Case [%d|%d] en [%d][%d] et cellaff = %d  et color = %d \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j,layout->DisplayTab[i][j].cellaff,player.Color);
 				// Si la case ne comprend déjà la bonne pièce
-				if  ((player.Pboard[i][j].content!=player.Color)||(layout->DisplayTab[i][j].cellaff!=player.Pboard[i][j].piece))
+				if  ((player.Pboard[i][j].content!=player.Color)||(layout->DisplayTab[i][j].cellaff!=player.Pboard[i][j].piece)||(layout->DisplayTab[i][j].cellcol!=player.Pboard[i][j].content))
 				{ printf("B \n");
 				posPiece.line=i;
 				posPiece.col=j;
 				Display_PieceInit(player.Pboard[i][j].piece, posPiece, layout ,player.Pboard[i][j].content);
 				layout->DisplayTab[i][j].cellaff=player.Pboard[i][j].piece;
+				layout->DisplayTab[i][j].cellcol=player.Pboard[i][j].content;
 				}
 
 			}
