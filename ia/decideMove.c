@@ -1,9 +1,26 @@
+#include <stdio.h>
 #include "resources.h"
 #include "decideMove.h"
+
+/****** FONCTIONS DE DEBUG ******/
+
+void drawGroupMoves(GroupMoves moves)
+{
+	int i;
+	SMove move;
+	for (i=0; i < moves.lenght_list; i++)
+	{
+		move = moves.listMoves[i].move;
+		printf("--------------------------------\n");
+		printf("| %d | (%d,%d) -> (%d,%d) | %f |\n", i, move.start.line, move.start.col, move.end.line, move.end.col, moves.listMoves[i].caution);
+	}
+	printf("\n");
+}
 
 // Décision du mouvement à effectuer
 void decideMove(const SGameState * const gameState)
 {
+	printf("Démarrage de decideMove...\n");
 	SMove choosedMove;
 	
 	// Décision du mouvemennt
@@ -16,6 +33,19 @@ void decideMove(const SGameState * const gameState)
 	evaluateMoves(gameState, &normalMoves,&riskedMoves);
  	globalEvaluation(&priorityMoves,riskedMoves);
 
+ 	printf("[decideMove] PRINTF DES GROUPMOVES\n");
+
+ 	printf("[decideMove] ---- NORMALMOVES ----\n");
+ 	drawGroupMoves(normalMoves);
+
+ 	printf("[decideMove] ---- RISKEDMOVES ----\n");
+ 	drawGroupMoves(riskedMoves);
+
+ 	printf("[decideMove] ---- PRIORITYMOVES ----\n");
+ 	drawGroupMoves(priorityMoves);
+
+ 	printf("[decideMove] Stratégie choisie : %d\n", m_strategy);
+
  	switch(m_strategy)
  	{
 	       case defensive || malicious || searchme :
@@ -24,8 +54,13 @@ void decideMove(const SGameState * const gameState)
 				else 
 					choosedMove = chooseMove(gameState, priorityMoves);
 	       break;
+
+	       case str_default:
+	       		choosedMove = chooseMove(gameState, normalMoves);
+	       	break;
  	}
 
+ 	printf("[decideMove] choosedMove : (%d,%d) -> (%d,%d)\n", choosedMove.start.line, choosedMove.start.col, choosedMove.end.line, choosedMove.end.col);
  	/* A décommenter si test de lib */
  	// choosedMove = m_movements[0];
 
@@ -47,6 +82,7 @@ void decideMove(const SGameState * const gameState)
 // calcule la probabilité de risque pour la force des pieces ennemies voisines ou les pieces ennemies à attaquer directement
 float riskProbability( const SGameState * const gameState,SPos myPosition,SPos enemyPosition)
 {
+	printf("Démarrage de riskProbability...\n");
 	int i;  /*compteur*/
 	int numHidedEnemyGlobal; /* nombre de piece ennemie cachée */
 	int numHidedEnemyMovable; /* nombre de pièce ennemie cachée qui peuvent bouger */
@@ -93,6 +129,7 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 // Classement des mouvements en fonction du risque encouru
 void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,GroupMoves *riskedMoves)
 {
+	printf("Démarrage de evaluateMoves...\n");
 	/* Declaration des variables internes à la procédure*/
 	int i = 0;
 	bool neighbour=1;
@@ -106,6 +143,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 	riskedMoves->lenght_list= 0;
 
 
+	printf("[evaluateMoves] Démarrage de la boucle principale..\n");
 	/* classification des mouvements */
 	while(i<m_nbMove)
 	{
@@ -114,9 +152,11 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 		myPosition = m_movements[i].start;
 		bool flag = false; /* pour les risqués */
 
+		printf("[evaluateMoves] Condition si non flag\n");
 		if (!flag)
 		{
 			
+			printf("[evaluateMoves] Evaluation en haut\n");
 			/* si en effectuant le mouvement dans une case vide, je peux directement  être attaqué en haut  au prochain tour */
 			if( m_movements[i].end.line < 9 &&  m_board[m_movements[i].end.line + 1][m_movements[i].end.col].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 			{
@@ -136,6 +176,8 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 
 				riskedMoves->lenght_list++;			
 			}
+
+			printf("[evaluateMoves] Evaluation en bas\n");
 			/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué en bas */
 			if (m_movements[i].end.line > 0  &&  m_board[ m_movements[i].end.line - 1 ][m_movements[i].end.col].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 			{
@@ -154,6 +196,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 				riskedMoves->lenght_list++;
 			}
 
+			printf("[evaluateMoves] Evaluation à droite\n");
 			/* si en effectuant le mouvement dans une case videje peux directement  être attaqué à droite*/
 			if (m_movements[i].end.col < 9 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col + 1 ].box.content == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 			{
@@ -172,6 +215,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 				riskedMoves->lenght_list++;
 			}
 
+			printf("[evaluateMoves] Evaluation à gauche\n");
 			/* si en effectuant le mouvement dans une case vide je peux directement  être attaqué par le bas */
 			if (m_movements[i].end.col > 0 &&  m_board[ m_movements[i].end.line][m_movements[i].end.col - 1 ].box.content  == m_enemyColor && m_board[m_movements[i].end.line][m_movements[i].end.col].box.content == ECnone)
 			{
@@ -189,6 +233,8 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 					riskedMoves->listMoves[riskedMoves->lenght_list].caution = attributionRank(myPiece,enemyPiece,neighbour);
 				riskedMoves->lenght_list++;
 			}
+
+			printf("[evaluateMoves] Evaluation sur case ennemie\n");
 			/* si 0n effectuant le mouvement dans une case contenant une piece ennemie */
 			if ( m_board[ m_movements[i].end.line][m_movements[i].end.col].box.content  == m_enemyColor )
 			{
@@ -209,11 +255,14 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 
 			}
 		}		
+
+		printf("[evaluateMoves] Evaluation si je ne risque rien\n");
 		if(!flag)/* si en effectuant le mouvement je ne risque rien */
 		{
 			normalMoves->listMoves[normalMoves->lenght_list].move = m_movements[i];
 			normalMoves->lenght_list++;
-		}		
+		}
+		i++;
 	}
 }
 
@@ -221,6 +270,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 // Donne l'information sur la piece ennemie voisine pour evaluer le risque encouru
 float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 {	
+	printf("Démarrage de attributionRank...\n");
 	float forceDifference;// ecart de force entre la piece enemie et la mienne;
 	/*legende: 
 			0  ==> pas de risque pour ce mouvement meme si on ne sait pas si il ya l'enemi present à cote 
@@ -282,6 +332,7 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 // donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi
 void normalClassication(GroupMoves *normalMoves)
 {
+	printf("Démarrage de normalClassication...\n");
 	int i; /* compteur */
 	int numEnemy; /* nombres d'ennemi */
 	while(i < normalMoves->lenght_list)
@@ -302,6 +353,7 @@ void normalClassication(GroupMoves *normalMoves)
 // fonction interne a normalClassication
 // classifie les mouvements normaux en fonction du nombre de pièce énnemie environante 
 float giveNormalRank(int numEnemy){
+	printf("Démarrage de giveNormalRank...\n");
 	if(numEnemy == 0)
 		return 0 ;
 	else if (numEnemy == 1)
@@ -318,6 +370,7 @@ float giveNormalRank(int numEnemy){
 // evaluation globale des mouvements dupliqués et risqués 
 void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 {
+	printf("Démarrage de globalEvaluation...\n");
 	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
 	// a faire
 	int i, j; /* compteurs */
@@ -351,6 +404,7 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 // cherche toutes les occurences d'un mouvement dans la liste de mouvements risqués et remplit le buffer 
 void findOccurences(SMove movement,GroupMoves riskedMoves,GroupMoves *buffer)
 {
+	printf("Démarrage de findOccurences..\n");
  	int i = 0; /* compteurs */
 
  	buffer->lenght_list=0;
@@ -370,7 +424,7 @@ void findOccurences(SMove movement,GroupMoves riskedMoves,GroupMoves *buffer)
  // procedure interne à globalEvaluation
  // permet de donner le taux de risque global pour un mouvement
 float globalProbability(GroupMoves buffer){
-
+	printf("Démarrage de globalProbability...\n");
 	int i=0; /* compteurs */
 	float sumCautionNeighbour=0; /* somme des risques pour les mouvements risqué lies au ennemis environants */
 	float cautionAttack; /* rique éventuel du mouvement d'attaque */
@@ -393,6 +447,7 @@ float globalProbability(GroupMoves buffer){
 // permet de savoir si un mouvement est présent dans une liste de mouvement 
 bool isMovePresent(SMove mouvement, GroupMoves buffer)
 {
+	printf("Démarrage de isMovePresent...\n");
 	int i; /* compteur */
 
 	for(i=0;i<buffer.lenght_list;i++)
@@ -410,6 +465,7 @@ bool isMovePresent(SMove mouvement, GroupMoves buffer)
 // permet d'initialiser un tableau de mouvement
 void emptyList(GroupMoves *buffer)
 {
+	printf("Démarrage de emptyList...\n");
 	int i=0; /* compteur*/
 	while(i<buffer->lenght_list)
 	{
@@ -425,12 +481,14 @@ void emptyList(GroupMoves *buffer)
 
 SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 {
+	printf("Démarrage de chooseMove...\n");
 	/* Declaration des variables internes à la procédure*/
 	// int i = r = n = 0;
 	
 	// on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués
- 	if(m_caution>5)
- 	{
-
- 	}
+ 	//if(m_caution>5)
+ 	//{
+ 	
+	// Valeur pour test de l'IA
+ 	return moves.listMoves[0].move;
 }
