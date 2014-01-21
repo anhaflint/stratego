@@ -1,10 +1,9 @@
+#ifndef _DISPLAY_H
+	#define _DISPLAY_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
-
-
-#ifndef _DISPLAY_H
-	#define _DISPLAY_H
 
 
 
@@ -61,9 +60,12 @@ void Display_Init(BoardLayout layout,EColor color,int nbPiecesRestantes[13]);
  
 void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color); // affichage d'une piece
 
+void Display_fight(SMove moveaff,SGameState game,EPlayer *player, BoardLayout *layout);
+
 void Display_lateralPieces(BoardLayout layout,EColor color);
 void Display_Penalty(BoardLayout *layout,EPlayer player); // affichage d'une pénalité
-void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff);
+void Display_affPlayer(BoardLayout *layout,int aff, int joueur);
+
 
 void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate);
 

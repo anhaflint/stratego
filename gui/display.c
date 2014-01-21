@@ -1,5 +1,7 @@
+
 #include "../structure.h"
 #include "display.h"
+#include "game.h"
 
 //**************************************************************************
 //							Fonctions d'affichages
@@ -87,6 +89,15 @@ for (i=13;i<26;i++){
 
 		layout->RECTblueOut[i].x=755;
 		layout->RECTblueOut[i].y=33+45*i;
+<<<<<<< HEAD
+
+		layout->RECTblueOut[i].w=30;
+		layout->RECTredOut[i].w=30;
+		layout->RECTblueOut[i].h=40;
+		layout->RECTredOut[i].h=40;
+
+=======
+>>>>>>> 21e19dd1e542bb840cd355d1f25808516dddc223
 	}
 
 
@@ -343,8 +354,8 @@ void Display_Penalty(BoardLayout *layout,EPlayer player)
 	}
 
 }
-void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff)
-
+//void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff, int joueur)
+void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
 {
 	SDL_Rect rectJ;
 	rectJ.w=80;
@@ -352,6 +363,24 @@ void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff)
 
 	if (aff==1)
 	{
+<<<<<<< HEAD
+
+			switch(joueur)
+			{
+				case 1: // joueur 1
+						rectJ.x=250;
+						rectJ.y=280;
+						SDL_BlitSurface(layout->J1, NULL, layout->Screen, &rectJ);
+						break;
+
+				case 2: // joueur 2
+						rectJ.x=800-350; //120-80
+						rectJ.y=280;
+						SDL_BlitSurface(layout->J2, NULL, layout->Screen, &rectJ);
+						break;
+
+			}
+=======
 		if(player.Color==2)
 		{
 			rectJ.x=120;
@@ -365,18 +394,19 @@ void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff)
 			rectJ.y=556;
 			SDL_BlitSurface(layout->J2, NULL, layout->Screen, &rectJ);
 		}
+>>>>>>> 21e19dd1e542bb840cd355d1f25808516dddc223
 		
 		SDL_Flip(layout->Screen);
 	}
 	else
 	{
 
-			rectJ.x=120;
-			rectJ.y=556;
+			rectJ.x=250;
+			rectJ.y=280;
 		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
 
-			rectJ.x=800-200; // 120-80
-			rectJ.y=556;
+			rectJ.x=800-350; // 120-80
+			rectJ.y=280;
 		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
 		SDL_Flip(layout->Screen);
 		}
@@ -422,6 +452,15 @@ int i;
 
 
 
+<<<<<<< HEAD
+
+void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate)
+{
+
+SDL_Rect rectKilled;
+//RECTredOut[11];	// Tableau rectangle de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+//RECTblueOut[11];	// Tableau rectangle de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+=======
 
 void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate)
 {
@@ -469,24 +508,59 @@ int i;
 
 /*	
 } SGameState;
+>>>>>>> 21e19dd1e542bb840cd355d1f25808516dddc223
+
+int i;
+
+	for (i=0;i<11;i++){
+		rectKilled.h=40;
+		rectKilled.w=30;
+
+		rectKilled.y=0;
+
+		
+		if (player.Color==ECred)
+		{
+		rectKilled.x=0+(gamestate.redOut[i]*30);
+		SDL_BlitSurface(layout->Background, &(layout->RECTredOut[i]), layout->Screen, &(layout->RECTredOut[i]));		
+		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTredOut[i])); //Affichage 
+		}
+
+		else if (player.Color==ECblue)
+		{
+		rectKilled.x=0+(gamestate.blueOut[i]*30);
+		SDL_BlitSurface(layout->Background, &(layout->RECTblueOut[i]), layout->Screen, &(layout->RECTblueOut[i]));		
+		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
+
+		}
+		/*
+		else if (color==ECnone){  // remise à vide
+			rectTuilesAPlacer[i].x=10;
+			rectTuilesAPlacer[i].y=33+45*i;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+			rectTuilesAPlacer[i].x=710;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
 
 
+		}
+		*/
+		
+	}
+ 	SDL_Flip(layout->Screen); // Rafraichissement
+}
 
-void Display_Board(BoardLayout layout, SGameState gamestate){
 
-
-
-
+void Display_fight(SMove moveaff,SGameState game, EPlayer *player, BoardLayout *layout)
+{
+SMove move;
+move= Game_TranslateMove(moveaff,*player,1);
+	Display_PieceInit(game.board[move.start.line][move.start.col].piece, moveaff.start,layout,game.board[move.start.line][move.start.col].content);
+	Display_PieceInit(game.board[move.end.line][move.end.col].piece, moveaff.end,layout,game.board[move.end.line][move.end.col].content);
+	SDL_Delay(1500);
 
 }
-void Display_Fight(SDL_Surface* piece){
 
-
-
-
-}
-
-
+/*
 
 void Display_CpyBg(BoardLayout *layout, SPos posPiece){
 // affichage du background sur une petite partie du plateau
@@ -514,3 +588,4 @@ SDL_BlitSurface(layout->Background, rectCut, layout->Screen, layout->DisplayTab[
 
 }
 */
+

@@ -9,10 +9,41 @@
 #include "../ia/couleurs.h"
 #include "display.h"
 #include "event.h"
+#include "initlib.h"
 
 //gcc -Wall mainTestGame.c  game.c -o test
 
 
+
+//--------------------------------------------------------------------------------------------
+// Fonctions auxiliaires
+//--------------------------------------------------------------------------------------------
+void pause()
+{
+    int continuer = 1;
+    SDL_Event event;
+ 
+    while (continuer)
+    {
+        SDL_WaitEvent(&event);
+        switch(event.type)
+        {
+            case SDL_KEYDOWN:
+                continuer = 0;
+        }
+    }
+}
+
+
+void Display(BoardLayout *layout, EPlayer player1, EPlayer player2, SGameState gamestate, int mode, int joueur)
+{
+	Display_killedPieces(layout, player1, gamestate);
+	Display_killedPieces(layout, player2, gamestate);
+	Display_BoardPlayer(layout,player1);
+	//Display_affPlayer(layout,player1, mode);
+	Display_affPlayer(layout,mode, joueur);
+
+}
 
 int main(int argc, char* argv[])
 {
@@ -129,17 +160,32 @@ int main(int argc, char* argv[])
 	DisplayGS(gameState);
 */
 	//printf("le gagnant est : %s\n", vainqueur);
+
+
 // ============================ test jeu==========================================
+	
+	StructIA AIfunctions1, AIfunctions2;
 	SGameConfig gameconfig;
 	SGameState gamestate;
 	EPlayer player1, player2;
+	int i; 
+	printf("lalalaal1\n");
+
+	InitStructIA(&AIfunctions1);
+	InitStructIA(&AIfunctions2);
+	printf("lalalalalalalalalala\n");
+//SGameMode DetectGameMode(int argc, char* argv[], StructIA *AIfunctions1, StructIA *AIfunctions2)
+	gameconfig.Mode = DetectGameMode(argc, argv, &AIfunctions1, &AIfunctions2);
+	if (gameconfig.Mode == 3) return EXIT_FAILURE;
+	printf("je pue l'oignon\n");
 	// EPiece boardInit[4][10]; // Tableau temporaire rempli par les joueurs
-	int GameWinner, MatchWinner;
+	int GameWinner, MatchWinner = 0;
 	SMove move;
-	EPiece boardInit[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
+	EPiece boardInit1[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
                            {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
                            {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
                            {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
+    EPiece boardInit2[4][10];
 
 
 	// Init SDL
@@ -148,6 +194,7 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
         exit(EXIT_FAILURE); // On quitte le programme
     	}
+    	printf("lalala2\n");
 	
 	// Déclarations des var. display + Init
 	BoardLayout layout;
@@ -165,23 +212,42 @@ int main(int argc, char* argv[])
 	int nbCoups = atoi(argv[1]);
 
 // Initialisation du nombre de victoires et début du match
-	Game_Start(&player1, &player2);
+	Game_Start(&player1, &player2, &gameconfig);
 
 // Initialisation des gamestates joueurs et du gamestate général pour le premier jeu
 	Game_Begin(&player1, &player2, &gamestate, &gameconfig, nbCoups);
 
-	while( (MatchWinner = Game_EndMatch(player1,  player2, gameconfig, gamestate, nbCoups)) == 0) 
+
+printf("--------------------DEBUT DU MATCH----------------------------------------------------------------------------------\n");
+	while( MatchWinner == 0) 
 	{ // Boucle pour finir le match
 		//Premier placement des pions des joueurs
+		printf("------------------------------DEBUT DU JEU--------------------------------------------------------------------\n");
+		// Affichage des indices J1 et J2
+		//Display_affPlayer(&layout,player1,1);
+		//Display_affPlayer(&layout,player2,1);
+
+		//Affichage des pieces latérales
+		Display_lateralPieces(layout,player1.Color);
+		Display_lateralPieces(layout,player2.Color);
+
+		if(gameconfig.Mode == IA_HUMAN) 
+		{
+			AIfunctions1.InitLibrary(gameconfig.Player2Name);
+			AIfunctions1.StartGame(player2.Color, boardInit2);
+			printf("si ia\n");
+		}
 		if(player1.Color == ECred)
-		{ // Si le premier joueur est rouge alors : 
+		{ // Si le premier joueur est rouge alors :
+
+
 			//Le joueur rouge saisi le placement de ses pions et valide
 				//Event_InitGameState(&event, &continuer, ECred, &layout, boardInit);
 				// Copie du placement des pions du joueur dans les gamestates
-				Game_CpyInitGameState(&gamestate, &player1, boardInit);
+				Game_CpyInitGameState(&gamestate, &player1, boardInit1);
 			//Le joueur bleu saisi le placement de ses pions et valide
 				//Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit);
-				Game_CpyInitGameState(&gamestate, &player2, boardInit);
+				Game_CpyInitGameState(&gamestate, &player2, boardInit2);
 
 		}
 		else // Le joueur 1 est bleu
@@ -189,62 +255,91 @@ int main(int argc, char* argv[])
 			//Le joueur rouge saisi le placement de ses pions et valide
 				//Event_InitGameState(&event, &continuer, ECred, &layout, boardInit);
 				// Copie du placement des pions du joueur dans les gamestates
-				Game_CpyInitGameState(&gamestate, &player2, boardInit);
+				Game_CpyInitGameState(&gamestate, &player2, boardInit2);
 			//Le joueur bleu saisi le placement de ses pions et valide
 				//Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit);
-				Game_CpyInitGameState(&gamestate, &player1, boardInit);
+				Game_CpyInitGameState(&gamestate, &player1, boardInit1);
 		}
+		printf("================LA COULEUR DE L'IA EST============================================================ %d\n", player2.Color);
 
 		//Les gamestates joueurs + général sont remplis des pièces des joueurs : le jeu peut commencer
 		while( (GameWinner = Game_GotWinner(player1, player2, gamestate, nbCoups)) == 0) // tant que le jeu n'a pas de gagnant
+		//for(i=0; i<1; i++)
 		{
 			/*jeu*/
 			// Le joueur rouge commence
+				Display_killedPieces(&layout, player1, gamestate);
+				Display_killedPieces(&layout, player2, gamestate);
 			printf("au joueur rouge\n");
 			if(player1.Color == ECred)
 			{
-				Display_BoardPlayer(&layout,player1);
-				//DisplayPlayerGS(player1.Pboard);
+				//joueur 1
+				Display(&layout, player1, player2, gamestate, 1, 1);
 				move=Event_IdMove(&event,player1, &continuer);
-				Game_DoMove(&gamestate, move, &player1, &player2);
+				Game_DoMove(&gamestate, move, &player1, &player2, &layout);
+				printf("la pénalité du joueur est %d\n", player1.nbPenalty);
+				Display(&layout, player1, player2, gamestate, 2, 1);
+				
 
-				// Au tour du joueur 2 de jouer
-				Display_BoardPlayer(&layout,player2);
+				//joueur 2
+				Display(&layout, player2, player1, gamestate, 1, 2);
 				move=Event_IdMove(&event,player2, &continuer);
-				Game_DoMove(&gamestate, move, &player2, &player1);
+				Game_DoMove(&gamestate, move, &player2, &player1, &layout);
+				printf("la pénalité du joueur est %d\n", player2.nbPenalty);
+				Display(&layout, player2, player1, gamestate, 2, 2);
 			}
 			else
 			{
-				// Au tour du joueur 2 rouge de jouer
-				Display_BoardPlayer(&layout,player2);
+				//joueur 2
+				Display(&layout, player2, player1, gamestate, 1, 2);
 				move=Event_IdMove(&event,player2, &continuer);
-				Game_DoMove(&gamestate, move, &player2, &player1);
-				Display_BoardPlayer(&layout,player2);
+				Game_DoMove(&gamestate, move, &player2, &player1, &layout);
+				printf("la pénalité du joueur est %d\n", player2.nbPenalty);
+				Display(&layout, player2, player1, gamestate, 2, 2);
 
-				// Au tour du joueur bleu de jouer
-				Display_BoardPlayer(&layout,player1);
+				//joueur 1
+				Display(&layout, player1, player2, gamestate, 1, 1);
 				move=Event_IdMove(&event,player1, &continuer);
-				Game_DoMove(&gamestate, move, &player1, &player2);
-				Display_BoardPlayer(&layout,player1);
-
+				Game_DoMove(&gamestate, move, &player1, &player2, &layout);
+				Display(&layout, player1, player2, gamestate, 2, 1);
 			}
+				
 
 
 		}
 
 		// incrémenation des compteurs de victoire
-		if (GameWinner == 1)
+		/*if (GameWinner == 1)
+		{
+			printf("GameWinner = 1\n");
 			player1.winnings ++;
+		}
 		else
+		{
+			printf("GameWinner = 2\n");
 			player2.winnings ++;
+		}*/
+
+
 
 		// Réinitialisation des gamestates
 		Game_Begin(&player1, &player2, &gamestate, &gameconfig, nbCoups);
 
+		printf("le nombre de jeux est %d\n",gameconfig.nbJeux - 1);
+		if(gameconfig.nbJeux == 3)
+		{
+			
+			player1.winnings = 2;
+			player2.winnings = 1;
+		}
+		MatchWinner = Game_EndMatch(player1,  player2, gameconfig, gamestate, nbCoups);
 	}
 
 
 
 	return 0;
 }
+
+
+
 

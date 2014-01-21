@@ -4,7 +4,7 @@
 //#include <math.h>
 #include "game.h"
 #include "analyze.c"
-
+#include "initlib.h"
 // Tous les tableaux sont comptés avec le 0,0 en bas à gauche
 // Tous les indices donnés en commentaires sont comptés à partir de 0 (indice 3 = 4eme ligne du tableau)
 
@@ -47,6 +47,18 @@ void DisplayPlayerGS(SBox board[10][10])
 	printf("\n");
 }
 
+SMove ScanM()
+{
+	SMove move;
+	printf("saisissez votre mouvement StartLine StartCol EndLine EndCol\n");
+	scanf("%d", &(move.start.line));
+	scanf("%d", &(move.start.col));
+	scanf("%d", &(move.end.line));
+	scanf("%d", &(move.end.col));
+
+	return move;
+}
+
 /* fonction de detection du mode de jeu
  * @param char *argv[]
  *			nombre de joueurs humains detectés via argv[1]=j j={0,1,2}
@@ -56,21 +68,30 @@ void DisplayPlayerGS(SBox board[10][10])
  * @param int argc : nombre d'arguments.  par défaut le jeu se lance en humain vs humain
  * @return value : retourne un gamemode (entier)
  */
-SGameMode DetectGameMode(int argc, char* argv[])
+SGameMode DetectGameMode(int argc, char* argv[], StructIA *AIfunctions1, StructIA *AIfunctions2)
 {
 	SGameMode gamemode = ERROR;
-	if(argc >5 || argc == 1)
-		printf("le nombre d'arguments est incorrect\n");
-	if(argc > 1)
+	if(argc < 3)
 	{
-		if (*argv[2] == '0')
-			gamemode = HUMAN_HUMAN;
-		else if (*argv[2] == '1')
-			gamemode = IA_HUMAN;
-		else if (*argv[2] == '2')
-			gamemode = IA_IA;
-		
+		printf("le nombre d'arguments est incorrect\n");
 	}
+	if(argc > 2)
+	{
+		switch(*argv[2])
+		{
+			case '0': if (argc == 3)  // OK
+						gamemode = HUMAN_HUMAN;
+						break;
+			case '1': if(LoadAI(AIfunctions1, argv[4])) // 1 IA
+						gamemode = IA_HUMAN;
+						break;
+			case '2': if((LoadAI(AIfunctions1, argv[4]))&&(LoadAI(AIfunctions2, argv[5]))) // 2 IA
+						gamemode = IA_IA;
+						break;
+			default : break;
+		}
+	}
+		 
 	return gamemode;
 
 }
@@ -323,21 +344,20 @@ int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int positi
 		// ou si le joueur essaie de rester sur la mm case
 		// ou si le joueur essaie de se deplacer sur un de ses pions
 		// ou si le joueur essaie de se deplacer sur un lac
-	/*
 	if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player->Color) || (gamestate.board[EndLine][EndCol].content == EClake))
 	{
-		player->nbPenalty++;
-		return -1; // deplacement invalide		
+		RETOUR = -1; // deplacement invalide		
 	}
 		// Traitement des cas où on ne peut pas deplacer le pion 
 		switch (position)
 		{
 			case 0 : player->nbPenalty++; // On choisi d'incrémenter le compteur de pénalités ici plutot que dans checkpos
-					return -1; // Position de depart invalide
+					RETOUR = -1; // Position de depart invalide
 					break;
 			case 1 : // cas pion général
 					 // Deplacement d'une case seulement
-					if (diffligne + diffcol != 1) return -1;// Deplacement illégal
+					if (diffligne + diffcol != 1) 
+						RETOUR = -1;// Deplacement illégal
 					break;
 			case 2 : // cas pion scout
 					if (diffcol == 0) // deplacement en lignes
@@ -346,14 +366,16 @@ int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int positi
 						{
 							for(i = StartLine + 1; i<EndLine; i++) 
 							{
-								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
+								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) 
+									RETOUR = -1; // on ne peut pas déplacer le scout	
 							}
 						}
 						else
 						{
 							for(i = StartLine - 1; i>EndLine; i--) 
 							{
-								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
+								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone))
+									RETOUR = -1; // on ne peut pas déplacer le scout	
 							}
 						}
 					}
@@ -363,14 +385,16 @@ int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int positi
 						{
 							for (i = StartCol + 1; i<EndCol; i++)
 							{
-								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
+								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone))
+									RETOUR = -1; // on ne peut pas déplacer le scout
 							}
 						}
 						else
 						{
 							for (i = StartCol -1; i>EndCol; i--)
 							{
-								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
+								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone))
+									RETOUR = -1; // on ne peut pas déplacer le scout
 							}
 						}
 					}
@@ -380,63 +404,9 @@ int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int positi
 		// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
 		if (gamestate.board[EndLine][EndCol].content == Enemy)
 			RETOUR = 1;
-		*/
-if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (player->Pboard[EndLine][EndCol].content == player->Color) || (player->Pboard[EndLine][EndCol].content == EClake))
-	{
-		player->nbPenalty++;
-		return -1; // deplacement invalide		
-	}
-		// Traitement des cas où on ne peut pas deplacer le pion 
-		switch (position)
-		{
-			case 0 : player->nbPenalty++; // On choisi d'incrémenter le compteur de pénalités ici plutot que dans checkpos
-					return -1; // Position de depart invalide
-					break;
-			case 1 : // cas pion général
-					 // Deplacement d'une case seulement
-					if (diffligne + diffcol != 1) return -1;// Deplacement illégal
-					break;
-			case 2 : // cas pion scout
-					if (diffcol == 0) // deplacement en lignes
-					{
-						if ((StartLine - EndLine) < 0)
-						{
-							for(i = StartLine + 1; i<EndLine; i++) 
-							{
-								if ((player->Pboard[i][StartCol].piece != EPnone)||(player->Pboard[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
-							}
-						}
-						else
-						{
-							for(i = StartLine - 1; i>EndLine; i--) 
-							{
-								if ((player->Pboard[i][StartCol].piece != EPnone)||(player->Pboard[i][StartCol].content != ECnone)) return -1; // on ne peut pas déplacer le scout	
-							}
-						}
-					}
-					if (diffligne == 0) // deplacement en colonnes
-					{
-						if((StartCol - EndCol) < 0)
-						{
-							for (i = StartCol + 1; i<EndCol; i++)
-							{
-								if ((player->Pboard[StartLine][i].piece != EPnone)||(player->Pboard[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
-							}
-						}
-						else
-						{
-							for (i = StartCol -1; i>EndCol; i--)
-							{
-								if ((player->Pboard[StartLine][i].piece != EPnone)||(player->Pboard[StartLine][i].content != ECnone)) return -1; // on ne peut pas déplacer le scout
-							}
-						}
-					}
-					// si on arrive ici on peut deplacer le scout
-					break;
-		}
-		// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
-		if (player->Pboard[EndLine][EndCol].content == Enemy)
-			RETOUR = 1;
+		if(RETOUR == -1)
+			player->nbPenalty++;
+
 return RETOUR;
 }
 
@@ -458,7 +428,7 @@ void Game_RazSBox(SBox *box)
 
 
 
-int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other)
+int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other, BoardLayout *layout)
 {
 	/* @variable : move 
 	 *				mouvement tel qu'il est rentré par le joueur, dans le sens de son tableau personnel
@@ -529,7 +499,10 @@ int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Oth
 				 RETOUR = 1; // le mouvement a été effectué
 				 break;
 		// Combat
-		case 1 : if((game->board[GSMoveStartLine][GSMoveStartCol].piece) == (game->board[GSMoveEndLine][GSMoveEndCol].piece)) 
+				 //void Display_fight(SMove moveaff,SGameState game,EPlayer *player, BoardLayout *layout)
+		case 1 : printf("lalalalalalala\n");
+				 Display_fight(move, *game, MovingPlayer, layout);
+				 if((game->board[GSMoveStartLine][GSMoveStartCol].piece) == (game->board[GSMoveEndLine][GSMoveEndCol].piece)) 
 				 {
 				 	printf("les deux pions sont egaux\n");
 				 	// On MaJ les deux tableaux de pièces éliminées dans le gamestate
@@ -694,7 +667,7 @@ int Game_EndMatch(EPlayer player1, EPlayer player2, SGameConfig config, SGameSta
 	 * Sinon on renvoie le joueur 2
 	 */
 	unsigned int FINI = 0;
-	if((config.nbJeux == 3)&&((player1.winnings + player2.winnings)==3))// On a joué tous les jeux
+	if((config.nbJeux == 4)&&((player1.winnings + player2.winnings)==3))// On a joué tous les jeux
 	{
 		FINI = (player1.winnings >= player2.winnings)? ((player1.winnings == player2.winnings)? 0 : 1): 2; 
 	}
@@ -735,9 +708,10 @@ int Game_GotWinner(EPlayer player1, EPlayer player2, SGameState gamestate, int n
 	// On regarde si les joueurs ont encore des pièces mobiles
 
 }
-void Game_Start(EPlayer *player1, EPlayer *player2)
+void Game_Start(EPlayer *player1, EPlayer *player2, SGameConfig *config)
 {
 	printf("Attention, le jeu va commencer !!!\n");
+	config->nbJeux = 0;
 	player1->winnings = 0;
 	player2->winnings = 0; 
 	printf("Nombre de victoires des joueurs initialisé---------------\n");
