@@ -102,27 +102,41 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 	numHidedEnemyBomb = getInfoHidedEnemyBomb(gameState);
 	hidedMarshal = isHidedMarshal(gameState);
 
+	printf("[riskProbability] numHidedENemyGlobal = %d\n", numHidedEnemyGlobal);
+	printf("[riskProbability] numHidedEnemyMovable = %d\n", numHidedEnemyMovable);
+	printf("[riskProbability] numHighEnemy = %d\n", numHighEnemy);
+	printf("[riskProbability] numLowEnemy = %d\n", numLowEnemy);
+	printf("[riskProbability] numHidedEnemyBomb = %d\n", numHidedEnemyBomb);
+	printf("[riskProbability] hidedMarshal = %d\n", hidedMarshal);
+
 	/* calcul effectif des probabilités */
 
 	/* Si l'ennemi a déjà bougé, donc ni bombe ni flag */
 	if(m_board[enemyPosition.line][enemyPosition.col].isBomb == false)
-	{
+	{	
+		printf("[riskProbability] L'ennemi a déjà bougé\n");
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
 			winProbability = (hidedMarshal / numHidedEnemyMovable);
 		else winProbability = (numLowEnemy / numHidedEnemyMovable);
+		printf("[riskProbability] winProbability = %f \n", winProbability);
 	}
 	else
 	{
+		printf("[riskProbability] L'ennemi n'a pas déjà bougé\n");
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPminer)
 			winProbability = (numFlag + numHidedEnemyBomb + numLowEnemy) / numHidedEnemyGlobal;
 		else
 			{
+				printf("[riskProbability] Nous ne sommes pas un démineur\n");
 				if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
 					winProbability = (numFlag + hidedMarshal) / numHidedEnemyGlobal;
 				else winProbability = (numLowEnemy + numFlag) / numHidedEnemyGlobal;
 			}
+		printf("[riskProbability] winProbability = %f \n", winProbability);
 	}
+	printf("[riskProbability] On retourne (-20 * %f) + 10 = %f\n", winProbability, (-20 * winProbability) + 10);
 	return ((-20 * winProbability) + 10 );
+
 }
 
 // procedure interne a decideMoves
