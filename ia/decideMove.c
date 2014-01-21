@@ -90,7 +90,7 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 	int numLowEnemy; /* nombre de piece ennemie de rang inferieur à ma piece de plus bas rang cachée */
 	int numHidedEnemyBomb; /* nombre de bombes ennemies cachées*/
 	int hidedMarshal; /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
-	int numFlag = 1; /* nombre de drapeau */
+	int numFlag = 1.f; /* nombre de drapeau */
 	float winProbability; /* Probabilité de gagner l'adversaire */
 	EPiece myPiece = gameState->board[myPosition.line][myPosition.col].piece; /* Notre pièce */
 	/* recuperation des informations */
@@ -116,21 +116,23 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 	{	
 		printf("[riskProbability] L'ennemi a déjà bougé\n");
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
-			winProbability = (hidedMarshal / numHidedEnemyMovable);
-		else winProbability = (numLowEnemy / numHidedEnemyMovable);
+			winProbability = ((float)hidedMarshal / (float)numHidedEnemyMovable);
+		else 
+			winProbability = ((float)numLowEnemy / (float)numHidedEnemyMovable);
 		printf("[riskProbability] winProbability = %f \n", winProbability);
 	}
 	else
 	{
 		printf("[riskProbability] L'ennemi n'a pas déjà bougé\n");
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPminer)
-			winProbability = (numFlag + numHidedEnemyBomb + numLowEnemy) / numHidedEnemyGlobal;
+			winProbability = ((float)numFlag + (float)numHidedEnemyBomb + (float)numLowEnemy) / (float)numHidedEnemyGlobal;
 		else
 			{
 				printf("[riskProbability] Nous ne sommes pas un démineur\n");
 				if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
-					winProbability = (numFlag + hidedMarshal) / numHidedEnemyGlobal;
-				else winProbability = (numLowEnemy + numFlag) / numHidedEnemyGlobal;
+					winProbability = ((float)numFlag + (float)hidedMarshal) / (float)numHidedEnemyGlobal;
+				else 
+					winProbability = ((float)numLowEnemy + (float)numFlag) / (float)numHidedEnemyGlobal;
 			}
 		printf("[riskProbability] winProbability = %f \n", winProbability);
 	}
