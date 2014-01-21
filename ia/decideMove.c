@@ -32,6 +32,7 @@ void decideMove(const SGameState * const gameState)
 
 	evaluateMoves(gameState, &normalMoves,&riskedMoves);
  	globalEvaluation(&priorityMoves,riskedMoves);
+ 	normalClassication(&normalMoves);
 
  	printf("[decideMove] PRINTF DES GROUPMOVES\n");
 
@@ -48,16 +49,12 @@ void decideMove(const SGameState * const gameState)
 
  	switch(m_strategy)
  	{
-	       case defensive || malicious || searchme :
+	       case str_default:
 				if(normalMoves.lenght_list > 0)// si il ya la possibilité de jouer sans perdre de pion
 					choosedMove = chooseMove(gameState, normalMoves);
 				else 
 					choosedMove = chooseMove(gameState, priorityMoves);
 	       break;
-
-	       case str_default:
-	       		choosedMove = chooseMove(gameState, normalMoves);
-	       	break;
  	}
 
  	printf("[decideMove] choosedMove : (%d,%d) -> (%d,%d)\n", choosedMove.start.line, choosedMove.start.col, choosedMove.end.line, choosedMove.end.col);
@@ -349,7 +346,7 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 void normalClassication(GroupMoves *normalMoves)
 {
 	printf("Démarrage de normalClassication...\n");
-	int i; /* compteur */
+	int i = 0; /* compteur */
 	int numEnemy; /* nombres d'ennemi */
 	while(i < normalMoves->lenght_list)
 	{
