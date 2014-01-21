@@ -79,7 +79,7 @@ void decideMove(const SGameState * const gameState)
 // calcule la probabilité de risque pour la force des pieces ennemies voisines ou les pieces ennemies à attaquer directement
 float riskProbability( const SGameState * const gameState,SPos myPosition,SPos enemyPosition)
 {
-	printf("Démarrage de riskProbability...\n");
+	printf("Démarrage de riskProbability...\n");+
 	int i;  /*compteur*/
 	int numHidedEnemyGlobal; /* nombre de piece ennemie cachée */
 	int numHidedEnemyMovable; /* nombre de pièce ennemie cachée qui peuvent bouger */
@@ -393,11 +393,12 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 
 	for(i = 0; i < riskedMoves.lenght_list; i++)
 	{	
-		/* si on s'occupe du tyableau de mouvement pour la première fois */
+		/* si on s'occupe du tableau de mouvement pour la première fois */
 		if(i == 0)
 		{
-			findOccurences(riskedMoves.listMoves[i].move, riskedMoves, &buffer);
+			findOccurences(riskedMoves.listMoves[i].move, riskedMoves,&buffer);
 			priorityMoves->listMoves[j].caution = globalProbability(buffer);
+			printf(" VALEUR DE CAUTION [dans globalProbability] %d\n",priorityMoves->listMoves[j].caution);
 			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
 			priorityMoves->lenght_list++;
 		}
@@ -407,6 +408,7 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 			emptyList(&buffer);
 			findOccurences(riskedMoves.listMoves[i].move, riskedMoves, &buffer);
 			priorityMoves->listMoves[j].caution = globalProbability(buffer);
+			printf(" VALEUR DE CAUTION [dans globalProbability] %d\n",priorityMoves->listMoves[j].caution);
 			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
 			priorityMoves->lenght_list++;
 		}
