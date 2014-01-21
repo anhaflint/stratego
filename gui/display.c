@@ -81,18 +81,33 @@ for (i=13;i<26;i++){
 	layout->PiecesLayout[i].h=40;
 	}
 }
+	for (i=0;i<11;i++){
+		layout->RECTredOut[i].x=55;
+		layout->RECTredOut[i].y=33+45*i;	// Tableau des rect. à l'écran pour comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+
+		layout->RECTblueOut[i].x=755;
+		layout->RECTblueOut[i].y=33+45*i;
+	}
+
 
 	layout->Patron=SDL_LoadBMP("images/piecestest.bmp");   // Charge image Patron Pièces
 	
 	layout->J1=SDL_LoadBMP("images/j1.bmp");   // Charge image J1
+	SDL_SetColorKey(layout->J1, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J1->format, 0, 0, 0));
+
 	layout->J2=SDL_LoadBMP("images/j2.bmp");   // Charge image J2
-	
+	SDL_SetColorKey(layout->J2, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J2->format, 0, 0, 0));
+
 	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
 
 	layout->Placement=SDL_LoadBMP("images/endTuile.bmp");   // Charge image grisée
 	SDL_SetAlpha(layout->Placement, SDL_SRCALPHA, 192);
 
+	layout->Killed=SDL_LoadBMP("images/piecekill.bmp");   // Charge image J2
+	SDL_SetColorKey(layout->Killed, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Killed->format, 0, 0, 0));
+
 	layout->Penalty=SDL_LoadBMP("images/penality.bmp");
+	SDL_SetColorKey(layout->Penalty, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Penalty->format, 0, 0, 255));
 
 
  	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran : 800x600
@@ -300,7 +315,7 @@ void Display_Penalty(BoardLayout *layout,EPlayer player)
 			rectPenalty.x=800-(190+30*player.nbPenalty);
 			rectPenalty.y=554;
 		}
-		SDL_SetColorKey(layout->Penalty, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Penalty->format, 0, 0, 255));
+		
 		SDL_BlitSurface(layout->Penalty, NULL, layout->Screen, &(rectPenalty));
 		SDL_Flip(layout->Screen);
 	}
@@ -341,7 +356,6 @@ void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff)
 		{
 			rectJ.x=120;
 			rectJ.y=556;
-			SDL_SetColorKey(layout->J1, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J1->format, 0, 0, 0));
 			SDL_BlitSurface(layout->J1, NULL, layout->Screen, &rectJ);
 		}
 
@@ -349,7 +363,6 @@ void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff)
 		{
 			rectJ.x=800-200; //120-80
 			rectJ.y=556;
-			SDL_SetColorKey(layout->J2, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J2->format, 0, 0, 0));
 			SDL_BlitSurface(layout->J2, NULL, layout->Screen, &rectJ);
 		}
 		
@@ -409,14 +422,52 @@ int i;
 
 
 
-/*
-void Display_killedPieces(BoardLayout *layout,SGameState gamestate)
+
+void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate)
 {
 
+SDL_Rect rectKilled;
+//RECTredOut[11];	// Tableau rectangle de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+//RECTblueOut[11];	// Tableau rectangle de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+
+int i;
+
+	for (i=0;i<11;i++){
+		rectKilled.h=40;
+		rectKilled.w=30;
+
+		rectKilled.y=0;
+
+		
+		if (player.Color==ECred)
+		{
+		rectKilled.x=0+(gamestate.redOut[i]*30);		
+		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTredOut[i])); //Affichage 
+		}
+
+		else if (player.Color==ECblue)
+		{
+		rectKilled.x=0+(gamestate.blueOut[i]*30);		
+		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
+
+		}
+		/*
+		else if (color==ECnone){  // remise à vide
+			rectTuilesAPlacer[i].x=10;
+			rectTuilesAPlacer[i].y=33+45*i;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+			rectTuilesAPlacer[i].x=710;
+			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
+
+
+		}
+		*/
+		
+	}
+ 	SDL_Flip(layout->Screen); // Rafraichissement
 }
 
-	unsigned int redOut[11];	// Tableau de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
-	unsigned int blueOut[11];	// Tableau de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+/*	
 } SGameState;
 
 

@@ -20,12 +20,15 @@ EColor		 cellcol;		//
 typedef struct
 {
 	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
+	SDL_Rect RECTredOut[11];	// Tableau de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+	SDL_Rect RECTblueOut[11];	// Tableau de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
 	SDL_Surface *Patron;			// Stockage du patron d'images
 	SDL_Surface *Background;    // Image de fond 
 	SDL_Surface	*Placement;
 	SDL_Surface *Penalty;
 	SDL_Surface *J1;
 	SDL_Surface *J2;
+	SDL_Surface *Killed;
 	SDL_Surface *Screen;		// Surface de l'ecran
 	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
 	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
@@ -62,7 +65,7 @@ void Display_lateralPieces(BoardLayout layout,EColor color);
 void Display_Penalty(BoardLayout *layout,EPlayer player); // affichage d'une pénalité
 void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff);
 
-void Display_killedPieces(BoardLayout *layout,SGameState gamestate);
+void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate);
 
 
 void Display_ReinitDisplayBoard(BoardLayout layout); // Réinit Aff plateau
