@@ -1,7 +1,6 @@
 #ifndef RESOURCES_H
 #define RESOURCES_H
 
-#include <stdbool.h>
 #include "../structure.h"
 
 extern Strategy m_strategy;

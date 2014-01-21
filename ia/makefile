@@ -14,5 +14,5 @@ mrproper: clean
 
 lib:
 	gcc -fPIC -c updateData.c analyzeBoard.c decideMove.c riskProbability.c saveMove.c api.c
-	gcc -shared -o libNonoPorchet.so updateData.o analyzeBoard.o decideMove.o riskProbability.o saveMove.o api.o
+	gcc -shared -o libValAriel.so updateData.o analyzeBoard.o decideMove.o riskProbability.o saveMove.o api.o
 
