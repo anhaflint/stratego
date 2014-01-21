@@ -20,7 +20,6 @@ int m_nbMove; // Nombre de mouvements enregistrés dans le tableau des mouvement
 int m_caution; // Variable pour prise de risque : vaut 0 si aucun risque à prendre, 10 si faire des mouvements très risqués
 int m_nbRoundTrips; // Nombre d'allers et retours que l'on a fait (pour la règle des 2 cases)
 bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour précédent : false = mouvement normal et true = attaque
-bool m_hisMove; // Variable pour connaître le mouvement que l'ennemi a fait au tour précédent : false = mouvement normal et true = attaque
 
 //-------------------------- Fonctions de l'API IA --------------------------//
 
@@ -225,7 +224,7 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 		for (j = 0; j < 10; ++j)
 		{
 			if (m_board[9-i][j].box.piece >= 10)
-				printf(" %d|%d", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);		
+				printf(" %d|%d", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);
 			else
 				printf(" %d|%d ", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);			
 			printf(" |");				
@@ -242,7 +241,6 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	}
 	else
 	{
-		m_hisMove = true;
 		analyseFight(enemyPiece, armyPiece, enemyPos, armyPos);
 	}
 	printf("Tableau après l'attaque\n");

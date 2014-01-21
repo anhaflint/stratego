@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
 	SMove move;
 
 	EPlayer player1, player2;
-	EPiece boardInit1[4][10]; // faux placement de pions pour tester cpygamestate
-	EPiece boardInit2[4][10];
+	//EPiece boardInit1[4][10]; // faux placement de pions pour tester cpygamestate
+	//EPiece boardInit2[4][10];
 	/*for(i=0; i<4; i++)
 	{
 		for(j=0; j<10; j++)
@@ -86,15 +86,17 @@ int main(int argc, char* argv[])
 	gameConfig.Mode = DetectGameMode(argc, argv);
 	// initialisation des joueurs
 	Game_InitPlayer(&player1, &player2, &gameConfig, 300);
-	Event_InitGameState(&event, &continuer, ECred, &layout, boardInit1); // Rouge // A MODIFIER PAR UN ECOLOR ET 2
-	Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit2); // BLEU  // A MODIFIER PAR UN ECOLOR ET 3
+	
+
+	//Event_InitGameState(&event, &continuer, ECred, &layout, boardInit1); // Rouge // A MODIFIER PAR UN ECOLOR ET 2
+	//Event_InitGameState(&event, &continuer, ECblue, &layout, boardInit2); // BLEU  // A MODIFIER PAR UN ECOLOR ET 3
 	
 	// initialisation du gamestate
 	if (gameConfig.Mode == 3) return EXIT_FAILURE;
 
 	Game_InitGameState(&gameState);
 	// remplissage du gamestate avec les pions placés par les joueurs
-	/*EPiece boardInit1[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
+	EPiece boardInit1[4][10] = {{11, 0, 8, 3, 0, 4, 0, 4, 5, 2},
                            {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
                            {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
                            {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
@@ -103,7 +105,7 @@ int main(int argc, char* argv[])
                            {0, 7, 3, 3, 5, 0, 3, 3, 5, 2},
                            {4, 6, 6, 1, 6, 2, 4, 6, 0, 8},
                            {2, 7, 2, 9, 2, 2, 10, 7, 2, 5}};
-	*/
+	
 	if(player1.Color == ECred) 
 	{
 		Game_CpyInitGameState(&gameState, &player1, boardInit1);
@@ -172,14 +174,26 @@ int main(int argc, char* argv[])
 	DisplayPlayerGS(player1.Pboard);
 	
 	//Display_BoardPlayer(layout,player1);
-
-	while(player1.nbCoups!=0)
+	Display_lateralPieces(layout,player1.Color);
+	
+	while( (player1.nbCoups!=0) || (continuer==0) )
 	{
+		Display_affPlayer(&layout,player1,1);
+		Display_affPlayer(&layout,player2,1);
+		// TEST SUPPRESSION TERMINEE Display_affPlayer(&layout,player2,0);
+
 		Display_BoardPlayer(&layout,player1);
 		DisplayPlayerGS(player1.Pboard);
 		move=Event_IdMove(&event,player1, &continuer);
 		Game_DoMove(&gameState, move, &player1, &player2);
+		
+		player1.nbPenalty++;
+		player2.nbPenalty++;
+		Display_Penalty(&layout,player1);
+		Display_Penalty(&layout,player2);
+		
 		player1.nbCoups--;
+
 	}
 
 	printf("-----------JOUEUR 2----------------------\n");
@@ -198,6 +212,8 @@ int main(int argc, char* argv[])
 	//Game_DoMove(&gameState, move, &player1, &player2);
 	printf("------------GAMESTATE--APRES--MOUVEMENT----------------\n");
 	DisplayGS(gameState);
+
+    SDL_Quit(); // Libération de la SDL en mémoire
 	return 0;
 }
 

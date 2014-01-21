@@ -1,7 +1,6 @@
 #include "resources.h"
 #include "riskProbability.h"
 
-
 /*Permet d'avoir le nombre de piece ennemie cachée */
 float getInfoHidedEnemyGlobal()
 {

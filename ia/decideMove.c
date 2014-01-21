@@ -5,11 +5,12 @@
 void decideMove(const SGameState * const gameState)
 {
 	SMove choosedMove;
+	
 	// Décision du mouvemennt
 	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 
-	/*GroupMoves priorityMoves; /* liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)
+	GroupMoves priorityMoves; // liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)
 	GroupMoves normalMoves, riskedMoves;
 
 	evaluateMoves(gameState, &normalMoves,&riskedMoves);
@@ -21,12 +22,12 @@ void decideMove(const SGameState * const gameState)
 				if(normalMoves.lenght_list > 0)// si il ya la possibilité de jouer sans perdre de pion
 					choosedMove = chooseMove(gameState, normalMoves);
 				else 
-					choosedMove = chooseMove(gameState, riskedMoves);
+					choosedMove = chooseMove(gameState, priorityMoves);
 	       break;
- 	}*/
+ 	}
 
  	/* A décommenter si test de lib */
- 	choosedMove = m_movements[0];
+ 	// choosedMove = m_movements[0];
 
  	/* Mise à jour de la variable de nombre d'allers-retours */
 
@@ -213,7 +214,7 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 			normalMoves->listMoves[normalMoves->lenght_list].move = m_movements[i];
 			normalMoves->lenght_list++;
 		}		
-	}	
+	}
 }
 
 // procedure interne a evaluateMoves
@@ -315,11 +316,11 @@ float giveNormalRank(int numEnemy){
 
 // procedure interne a decideMoves
 // evaluation globale des mouvements dupliqués et risqués 
-void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves[])
+void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 {
 	// movement copie dans priorityMoves une seule fois avec son taux de risque non plus local mais global plus besoin d'avoir 2 taux
 	// a faire
-	int i = j = 0; /* compteurs */
+	int i, j; /* compteurs */
 	GroupMoves buffer; /* tableau temporel utile pour le classement des mouvements */
 
 	priorityMoves->lenght_list=0;
@@ -329,16 +330,16 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves[])
 		/* si on s'occupe du tyableau de mouvement pour la première fois */
 		if(i == 0)
 		{
-			findOccurences(riskedMoves.listMoves[i].move,riskedMoves.listMoves,&buffer);
+			findOccurences(riskedMoves.listMoves[i].move, riskedMoves, &buffer);
 			priorityMoves->listMoves[j].caution = globalProbability(buffer);
 			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
 			priorityMoves->lenght_list++;
 		}
 		/* si le mouvement actuel n'a pas été pris en compte par le traitement précédent */
-		else if (!isMovePresent(riskedMoves->listMoves[i].move,buffer))
+		else if (!isMovePresent(riskedMoves.listMoves[i].move,buffer))
 		{
 			emptyList(&buffer);
-			findOccurences(riskedMoves.listMoves[i],riskedMoves.listMoves,&buffer);
+			findOccurences(riskedMoves.listMoves[i].move, riskedMoves, &buffer);
 			priorityMoves->listMoves[j].caution = globalProbability(buffer);
 			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
 			priorityMoves->lenght_list++;
@@ -348,26 +349,29 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves[])
 
 // procedure interne à globalEvaluation
 // cherche toutes les occurences d'un mouvement dans la liste de mouvements risqués et remplit le buffer 
- void findOccurences(Smove movement,GroupMoves riskedMoves,GroupMoves *buffer)
- {
+void findOccurences(SMove movement,GroupMoves riskedMoves,GroupMoves *buffer)
+{
  	int i = 0; /* compteurs */
 
  	buffer->lenght_list=0;
- 	for(i=0;i < riskedMoves.lenght_list; i<++)
+ 	for(i=0;i < riskedMoves.lenght_list; i++)
  	{
- 		if(riskedMoves[i].listMoves[i].move == mouvement)
+ 		if((riskedMoves.listMoves[i].move.start.line == movement.start.line)
+ 			&&(riskedMoves.listMoves[i].move.start.col == movement.start.col)
+ 			&&(riskedMoves.listMoves[i].move.end.line == movement.end.line)
+ 			&&(riskedMoves.listMoves[i].move.end.col == movement.end.col))
  		{
  			buffer->listMoves[buffer->lenght_list]=riskedMoves.listMoves[i];
  			buffer->lenght_list++;
 		}
  	}
- }
+}
 
  // procedure interne à globalEvaluation
  // permet de donner le taux de risque global pour un mouvement
 float globalProbability(GroupMoves buffer){
 
-	int i=0 /* compteurs */
+	int i=0; /* compteurs */
 	float sumCautionNeighbour=0; /* somme des risques pour les mouvements risqué lies au ennemis environants */
 	float cautionAttack; /* rique éventuel du mouvement d'attaque */
 
@@ -376,10 +380,11 @@ float globalProbability(GroupMoves buffer){
 		/* mouvement d'attaque */
 		if(buffer.listMoves[i].caution > 12 || buffer.listMoves[i].caution < -12)
 			cautionAttack = buffer.listMoves[i].caution;
-		else sumCautionNeighbour += buffer.listMoves[i].caution;
+		else 
+			sumCautionNeighbour += buffer.listMoves[i].caution;
 	}
 
-	finalCaution = ((sumCautionNeighbour / (buffer.lenght_list - 1) + (cautionAttack / 2) / 2 );
+	float finalCaution = (sumCautionNeighbour / (buffer.lenght_list - 1) + (cautionAttack / 2) / 2 );
 
 	return finalCaution;
 }
@@ -392,7 +397,10 @@ bool isMovePresent(SMove mouvement, GroupMoves buffer)
 
 	for(i=0;i<buffer.lenght_list;i++)
 	{
-		if(buffer.listMoves[i].move == mouvement)
+		if((buffer.listMoves[i].move.start.line == mouvement.start.line)
+			&&(buffer.listMoves[i].move.start.col == mouvement.start.col)
+			&&(buffer.listMoves[i].move.end.line == mouvement.end.line)
+			&&(buffer.listMoves[i].move.end.col == mouvement.end.col))
 			return true;
 	}
 	return false;
@@ -415,11 +423,14 @@ void emptyList(GroupMoves *buffer)
 	buffer->lenght_list = 0;
 }
 
-// SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
-// {
+SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
+{
 	/* Declaration des variables internes à la procédure*/
 	// int i = r = n = 0;
 	
 	// on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués
-// 	if(m_caution>5)
-// }
+ 	if(m_caution>5)
+ 	{
+
+ 	}
+}
