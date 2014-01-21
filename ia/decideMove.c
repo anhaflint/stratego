@@ -32,6 +32,7 @@ void decideMove(const SGameState * const gameState)
 
 	evaluateMoves(gameState, &normalMoves,&riskedMoves);
  	globalEvaluation(&priorityMoves,riskedMoves);
+ 	normalClassication(&normalMoves);
 
  	printf("[decideMove] PRINTF DES GROUPMOVES\n");
 
@@ -48,16 +49,12 @@ void decideMove(const SGameState * const gameState)
 
  	switch(m_strategy)
  	{
-	       case defensive || malicious || searchme :
+	       case str_default:
 				if(normalMoves.lenght_list > 0)// si il ya la possibilité de jouer sans perdre de pion
 					choosedMove = chooseMove(gameState, normalMoves);
 				else 
 					choosedMove = chooseMove(gameState, priorityMoves);
 	       break;
-
-	       case str_default:
-	       		choosedMove = chooseMove(gameState, normalMoves);
-	       	break;
  	}
 
  	printf("[decideMove] choosedMove : (%d,%d) -> (%d,%d)\n", choosedMove.start.line, choosedMove.start.col, choosedMove.end.line, choosedMove.end.col);
@@ -82,7 +79,7 @@ void decideMove(const SGameState * const gameState)
 // calcule la probabilité de risque pour la force des pieces ennemies voisines ou les pieces ennemies à attaquer directement
 float riskProbability( const SGameState * const gameState,SPos myPosition,SPos enemyPosition)
 {
-	printf("Démarrage de riskProbability...\n");
+	printf("Démarrage de riskProbability...\n");+
 	int i;  /*compteur*/
 	int numHidedEnemyGlobal; /* nombre de piece ennemie cachée */
 	int numHidedEnemyMovable; /* nombre de pièce ennemie cachée qui peuvent bouger */
@@ -90,7 +87,7 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 	int numLowEnemy; /* nombre de piece ennemie de rang inferieur à ma piece de plus bas rang cachée */
 	int numHidedEnemyBomb; /* nombre de bombes ennemies cachées*/
 	int hidedMarshal; /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
-	int numFlag = 1; /* nombre de drapeau */
+	int numFlag = 1.f; /* nombre de drapeau */
 	float winProbability; /* Probabilité de gagner l'adversaire */
 	EPiece myPiece = gameState->board[myPosition.line][myPosition.col].piece; /* Notre pièce */
 	/* recuperation des informations */
@@ -116,21 +113,23 @@ float riskProbability( const SGameState * const gameState,SPos myPosition,SPos e
 	{	
 		printf("[riskProbability] L'ennemi a déjà bougé\n");
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
-			winProbability = (hidedMarshal / numHidedEnemyMovable);
-		else winProbability = (numLowEnemy / numHidedEnemyMovable);
+			winProbability = ((float)hidedMarshal / (float)numHidedEnemyMovable);
+		else 
+			winProbability = ((float)numLowEnemy / (float)numHidedEnemyMovable);
 		printf("[riskProbability] winProbability = %f \n", winProbability);
 	}
 	else
 	{
 		printf("[riskProbability] L'ennemi n'a pas déjà bougé\n");
 		if(m_board[myPosition.line][myPosition.col].box.piece == EPminer)
-			winProbability = (numFlag + numHidedEnemyBomb + numLowEnemy) / numHidedEnemyGlobal;
+			winProbability = ((float)numFlag + (float)numHidedEnemyBomb + (float)numLowEnemy) / (float)numHidedEnemyGlobal;
 		else
 			{
 				printf("[riskProbability] Nous ne sommes pas un démineur\n");
 				if(m_board[myPosition.line][myPosition.col].box.piece == EPspy)
-					winProbability = (numFlag + hidedMarshal) / numHidedEnemyGlobal;
-				else winProbability = (numLowEnemy + numFlag) / numHidedEnemyGlobal;
+					winProbability = ((float)numFlag + (float)hidedMarshal) / (float)numHidedEnemyGlobal;
+				else 
+					winProbability = ((float)numLowEnemy + (float)numFlag) / (float)numHidedEnemyGlobal;
 			}
 		printf("[riskProbability] winProbability = %f \n", winProbability);
 	}
@@ -347,7 +346,7 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 void normalClassication(GroupMoves *normalMoves)
 {
 	printf("Démarrage de normalClassication...\n");
-	int i; /* compteur */
+	int i = 0; /* compteur */
 	int numEnemy; /* nombres d'ennemi */
 	while(i < normalMoves->lenght_list)
 	{
@@ -394,11 +393,12 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 
 	for(i = 0; i < riskedMoves.lenght_list; i++)
 	{	
-		/* si on s'occupe du tyableau de mouvement pour la première fois */
+		/* si on s'occupe du tableau de mouvement pour la première fois */
 		if(i == 0)
 		{
-			findOccurences(riskedMoves.listMoves[i].move, riskedMoves, &buffer);
+			findOccurences(riskedMoves.listMoves[i].move, riskedMoves,&buffer);
 			priorityMoves->listMoves[j].caution = globalProbability(buffer);
+			printf(" VALEUR DE CAUTION [dans globalProbability] %d\n",priorityMoves->listMoves[j].caution);
 			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
 			priorityMoves->lenght_list++;
 		}
@@ -408,6 +408,7 @@ void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves)
 			emptyList(&buffer);
 			findOccurences(riskedMoves.listMoves[i].move, riskedMoves, &buffer);
 			priorityMoves->listMoves[j].caution = globalProbability(buffer);
+			printf(" VALEUR DE CAUTION [dans globalProbability] %d\n",priorityMoves->listMoves[j].caution);
 			priorityMoves->listMoves[j].move = riskedMoves.listMoves[i].move;
 			priorityMoves->lenght_list++;
 		}

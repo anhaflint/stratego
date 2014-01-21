@@ -4,41 +4,41 @@
 /**
 * 
 */
-float getInfoHidedEnemyGlobal();
+int getInfoHidedEnemyGlobal();
 
 /**
 * 
 */
-float getInfoHidedEnemyMovable(const SGameState * const gameState);
+int getInfoHidedEnemyMovable(const SGameState * const gameState);
 
 /**
 * 
 */
-float getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece);
+int getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece);
 
 /**
 * 
 */
-float calculateHighEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[]);
+int calculateHighEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[]);
 
 /**
 * 
 */
-float getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece);
+int getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece);
 
 /**
 * 
 */
-float calculateLowEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[]);
+int calculateLowEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[]);
 
 /**
 * 
 */
-float getInfoHidedEnemyBomb(const SGameState * const gameState);
+int getInfoHidedEnemyBomb(const SGameState * const gameState);
 
 /**
 * 
 */
-float isHidedMarshal(const SGameState * const gameState);
+int isHidedMarshal(const SGameState * const gameState);
 
 #endif
