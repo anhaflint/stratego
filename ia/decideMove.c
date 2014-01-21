@@ -297,19 +297,19 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 	{	
 		/* cas ou la piece ennemie est le drapeau  */
 		if (enemyPiece == EPflag)
-			return -12;
+			return -12.f;
 		/* cas ou la piece ennemie est la bombe et que la notre est un demineur */
 		else if (enemyPiece == EPbomb && myPiece == EPminer)
-			return -11;
+			return -11.f;
 		/* cas ou la piece ennemie est une bombe ou l'espion */
 		else if( enemyPiece == EPbomb || (enemyPiece == EPspy && myPiece != EPmarshal))
-			return 0;
+			return 0.f;
 		/* cas ou la piece ennemie est un espion et la mienne un marechal */
 		else if((enemyPiece == EPspy && myPiece == EPmarshal) || (enemyPiece == EPmarshal && myPiece == EPspy))
-			return 12;// le maximum warning 
+			return 12.f;// le maximum warning 
 		/* cas où la piece de l'ennemi et la mienne est egale */
 		else if (enemyPiece == myPiece)
-			return 10;
+			return 10.f;
 		else
 		{
 			forceDifference = enemyPiece - myPiece;
@@ -320,23 +320,23 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 	{
 		/* cas ou la piece ennemie est le drapeau ou l'espion */
 		if (enemyPiece == EPflag || (enemyPiece == EPspy && myPiece != EPspy))
-			return (-12 * 2);
+			return (-12.f * 2.f);
 		/* cas ou la piece ennemie est la bombe et que la notre est un demineur */
 		else if (enemyPiece == EPbomb && myPiece == EPminer)
-			return (-11 * 2);
+			return (-11.f * 2.f);
 		/* cas ou la piece ennemie est une bombe */
 		else if( enemyPiece == EPbomb )
-			return (10 * 2);
+			return (10.f * 2.f);
 		/* cas ou la piece ennemie est un marechal et la mienne un espion*/
 		else if (enemyPiece == EPmarshal && myPiece == EPspy)
-			return (12 * 2);// le maximun warning 
+			return (12.f * 2.f);// le maximun warning 
 		/* cas où la piece de l'ennemi et la mienne est egale */
 		else if (enemyPiece == myPiece)
-			return (10 * 2);
+			return (10.f * 2.f);
 		else
 		{
 			forceDifference = enemyPiece - myPiece;
-		return (forceDifference * 2);
+		return (forceDifference * 2.f);
 		} 
 	}
 }
@@ -359,7 +359,9 @@ void normalClassication(GroupMoves *normalMoves)
 			numEnemy++;
 		if( normalMoves->listMoves[i].move.start.col > 0 && m_board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col -1 ].box.content == m_enemyColor)
 			numEnemy++;
+		printf("nombre d'ennemi: %d", numEnemy);
 		normalMoves->listMoves[i].caution=giveNormalRank(numEnemy);
+		i++;
 	}
 }
 
@@ -368,15 +370,15 @@ void normalClassication(GroupMoves *normalMoves)
 float giveNormalRank(int numEnemy){
 	printf("Démarrage de giveNormalRank...\n");
 	if(numEnemy == 0)
-		return 0 ;
+		return 0.f ;
 	else if (numEnemy == 1)
-		return 3;
+		return 3.f;
 	else if (numEnemy == 2)
-		return 6;
+		return 6.f;
 	else if (numEnemy == 3)
-		return 8;
+		return 8.f;
 	else if (numEnemy == 4)
-		return 10;
+		return 10.f;
 }
 
 // procedure interne a decideMoves
