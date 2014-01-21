@@ -2,10 +2,10 @@
 #include "riskProbability.h"
 
 /*Permet d'avoir le nombre de piece ennemie cachée */
-float getInfoHidedEnemyGlobal()
+int getInfoHidedEnemyGlobal()
 {
 	int i, j;
-	float numHidedEnemy = 0; //Nombre d'ennemis restants sur le plateau
+	int numHidedEnemy = 0; //Nombre d'ennemis restants sur le plateau
 	/* Parcours du plateau pour déterminer le nombre d'ennemis non visibles (EPnone) */
 	for (i=0; i<10; i++)
 	{
@@ -24,12 +24,12 @@ float getInfoHidedEnemyGlobal()
 }
 
 /* Permet d'avoir nombre de pièce ennemie cachée qui peuvent bouger */
-float getInfoHidedEnemyMovable(const SGameState * const gameState)
+int getInfoHidedEnemyMovable(const SGameState * const gameState)
 {
-	float numHidedEnemy; //Nombre d'ennemis restants sur le plateau
-	float numHidedMovableEnemy; //nombre de pièce ennemie cachée qui peuvent bouger
-	float numBomb; // Nombre de bombes visibles */
-	float numFlag = 0; // Nombre de drapeau visible */
+	int numHidedEnemy; //Nombre d'ennemis restants sur le plateau
+	int numHidedMovableEnemy; //nombre de pièce ennemie cachée qui peuvent bouger
+	int numBomb; // Nombre de bombes visibles */
+	int numFlag = 0; // Nombre de drapeau visible */
 	
 	numHidedEnemy = getInfoHidedEnemyGlobal();
 	numBomb = getInfoHidedEnemyBomb(gameState);
@@ -41,25 +41,25 @@ float getInfoHidedEnemyMovable(const SGameState * const gameState)
 }
  
 /* Permet d'avoir nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */ 
-float getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece)
+int getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece)
 {
-	float numTotal = 0;
+	int numTotal = 0;
 	int i, j;
 	numTotal = calculateHighEnemy(numTotal, myPiece, (m_color == ECblue ? gameState->redOut : gameState->blueOut));
 
 	for (i=0; i<10; i++)
 		for (j=0; j<10; j++)
 			/* Si la pièce est un ennemi visible et plus fort que myPiece, on décrémente numTotal */
-			if ( (winnerFight(myPiece, m_board[i][j].box.piece) != myPiece) && (m_board[i][j].box.content == m_enemyColor) )
+			if ( (winnerFight(myPiece, m_board[i][j].box.piece) != myPiece) && (m_board[i][j].box.content == m_enemyColor) && (m_board[i][j].box.piece != EPnone))
 				numTotal--;
 
 	return numTotal;
 }
 
 /* calcule le nombre de piece de rang superieur à une piece */
-float calculateHighEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[])
+int calculateHighEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[])
 {
-	float numberEnemyPiece=0;
+	int numberEnemyPiece=0;
 
 	
 	if(piece == EPspy)
@@ -120,23 +120,23 @@ float calculateHighEnemy(float numTotal, EPiece piece, const unsigned int pieceO
 }
 
 /* Permet d'avoir nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */ 
-float getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
+int getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
 {
-	float numTotal = 0;
+	int numTotal = 0;
 	int i, j;
 	numTotal = calculateLowEnemy(numTotal, myPiece, (m_color == ECblue ? gameState->redOut : gameState->blueOut));
 
 	for (i=0; i<10; i++)
 		for (j=0; j<10; j++)
 			/* Si la pièce est un ennemi visible et plus fort que myPiece, on décrémente numTotal */
-			if ( (winnerFight(myPiece, m_board[i][j].box.piece) == myPiece) && (m_board[i][j].box.content ==m_enemyColor) )
+			if ( (winnerFight(myPiece, m_board[i][j].box.piece) == myPiece) && (m_board[i][j].box.content ==m_enemyColor) && (m_board[i][j].box.piece != EPnone))
 				numTotal--;
 }
 
 /* calcule le nombre de piece de rang superieur à une piece */
-float calculateLowEnemy(float numTotal, EPiece piece, const unsigned int pieceOut[])
+int calculateLowEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[])
 {
-	float numberEnemyPiece=0;
+	int numberEnemyPiece=0;
 
 	
 	if(piece == EPmarshal)
@@ -194,11 +194,11 @@ float calculateLowEnemy(float numTotal, EPiece piece, const unsigned int pieceOu
 }
 
 /* Permet d'avoir nombre de bombes ennemies cachées */
-float getInfoHidedEnemyBomb(const SGameState * const gameState)
+int getInfoHidedEnemyBomb(const SGameState * const gameState)
 {
 	int i, j;
-	float numShownBomb = 0; // nombre de bombe ennemie découverte
-	float numHidedBomb; // nombre de bombe ennemie cachée
+	int numShownBomb = 0; // nombre de bombe ennemie découverte
+	int numHidedBomb; // nombre de bombe ennemie cachée
 
 	for (i=0; i<10; i++)
 	{
@@ -225,7 +225,7 @@ float getInfoHidedEnemyBomb(const SGameState * const gameState)
 }
 
 /* Permet de savoir si le marshal ennemi est en vie et caché =1 sinon =0 */
-float isHidedMarshal(const SGameState * const gameState)
+int isHidedMarshal(const SGameState * const gameState)
 {
 	int i, j;
 	bool marshalIsVisible = false; // variable permettant de savoir si le maréchal énnemi est visible
