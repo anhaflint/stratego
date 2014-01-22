@@ -82,10 +82,11 @@ SGameMode DetectGameMode(int argc, char* argv[], StructIA *AIfunctions1, StructI
 			case '0': if (argc == 3)  // OK
 						gamemode = HUMAN_HUMAN;
 						break;
-			case '1': if(LoadAI(AIfunctions1, argv[4])) // 1 IA
-						gamemode = IA_HUMAN;
+			case '1': if(LoadAI(AIfunctions1, argv[3])) // 1 IA
+						{printf("on passe le mode à 1\n");
+						gamemode = IA_HUMAN;}
 						break;
-			case '2': if((LoadAI(AIfunctions1, argv[4]))&&(LoadAI(AIfunctions2, argv[5]))) // 2 IA
+			case '2': if((LoadAI(AIfunctions1, argv[3]))&&(LoadAI(AIfunctions2, argv[4]))) // 2 IA
 						gamemode = IA_IA;
 						break;
 			default : break;

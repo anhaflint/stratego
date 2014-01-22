@@ -89,15 +89,11 @@ for (i=13;i<26;i++){
 
 		layout->RECTblueOut[i].x=755;
 		layout->RECTblueOut[i].y=33+45*i;
-<<<<<<< HEAD
-
 		layout->RECTblueOut[i].w=30;
 		layout->RECTredOut[i].w=30;
 		layout->RECTblueOut[i].h=40;
 		layout->RECTredOut[i].h=40;
 
-=======
->>>>>>> 21e19dd1e542bb840cd355d1f25808516dddc223
 	}
 
 
@@ -363,7 +359,6 @@ void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
 
 	if (aff==1)
 	{
-<<<<<<< HEAD
 
 			switch(joueur)
 			{
@@ -380,21 +375,6 @@ void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
 						break;
 
 			}
-=======
-		if(player.Color==2)
-		{
-			rectJ.x=120;
-			rectJ.y=556;
-			SDL_BlitSurface(layout->J1, NULL, layout->Screen, &rectJ);
-		}
-
-		if(player.Color==3)
-		{
-			rectJ.x=800-200; //120-80
-			rectJ.y=556;
-			SDL_BlitSurface(layout->J2, NULL, layout->Screen, &rectJ);
-		}
->>>>>>> 21e19dd1e542bb840cd355d1f25808516dddc223
 		
 		SDL_Flip(layout->Screen);
 	}
@@ -452,15 +432,6 @@ int i;
 
 
 
-<<<<<<< HEAD
-
-void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate)
-{
-
-SDL_Rect rectKilled;
-//RECTredOut[11];	// Tableau rectangle de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
-//RECTblueOut[11];	// Tableau rectangle de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
-=======
 
 void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate)
 {
@@ -544,11 +515,11 @@ int i;
 
 		}
 		*/
-		
+	/*	
 	}
  	SDL_Flip(layout->Screen); // Rafraichissement
 }
-
+*/
 
 void Display_fight(SMove moveaff,SGameState game, EPlayer *player, BoardLayout *layout)
 {

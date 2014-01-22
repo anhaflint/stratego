@@ -230,9 +230,11 @@ printf("--------------------DEBUT DU MATCH--------------------------------------
 		//Affichage des pieces latérales
 		Display_lateralPieces(layout,player1.Color);
 		Display_lateralPieces(layout,player2.Color);
+		printf("le mode est %d\n",gameconfig.Mode );
 
-		if(gameconfig.Mode == IA_HUMAN) 
+		if(gameconfig.Mode == IA_HUMAN)  // L'IA est le joueur2
 		{
+			printf("LALALA\n");
 			AIfunctions1.InitLibrary(gameconfig.Player2Name);
 			AIfunctions1.StartGame(player2.Color, boardInit2);
 			printf("si ia\n");
@@ -283,19 +285,35 @@ printf("--------------------DEBUT DU MATCH--------------------------------------
 
 				//joueur 2
 				Display(&layout, player2, player1, gamestate, 1, 2);
-				move=Event_IdMove(&event,player2, &continuer);
+				if(gameconfig.Mode == IA_HUMAN)
+				{
+					move = AIfunctions1.NextMove(&gamestate);
+				}else
+				{
+					move=Event_IdMove(&event,player2, &continuer);
+				}
+				
 				Game_DoMove(&gamestate, move, &player2, &player1, &layout);
 				printf("la pénalité du joueur est %d\n", player2.nbPenalty);
 				Display(&layout, player2, player1, gamestate, 2, 2);
+				pause();
 			}
 			else
 			{
 				//joueur 2
 				Display(&layout, player2, player1, gamestate, 1, 2);
-				move=Event_IdMove(&event,player2, &continuer);
+				if(gameconfig.Mode == IA_HUMAN)
+				{
+					move = AIfunctions1.NextMove(&gamestate);
+				}else
+				{
+					move=Event_IdMove(&event,player2, &continuer);
+				}
+				
 				Game_DoMove(&gamestate, move, &player2, &player1, &layout);
 				printf("la pénalité du joueur est %d\n", player2.nbPenalty);
 				Display(&layout, player2, player1, gamestate, 2, 2);
+				pause();
 
 				//joueur 1
 				Display(&layout, player1, player2, gamestate, 1, 1);

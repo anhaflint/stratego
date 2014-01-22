@@ -59,7 +59,7 @@ typedef struct{
 possibles ainsi que leur nombre */
 typedef struct{
  	Mymove listMoves[172];
- 	int lenght_list;
+ 	int length_list;
 }GroupMoves;
 
 /* Enumération des différentes stratégies

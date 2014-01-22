@@ -23,9 +23,19 @@ void freeIA(StructIA *AIfunctions)
 
 int LoadAI(StructIA *AIfunctions, char* path)
 {
-printf("jambon jambon\n");
+printf("jambon jambon %s\n", path);
 	 	if ((AIfunctions->lib=dlopen(path, RTLD_LAZY))==NULL)
+        {
+               
+               fprintf(stderr, "%s\n", dlerror());
+               //dlerror()
                 return 0;
+               
+           }
+
+
+               
+            
     printf("lala1\n");
         if ((AIfunctions->InitLibrary=(pfInitLibrary)dlsym(AIfunctions->lib,"InitLibrary"))==NULL)
                 return 0;
