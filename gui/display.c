@@ -363,13 +363,13 @@ void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
 			switch(joueur)
 			{
 				case 1: // joueur 1
-						rectJ.x=250;
+						rectJ.x=260;
 						rectJ.y=280;
 						SDL_BlitSurface(layout->J1, NULL, layout->Screen, &rectJ);
 						break;
 
 				case 2: // joueur 2
-						rectJ.x=800-350; //120-80
+						rectJ.x=800-340; //120-80
 						rectJ.y=280;
 						SDL_BlitSurface(layout->J2, NULL, layout->Screen, &rectJ);
 						break;
@@ -381,11 +381,11 @@ void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
 	else
 	{
 
-			rectJ.x=250;
+			rectJ.x=260;
 			rectJ.y=280;
 		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
 
-			rectJ.x=800-350; // 120-80
+			rectJ.x=800-340; // 120-80
 			rectJ.y=280;
 		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
 		SDL_Flip(layout->Screen);
@@ -451,13 +451,16 @@ int i;
 		
 		if (player.Color==ECred)
 		{
-		rectKilled.x=0+(gamestate.redOut[i]*30);		
+
+		rectKilled.x=0+(gamestate.redOut[i]*30);
+		SDL_BlitSurface(layout->Background, &(layout->RECTredOut[i]), layout->Screen, &(layout->RECTredOut[i]));		
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTredOut[i])); //Affichage 
 		}
 
 		else if (player.Color==ECblue)
 		{
-		rectKilled.x=0+(gamestate.blueOut[i]*30);		
+		rectKilled.x=0+(gamestate.blueOut[i]*30);
+		SDL_BlitSurface(layout->Background, &(layout->RECTblueOut[i]), layout->Screen, &(layout->RECTblueOut[i]));	
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
 
 		}
@@ -504,7 +507,7 @@ int i;
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
 
 		}
-		/*
+
 		else if (color==ECnone){  // remise à vide
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
