@@ -170,6 +170,7 @@ void updateData(const SGameState * const gameState)
 
 	/* Variables internes à la fonction */
 	int i, j; // Variables pour les boucles	
+	int diff; // Différence entre les gameState à chaque passage de boucle
 	SMove enemyMovement; // Tableaux contenant les positions qui ont changé depuis le dernier mouvement
 	m_nbMove = 0; // A déplacer dans la fonction précédant l'envoi de mouvement
 	bool enemyHasMoved = false; // Permet de savoir si l'ennemi a fait un déplacement simple
@@ -187,21 +188,24 @@ void updateData(const SGameState * const gameState)
 	{
 		for (j=0; j < 10; j++)
 		{
+			diff = m_board[i][j].box.content - gameState->board[i][j].content;
 			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
-			if (((m_board[i][j].box.content - gameState->board[i][j].content) > 0)&&(!(m_board[i][j].isVisible)))
+			if ((diff > 0)&&(!(m_board[i][j].isVisible)))
 			{
 				enemyHasMoved = true;
 				enemyMovement.start.line = i;
 				enemyMovement.start.col = j;
 			}
 			/* Sinon si une pièce est arrivée en (i,j), on stocke */
-			else if (((m_board[i][j].box.content - gameState->board[i][j].content) < 0)&&(!(m_board[i][j].isVisible)))
+			else if (diff < 0)
 			{
 				enemyMovement.end.line = i; 
 				enemyMovement.end.col = j;				
 			}
 		}
 	}
+
+	printf("[updateData] Mouvement ennemi trouvé : (%d,%d) -> (%d, %d)\n", enemyMovement.start.line, enemyMovement.start.col, enemyMovement.end.line, enemyMovement.end.col);
 
 	if (enemyHasMoved)
 	{		
