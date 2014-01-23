@@ -209,29 +209,7 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	int i, j;
 	printf("Démarrage de AttackResult\n");	
 	printf("Tableau avant fin de l'attaque\n");
-	printf("  |");
-	for (i=0; i<10; i++)
-	{
-		printf(" %d  ", i);
-		printf("|");
-	}
-	printf("\n");
-	printf("-----------------------------------------------------\n");
-	for (i=0; i<10; i++)
-	{		
-		printf("%d ", 9-i);		
-		printf("|");
-
-		for (j = 0; j < 10; ++j)
-		{
-			if (m_board[9-i][j].box.piece >= 10)
-				printf(" %d|%d", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);
-			else
-				printf(" %d|%d ", m_board[9-i][j].box.piece, m_board[9-i][j].box.content);			
-			printf(" |");				
-		}
-		printf("\n-----------------------------------------------------\n");
-	}
+	drawBoard(m_board);
 	printf("(%d,%d) à (%d,%d) : %d versus %d\n", armyPos.line, armyPos.col, enemyPos.line, enemyPos.col, armyPiece, enemyPiece);
 	
 	/* Si c'est nous qui avons engagé l'attaque */
@@ -245,29 +223,7 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 		analyseFight(enemyPiece, armyPiece, enemyPos, armyPos);
 	}
 	printf("Tableau après l'attaque\n");
-	printf("  |");
-	for (i=0; i<10; i++)
-	{
-		printf(" %d  ", i);
-		printf("|");
-	}
-	printf("\n");
-	printf("-----------------------------------------------------\n");
-	for (i=0; i<10; i++)
-	{		
-		printf("%d ", 9-i);		
-		printf("|");
-
-		for (j = 0; j < 10; ++j)
-		{
-			if (m_board[9-i][j].box.piece >= 10)
-				printf(" %d", m_board[9-i][j].box.piece);		
-			else
-				printf(" %d ", m_board[9-i][j].box.piece);			
-			printf(" |");				
-		}
-		printf("\n-----------------------------------------------------\n");
-	}
+	drawBoard(m_board);
 }
 
 void Penalty()
