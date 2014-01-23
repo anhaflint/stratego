@@ -119,7 +119,7 @@ int calculateHighEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[]
 	return numberEnemyPiece + numTotal;
 }
 
-/* Permet d'avoir nombre de piece ennemie de rang superieur à ma piece de plus haut rang cachée */ 
+/* Permet d'avoir nombre de piece ennemie de rang inferieur à ma piece de plus haut rang cachée */ 
 int getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
 {
 	int numTotal = 0;
@@ -133,7 +133,7 @@ int getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
 				numTotal--;
 }
 
-/* calcule le nombre de piece de rang superieur à une piece */
+/* calcule le nombre de piece de rang inferieur à une piece */
 int calculateLowEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[])
 {
 	int numberEnemyPiece=0;
