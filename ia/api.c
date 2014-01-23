@@ -198,6 +198,9 @@ SMove NextMove(const SGameState * const gameState)
 	decideMove(gameState); // Décision du mouvement à faire
 	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
 		saveMove(); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
+
+	printf("[decideMove] ---- PLATEAU INTERNE APRES ----\n");
+ 	drawBoard(m_board);
 	return m_decidedMove;
 }
 
