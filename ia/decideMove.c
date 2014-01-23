@@ -70,7 +70,6 @@ void decideMove(const SGameState * const gameState)
 	int random;
 	
 	// Décision du mouvemennt
-	// Penser à mettre m_myMove à true lorsqu'on attaque l'ennemi
 	/*j'ai besoin du coup precedent(m_decidedMove) pour determiner le suivant*/
 
 	GroupMoves priorityMoves; // liste qui contient les mouvements non dupliqués et risqués évalués globalement( avec toutes les pieces énnemies voisines)
@@ -106,9 +105,6 @@ void decideMove(const SGameState * const gameState)
 		choosedMove = chooseMove(gameState, priorityMoves);
 
  	printf("[decideMove] choosedMove : (%d,%d) -> (%d,%d)\n", choosedMove.start.line, choosedMove.start.col, choosedMove.end.line, choosedMove.end.col);
- 	/* A décommenter si test de lib */
- 	// choosedMove = m_movements[0];
-
  	/* Mise à jour de la variable de nombre d'allers-retours */
 
  	// Si on a fait le mouvement inverse du précédent, on incrémente le nombre
@@ -121,6 +117,10 @@ void decideMove(const SGameState * const gameState)
  		m_nbRoundTrips = 1;
 
  	m_decidedMove = choosedMove;
+
+ 	/* Vérification si le mouvement est une attaque pour la valeur de m_myMove */
+ 	if (gameState->board[m_decidedMove.end.line][m_decidedMove.end.col].content == m_enemyColor)
+ 		m_myMove = true;
 }
 
 // fonction interne a decideMove
