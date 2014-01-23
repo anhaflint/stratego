@@ -32,13 +32,18 @@ void evaluateMoves(const SGameState * const gameState,GroupMoves *normalMoves,Gr
 */
 float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType);
 
+/** 
+* Permet de connaître le nombre d'ennemis encore présents sur le plateau
+* 	@param gameState est le gameState du jeu
+*/
+int nbAliveEnemies(const SGameState * const gameState);
 
 /**
-* Donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi 
+* Donne une priorité aux mouvements normaux remplissant certains critères
 * en attribuant un nombre au parametre interne caution de nomalMoves 
 * @param normalMoves est le tableau qui contient tous les movements courants  qui ne sont pas risqués
 */
-void normalClassication(GroupMoves *normalMoves);
+void normalClassication(const SGameState * const gameState, GroupMoves *normalMoves);
 
 /**
 * Donne la priorité au mouvements normaux (sans risque d'être attaqué) en fonction du nombre de pièce énnemie environante 
@@ -80,11 +85,6 @@ bool isMovePresent(SMove mouvement, GroupMoves buffer);
 void emptyList(GroupMoves *buffer);
 
 /**
-* Donne le mouvement à effectuer par l'IA
-* 
-*/
-
-/**
 * Fonction qui renvoie le mouvement comportant le moins de risque, 
 * le meilleur mouvement du GroupMoves passé en paramètre
 * @param GrouMoves moves
@@ -93,8 +93,8 @@ void emptyList(GroupMoves *buffer);
 SMove takeBestMove(GroupMoves moves);
 
 /**
-* A commenter
-*
+* Donne le mouvement à effectuer par l'IA
+* 
 */
 SMove chooseMove(const SGameState * const gameState, GroupMoves moves);
 

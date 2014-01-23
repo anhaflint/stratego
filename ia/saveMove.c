@@ -10,7 +10,7 @@ void saveMove()
 		m_board[m_decidedMove.start.line][m_decidedMove.start.col].box.piece,
 		m_color,
 		m_board[m_decidedMove.start.line][m_decidedMove.start.col].isVisible,
-		m_board[m_decidedMove.start.line][m_decidedMove.start.col].isBomb);
+		false);
 
 	// Puis on vide la case d'où vient la pièce
 	updateSquare(m_decidedMove.start, EPnone, ECnone, false, false);

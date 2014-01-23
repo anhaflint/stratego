@@ -127,5 +127,7 @@ decideMove()
 -------- globalProbability()
 -------- emptyList()
 -------- isMovePresent()
+---- normalClassication()
+-------- giveNormalRank()
 ---- chooseMove()
 -------- 

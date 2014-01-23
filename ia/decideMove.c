@@ -64,7 +64,7 @@ void decideMove(const SGameState * const gameState)
 
 	evaluateMoves(gameState, &normalMoves,&riskedMoves);
  	globalEvaluation(&priorityMoves,riskedMoves);
- 	normalClassication(&normalMoves);
+ 	normalClassication(gameState, &normalMoves);
 
  	printf("[decideMove] PRINTF DES GROUPMOVES\n");
 
@@ -391,15 +391,38 @@ float attributionRank(EPiece myPiece,EPiece enemyPiece,bool evaluationType)
 	}
 }
 
+// Procédure interne à normalClassification
+// Permet de connaître le nombre d'ennemis encore présents sur le plateau
+int nbAliveEnemies(const SGameState * const gameState)
+{
+	int nbDeadEnemies = 0;
+	int i;
+
+	if (m_color == ECred)
+	{
+		for (i=0; i < 12; i++)
+			nbDeadEnemies += gameState->blueOut[i];
+	}
+	else
+	{
+		for (i=0; i < 12; i++)
+			nbDeadEnemies += gameState->redOut[i];
+	}
+
+	return 40 - nbDeadEnemies;
+}
+
 // procedure interne a decideMove
-// donne une priorité au mouvements normaux qui echappent à l'attaque de l'ennemi
-void normalClassication(GroupMoves *normalMoves)
+// donne une priorité aux mouvements normaux remplissant certains critères
+void normalClassication(const SGameState * const gameState, GroupMoves *normalMoves)
 {
 	printf("Démarrage de normalClassication...\n");
 	int i = 0; /* compteur */
 	int numEnemy; /* nombres d'ennemi */
+
 	while(i < normalMoves->length_list)
 	{
+		// Donne une priorité aux fuites si un allié est proche d'un ou plusieurs ennemis
 		numEnemy=0;
 		if( normalMoves->listMoves[i].move.start.line < 9 && m_board[normalMoves->listMoves[i].move.start.line + 1 ][normalMoves->listMoves[i].move.start.col].box.content == m_enemyColor)
 			numEnemy++;
@@ -409,8 +432,36 @@ void normalClassication(GroupMoves *normalMoves)
 			numEnemy++;
 		if( normalMoves->listMoves[i].move.start.col > 0 && m_board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col -1 ].box.content == m_enemyColor)
 			numEnemy++;
-		printf("nombre d'ennemi: %d", numEnemy);
+		printf("[normalClassification] Nombre d'ennemis : %d\n", numEnemy);
 		normalMoves->listMoves[i].caution=giveNormalRank(numEnemy);
+		printf("[normalClassification] giveNormalRank renvoie %d\n", numEnemy);
+		printf("[normalClassification] Caution du mouvement après numEnemy %d : %f\n", i, normalMoves->listMoves[i].caution);
+
+		// Donner priorité à une pièce qui a déjà bougé
+		if (!(m_board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col].isBomb))
+			normalMoves->listMoves[i].caution -= 5.f;
+		printf("[normalClassification] Caution du mouvement après pieceDejaBougé %d : %f\n", i, normalMoves->listMoves[i].caution);
+
+		// Donne une priorité si pièce plus forte que plus des 3/4 des pièces du plateau
+		if ((float) getInfoLowEnemy(gameState, gameState->board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col].piece)
+			> (3.f/4.f)*nbAliveEnemies(gameState))
+			normalMoves->listMoves[i].caution -= 5.f;
+		printf("[normalClassification] Caution du mouvement après piecePlusForte %d : %f\n", i, normalMoves->listMoves[i].caution);
+
+		// Réglage de priorité en fonction de la hauteur sur le plateau et la force de la pièce pour mouvement vers le haut
+		if ((normalMoves->listMoves[i].move.end.line - normalMoves->listMoves[i].move.start.line) > 0)
+			normalMoves->listMoves[i].caution -= 0.1*(float)(gameState->board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col].piece)*(float)(normalMoves->listMoves[i].move.start.line);
+			
+			printf("[normalClassification] Caution du mouvement après plateau %d : %f\n", i, normalMoves->listMoves[i].caution);
+		// Si l'arrivée est un ennemi et qu'on est un scout qui se déplace vers le haut, on se suicide pour la découverte de la pièce adverse
+		/*if ((gameState->board[normalMoves->listMoves[i].move.end.line][normalMoves->listMoves[i].move.end.col].content == m_enemyColor)
+			&&(gameState->board[normalMoves->listMoves[i].move.start.line][normalMoves->listMoves[i].move.start.col].piece == EPscout)
+			&&((normalMoves->listMoves[i].move.end.line - normalMoves->listMoves[i].move.start.line) > 0))
+			normalMoves->listMoves[i].caution -= 10.f;
+		printf("[normalClassification] Caution du mouvement après scoutSuicide %d : %f\n", i, normalMoves->listMoves[i].caution);
+		====================> PAS BON CAR POSSIBLE SEULEMENT DANS LES MOUVEMENTS RISQUES */
+
+		printf("[normalClassication] Valeur finale du caution du mouvement %d : %f\n", i, normalMoves->listMoves[i].caution);
 		i++;
 	}
 }
@@ -571,8 +622,7 @@ SMove takeBestMove(GroupMoves moves)
 		{
 			bestMove = moves.listMoves[i].move;
 			bestCaution = moves.listMoves[i].caution;
-		}
-			
+		}			
 
 	return bestMove;
 }

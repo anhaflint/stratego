@@ -146,7 +146,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 	if (((enemyMovement.start.line - enemyMovement.end.line)/2 != 0)
 		||((enemyMovement.start.col - enemyMovement.end.col)/2 != 0))
 	{
-		updateSquare(enemyMovement.end, EPscout,m_enemyColor, true, false);
+		updateSquare(enemyMovement.end, EPscout, m_enemyColor, true, false);
 	}
 	
 	/* D'autres cas à venir sûrement... */
