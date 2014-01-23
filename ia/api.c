@@ -1,6 +1,7 @@
 #include <stdio.h> // A enlever à la fin
 #include <string.h> // A peut-être enlever à la fin
 #include <stdbool.h>
+#include <time.h>
 #include "../structure.h"
 #include "updateData.h"
 #include "analyzeBoard.h"
@@ -41,13 +42,15 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	m_color = color;
 	m_enemyColor = (m_color == ECblue) ? ECred : ECblue;
 	printf("Couleur choisie : %d\n", m_color);
-	m_strategy = str_default;
+	srand(time(NULL)); // Initialisation de la graine en fonction du temps actuel
+	m_strategy = rand() % 8;
 	printf("Stratégie choisie : %d\n", m_strategy);
 	m_caution = 5;
 	printf("Taux de risque initial : %d\n", m_caution);
 	m_nbRoundTrips = 1;
 	printf("Nombre d'allers-retours initial : %d\n", m_nbRoundTrips);
-
+	
+	
 	/* Variables servant à 
 	l'initialisation de m_board */
 	
@@ -118,10 +121,6 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 								   {2, 2, 0, 11, 0, 0, 4, 2, 2, 2}};
 		memcpy(boardInit, initBoard, sizeof(initBoard));
 	}
-	else if (m_strategy == risked)
-	{
-		//
-	}
 
 	/* Initialisation du tableau interne */
 
@@ -188,7 +187,6 @@ void EndGame()
 
 void EndMatch()
 {
-	// Désallocation
 	printf("EndMatch\n");
 }
 
