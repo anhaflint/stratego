@@ -2,6 +2,7 @@
 #include <time.h>
 #include "resources.h"
 #include "decideMove.h"
+#include "couleurs.h"
 
 /****** FONCTIONS DE DEBUG ******/
 
@@ -24,28 +25,41 @@ void drawBoard(InfoPiece board[10][10])
 	printf("  |");
 	for (i=0; i<10; i++)
 	{
+		couleur("33");
 		printf(" %d  ", i);
+		couleur("0");
 		printf("|");
 	}
 	printf("\n");
 	printf("-----------------------------------------------------\n");
 	for (i=0; i<10; i++)
 	{
+		couleur("33");
 		printf("%d ", 9-i);
+		couleur("0");
 		printf("|");
 
 		for (j = 0; j < 10; ++j)
 		{
-			if (board[9-i][j].box.piece >= 10)
-				printf("%d|%d", board[9-i][j].box.content, board[9-i][j].box.piece);
-			else
-				printf("%d|%d ", board[9-i][j].box.content, board[9-i][j].box.piece);
+			if (board[9-i][j].box.content == ECred)
+				couleur("31");			
+			if (board[9-i][j].box.content == ECblue)
+				couleur("36");
+			if (board[9-i][j].box.content == EClake)
+				couleur("30");
 
+			if (board[9-i][j].box.piece >= 10)
+				printf(" %d", board[9-i][j].box.piece);		
+			else
+				printf(" %d ", board[9-i][j].box.piece);
+
+			couleur("0");
 			printf(" |");
 				
 		}
 		printf("\n-----------------------------------------------------\n");
 	}
+	couleur("0");
 }
 
 // Décision du mouvement à effectuer
@@ -77,7 +91,7 @@ void decideMove(const SGameState * const gameState)
  	printf("[decideMove] ---- PRIORITYMOVES ----\n");
  	drawGroupMoves(priorityMoves);
 
- 	printf("[decideMove] ---- PLATEAU ----\n");
+ 	printf("[decideMove] ---- PLATEAU INTERNE AVANT ----\n");
  	drawBoard(m_board);
 
  	printf("[decideMove] Stratégie choisie : %d\n", m_strategy);
