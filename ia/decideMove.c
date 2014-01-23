@@ -82,18 +82,14 @@ void decideMove(const SGameState * const gameState)
 
  	printf("[decideMove] Stratégie choisie : %d\n", m_strategy);
 
- 	switch(m_strategy)
- 	{
-	       case str_default:
-	       		srand(time(NULL));
-	       		random = rand() % 2;
-	       		if((random == 0)&&(priorityMoves.length_list != 0))
-				// if(normalMoves.length_list > 0)// si il ya la possibilité de jouer sans perdre de pion
-					choosedMove = chooseMove(gameState, priorityMoves);
-				else if (normalMoves.length_list != 0)
-				 	choosedMove = chooseMove(gameState, normalMoves);
-	       break;
- 	}
+   	srand(time(NULL));
+	random = rand() % 2;
+	if((random == 0)&&(priorityMoves.length_list != 0))
+		choosedMove = chooseMove(gameState, priorityMoves);
+	else if (normalMoves.length_list != 0)
+		choosedMove = chooseMove(gameState, normalMoves);
+	else
+		choosedMove = chooseMove(gameState, priorityMoves);
 
  	printf("[decideMove] choosedMove : (%d,%d) -> (%d,%d)\n", choosedMove.start.line, choosedMove.start.col, choosedMove.end.line, choosedMove.end.col);
  	/* A décommenter si test de lib */
