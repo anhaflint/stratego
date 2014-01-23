@@ -65,7 +65,6 @@ typedef enum{
 	defensive,
 	malicious,
 	protective,
-	risked,
 	bluff,
 	agressive,
 	searchme,
