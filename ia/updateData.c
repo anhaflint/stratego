@@ -102,7 +102,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 		recherchée est 1, alors on a trouvé la pos de la pièce
 		et le type, on met à jour le board interne */
 		if (nbPossibilities == 1)
-			updateSquare(posPiece, piecePossible,m_enemyColor, true, (piecePossible == EPbomb ? true : false));
+			updateSquare(posPiece, piecePossible, m_enemyColor, true, (piecePossible == EPbomb ? true : false));
 
 		/* Réinitialisation du nombre de possibilités */
 		nbPossibilities = 0;
@@ -135,7 +135,7 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 		recherchée est 1, alors on a trouvé la pos de la pièce
 		et le type, on met à jour le board interne */
 		if (nbPossibilities == 1)
-			updateSquare(posPiece, piecePossible,m_enemyColor, true, false);
+			updateSquare(posPiece, piecePossible, m_enemyColor, true, false);
 
 		/* Réinitialisation du nombre de possibilités */
 		nbPossibilities = 0;
@@ -190,7 +190,7 @@ void updateData(const SGameState * const gameState)
 		{
 			diff = m_board[i][j].box.content - gameState->board[i][j].content;
 			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
-			if ((diff > 0)&&(!(m_board[i][j].isVisible)))
+			if (diff > 0)
 			{
 				enemyHasMoved = true;
 				enemyMovement.start.line = i;
