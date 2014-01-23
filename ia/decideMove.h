@@ -47,38 +47,41 @@ void normalClassication(GroupMoves *normalMoves);
 float giveNormalRank(int numEnemy);
 
 /**
-* A commenter
-*
+* Donne une priorité globale au mouvements et éliminer les doublons
+* @param priorityMoves est le tableau de mouvement risqué avec priorité globale sans doublons par mouvement
+* @param riskedMoves est le tableau qui contient tous les movements courants risqués avec d'éventuels doublons et priorités differentes par mouvement
 */
 void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves);
 
 /**
-* A commenter
-*
+* Cherche les occurences d'un mouvement dans un tableau de mouvement
+* @param riskedMoves tableau dans lequel s'effectue la recherche
+* @param buffer tableau dans lequel sont copiés les differentes occurences du mouvement cherché
 */
 void findOccurences(SMove movement,GroupMoves riskedMoves,GroupMoves *buffer);
 
 /**
-* A commenter
-*
+* Donne le taux de risque global d'un ensemble de mouvements
+* @param buffer est tableau contenant tous les mouvements pour lequel on calculera la probabilité globale puis converti en taux de risque
 */
 float globalProbability(GroupMoves buffer);
 
 /**
-* A commenter
-*
+* Permet de savoir si un mouvement est present dans un tableau de mouvement
+* @param mouvement est le mouvement dont on evalue sa presence ou non dans le tableau de mouvement
+* @param buffer est le tableau de mouvement dans lequel on evaluera la presence ou non de @param mouvement
 */
 bool isMovePresent(SMove mouvement, GroupMoves buffer);
 
 /**
-* A commenter
-*
+* Permet de vider une liste de mouvement en initialisant toutes ses variables à 0
+* @param buffer est le tableau à vider
 */
 void emptyList(GroupMoves *buffer);
 
 /**
-* A commenter
-*
+* Donne le mouvement à effectuer par l'IA
+* 
 */
 SMove chooseMove(const SGameState * const gameState, GroupMoves moves);
 
