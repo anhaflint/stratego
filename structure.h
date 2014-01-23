@@ -33,11 +33,6 @@ typedef struct
 }SGameConfig;
 
 
-/*typedef struct 
-{
-	SMove move;
-
-};??*/
 //----------------------- Structures et énumérations ------------------------//
 
 /* Stockage en interne du plateau, avec

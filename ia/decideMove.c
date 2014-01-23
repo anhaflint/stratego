@@ -556,19 +556,41 @@ void emptyList(GroupMoves *buffer)
 	buffer->length_list = 0;
 }
 
+SMove takeBestMove(GroupMoves moves)
+{
+	SMove bestMove;
+	int bestCaution;
+	int i;
+
+	// On initialise le meilleur mouvement au tout premier
+	bestMove = moves.listMoves[0].move;
+	bestCaution = moves.listMoves[0].caution;
+
+	for (i=1; i < moves.length_list; i++)
+		if (moves.listMoves[i].caution < bestCaution) // Si on trouve un meilleur mouvement
+		{
+			bestMove = moves.listMoves[i].move;
+			bestCaution = moves.listMoves[i].caution;
+		}
+			
+
+	return bestMove;
+}
+
 SMove chooseMove(const SGameState * const gameState, GroupMoves moves)
 {
 	printf("Démarrage de chooseMove...\n");
 	int random;
+	SMove bestMove;
 
-	random = rand() % moves.length_list;
+	bestMove = takeBestMove(moves); // On ressort le meilleur mouvement, celui qui a le score le plus faible
 	/* Declaration des variables internes à la procédure*/
 	// int i = r = n = 0;
 	
 	// on suppose que lorsque m_caution>5 les movements passer sont ceux des mouvements risqués
  	//if(m_caution>5)
  	//{
- 	
+ 	printf("On prend le bestMove : (%d,%d) -> (%d,%d)\n", bestMove.start.line, bestMove.start.col, bestMove.end.line, bestMove.end.col);
 	// Valeur pour test de l'IA
- 	return moves.listMoves[random].move;
+ 	return bestMove;
 }

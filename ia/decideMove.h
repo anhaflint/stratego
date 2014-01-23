@@ -80,6 +80,19 @@ void emptyList(GroupMoves *buffer);
 * A commenter
 *
 */
+
+/**
+* Fonction qui renvoie le mouvement comportant le moins de risque, 
+* le meilleur mouvement du GroupMoves passé en paramètre
+* @param GrouMoves moves
+* 	GroupMoves dont on va prendre le meilleur mouvement
+*/
+SMove takeBestMove(GroupMoves moves);
+
+/**
+* A commenter
+*
+*/
 SMove chooseMove(const SGameState * const gameState, GroupMoves moves);
 
 #endif
