@@ -2,6 +2,19 @@
 #define DECIDEMOVE_H
 
 /**
+* Choix du type de mouvement à faire au prochain tour
+* @param SGameState gameState
+* 	l'état du jeu courant
+* @param int normalMoves
+* 	Nombre de mouvements non risqués
+* @param int priorityMoves
+* 	Nombre de mouvements risqués
+* @return int
+*	Choix du type : 0 si mouvement risqué ou 1 si mouvement non risqué
+*/
+int chooseTypeOfMove(const SGameState * const gameState, int normalMoves, int priorityMoves);
+
+/**
 * Renvoie le mouvement à faire qui a été décidé par l'IA
 * @param SGameState gameState
 * 	l'état du jeu courant
@@ -55,8 +68,9 @@ float giveNormalRank(int numEnemy);
 * Donne une priorité globale au mouvements et éliminer les doublons
 * @param priorityMoves est le tableau de mouvement risqué avec priorité globale sans doublons par mouvement
 * @param riskedMoves est le tableau qui contient tous les movements courants risqués avec d'éventuels doublons et priorités differentes par mouvement
+* @param gameState actuel du jeu
 */
-void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves);
+void globalEvaluation(GroupMoves *priorityMoves, GroupMoves riskedMoves, const SGameState * const gameState);
 
 /**
 * Cherche les occurences d'un mouvement dans un tableau de mouvement
