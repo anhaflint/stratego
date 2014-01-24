@@ -7,28 +7,29 @@
 //							Fonctions d'affichages
 //**************************************************************************
 
+//			=	INITIALISATION DU BOARDLAYOUT : STRUCTURE PRINCIPALE DU DISPLAY	=
 
 void BoardLayout_Init(BoardLayout* layout){ 
 
 int i,j;
 
 
-//Init Rectangle découpe Patron Pièces Rouges
+//Initialisation des rectangles : "découpe" du Patron pour les Pièces Rouges
 for (i=0;i<13;i++){
 
 	if(i==0)
 	{	
 
 		layout->PiecesLayout[i].x=11*40;
-		layout->PiecesLayout[i].y=0;
+		layout->PiecesLayout[i].y=0;			// Pour une bombe
 		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
 		layout->PiecesLayout[i].h=40;
 	}
 	else if(i==11)
-	{
+	{																// 3 CAS PARTICULERS DU A L'ORDRE DES PIECES SUR LE PATRON
 
 		layout->PiecesLayout[i].x=12*40;
-		layout->PiecesLayout[i].y=0;
+		layout->PiecesLayout[i].y=0;			// Pour un drapeau
 		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
 		layout->PiecesLayout[i].h=40;
 	}
@@ -36,7 +37,7 @@ for (i=0;i<13;i++){
 	{
 
 		layout->PiecesLayout[i].x=0*40;
-		layout->PiecesLayout[i].y=0;
+		layout->PiecesLayout[i].y=0;			// Pour une case retournée
 		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
 		layout->PiecesLayout[i].h=40;
 	}
@@ -62,7 +63,7 @@ for (i=13;i<26;i++){
 		layout->PiecesLayout[i].h=40;
 	}
 	else if(i==24)
-	{
+	{																// 3 CAS PARTICULERS DU A L'ORDRE DES PIECES SUR LE PATRON
 		layout->PiecesLayout[i].x=12*40;
 		layout->PiecesLayout[i].y=40;
 		layout->PiecesLayout[i].w=40;			// Taille d'une pièce 40x40
@@ -83,11 +84,13 @@ for (i=13;i<26;i++){
 	layout->PiecesLayout[i].h=40;
 	}
 }
+// Initialisation des tableaux de rect. (écran de jeu) pour affichage 
+// du nombre de pièces éliminées
 	for (i=0;i<11;i++){
 		layout->RECTredOut[i].x=55;
-		layout->RECTredOut[i].y=33+45*i;	// Tableau des rect. à l'écran pour comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
+		layout->RECTredOut[i].y=33+45*i;	
 
-		layout->RECTblueOut[i].x=755;
+		layout->RECTblueOut[i].x=755;			//(indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10)
 		layout->RECTblueOut[i].y=33+45*i;
 		layout->RECTblueOut[i].w=30;
 		layout->RECTredOut[i].w=30;
@@ -96,40 +99,46 @@ for (i=13;i<26;i++){
 
 	}
 
+// Initialisation et Chargement des images
+		//	-Patron des pièces-	
+			layout->Patron=SDL_LoadBMP("images/piecestest.bmp");
 
-	layout->Patron=SDL_LoadBMP("images/piecestest.bmp");   // Charge image Patron Pièces
-	
-	layout->J1=SDL_LoadBMP("images/j1.bmp");   // Charge image J1
-	SDL_SetColorKey(layout->J1, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J1->format, 0, 0, 0));
+		//	-Jeton Joueur-		
+			layout->J1=SDL_LoadBMP("images/j1.bmp");   // Charge image J1
+			SDL_SetColorKey(layout->J1, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J1->format, 0, 0, 0));
 
-	layout->J2=SDL_LoadBMP("images/j2.bmp");   // Charge image J2
-	SDL_SetColorKey(layout->J2, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J2->format, 0, 0, 0));
+			layout->J2=SDL_LoadBMP("images/j2.bmp");   // Charge image J2
+			SDL_SetColorKey(layout->J2, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J2->format, 0, 0, 0));
 
-	layout->Background=SDL_LoadBMP("images/venicetest.bmp");   // Charge image de fond
+		//	-Fond/Backgound du jeu-	
+			layout->Background=SDL_LoadBMP("images/venicetest.bmp");
 
-	layout->Placement=SDL_LoadBMP("images/endTuile.bmp");   // Charge image grisée
-	SDL_SetAlpha(layout->Placement, SDL_SRCALPHA, 192);
+		// 	-Image grisée- (pour phases de placement)
+			layout->Placement=SDL_LoadBMP("images/endTuile.bmp");
+			SDL_SetAlpha(layout->Placement, SDL_SRCALPHA, 192);
 
-	layout->Killed=SDL_LoadBMP("images/piecekill.bmp");   // Charge image J2
-	SDL_SetColorKey(layout->Killed, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Killed->format, 0, 0, 0));
+		//	-Patron des nombres- (pour pieces éliminées)	
+			layout->Killed=SDL_LoadBMP("images/piecekill.bmp");
+			SDL_SetColorKey(layout->Killed, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Killed->format, 0, 0, 0));
 
-	layout->Penalty=SDL_LoadBMP("images/penality.bmp");
-	SDL_SetColorKey(layout->Penalty, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Penalty->format, 0, 0, 255));
+		//	-Image de pénalité-	
+			layout->Penalty=SDL_LoadBMP("images/penality.bmp");
+			SDL_SetColorKey(layout->Penalty, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Penalty->format, 0, 0, 255));
+
+			layout->Fight=NULL; 		// Stocke image affichée lors d'un combat (inutilisé pour le moment)
+
+// Initialisation de la fenêtre d'affichage
+	 	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran : 800x600
+
+	 	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre notamment son nom
+
+	 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background en 0,0 sur l'écran 
+	 	
+	 	// Rafraichissement
+	 	SDL_Flip(layout->Screen);
 
 
- 	layout->Screen=SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); //Setup de la surface de l'ecran : 800x600
-
- 	SDL_WM_SetCaption("Stratego's Creed", "SC"); //Affichage des infos de la fenêtre notamment son nom
-
- 	SDL_BlitSurface(layout->Background, NULL, layout->Screen, NULL); //Affichage du Background en 0,0 sur l'écran 
- 	
- 	// Rafraichissement
- 	SDL_Flip(layout->Screen);
-
-
-	layout->Fight=NULL; 		// Stocke image affichée lors d'un combat si jamais on en met une
-
-//Init Display TAB	: Tab des cellules du plateau
+//Init DisplayTab	: Tableau des cellules du plateau (Représentation spaticiale et graphique du plateau)
 
 	for (i=0;i<10;i++){
 		for (j=0;j<10;j++){
@@ -142,14 +151,18 @@ for (i=13;i<26;i++){
 			// On part du point (156,56) on parcout les colonnes, puis les lignes en ajoutant 50 px à chaque fois.
 
 
-			layout->DisplayTab[i][j].cellaff=12;	//Rien n'est encore afficher sur le plateau.
-													//toute cellule ne possède aucun remplissage => Background
-			layout->DisplayTab[i][j].cellcol=ECnone;
+			layout->DisplayTab[i][j].cellaff=12;		//Rien n'est encore afficher sur le plateau.
+														//Piece Affichée : NONE 						
+			layout->DisplayTab[i][j].cellcol=ECnone;	//Couleur de la pièce : NONE				=> Background
 		}
 
 	}
 
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//			=	PHASE DE PLACEMENT : AFFICHACHE LATERAL DES PIECES	=
 
 void Display_Init(BoardLayout layout,EColor color, int nbPiecesRestantes[13]){
 
@@ -164,7 +177,7 @@ int i;
 		{
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
-			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i]), layout.Screen, &rectTuilesAPlacer[i]); // Affichage de chacune des tuiles rouges
 				if (nbPiecesRestantes[i]==0)
 				{
 					SDL_BlitSurface(layout.Placement, NULL, layout.Screen, &rectTuilesAPlacer[i]);
@@ -175,14 +188,14 @@ int i;
 		{
 			rectTuilesAPlacer[i].x=710;
 			rectTuilesAPlacer[i].y=33+45*i;
-			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i+13]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles
+			SDL_BlitSurface(layout.Patron, &(layout.PiecesLayout[i+13]), layout.Screen, &rectTuilesAPlacer[i]); //Affichage de chacune des tuiles bleues
 			if (nbPiecesRestantes[i]==0)
 				{
 					SDL_BlitSurface(layout.Placement, NULL, layout.Screen, &rectTuilesAPlacer[i]);
 				}
 
 		}
-		else if (color==ECnone){  // remise à vide
+		else if (color==ECnone){  																				// Remise à vide ( recopie de Background )
 			rectTuilesAPlacer[i].x=10;
 			rectTuilesAPlacer[i].y=33+45*i;
 			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
@@ -196,16 +209,18 @@ int i;
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
+//			=	AFFICHAGE D'UNE PIECE : AFFICHAGE LOCALISE PAR SPOS & ECOLOR	=
 
 void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color){
 
-			if(color==ECred)
+			if(color==ECred) // Rouge
 			{
 				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[Piece]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
 
-			if(color==ECblue)
+			if(color==ECblue) // Bleu
 			{
 				SDL_BlitSurface(layout->Patron, &(layout->PiecesLayout[Piece+13]), layout->Screen,  &(layout->DisplayTab[ posPiece.line ][ posPiece.col ].position));
 			}
@@ -218,6 +233,9 @@ void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor c
 SDL_Flip(layout->Screen); // Rafraichissement
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+//			=	REINITIALISATION DU PLATEAU: EFFACE LES PIECES DU PLATEAU	=
 
 void Display_ReinitDisplayBoard(BoardLayout layout)
 {
@@ -241,23 +259,10 @@ SDL_Flip(layout.Screen); // Rafraichissement
 
 
 
+//----------------------------------------------------------------------------------------------------------------------
 
- //fonction de test de retour EPiece
-void Display_EPieceTest(EPiece Pieces[4][10]){
+//			=	AFFICHAGE PLATEAU JOUEUR	=
 
-	int i,j;
-
-	for (i=0;i<4;i++)
-	{
-		for (j=0;j<10;j++)
-		{
-				printf("[%d] ",Pieces[3-i][j] );
-				
-		}
-		printf("\n");
-	}
-
-}
 
 void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 
@@ -272,26 +277,28 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 		{		
 				// Cas d'une pièce vide
 			if( (player.Pboard[i][j].content==ECnone)&&(player.Pboard[i][j].piece==EPnone) )
-			{	printf("C 0 P 12 Case [%d|%d] en [%d][%d] \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j);
+			{	
 				// Si la case ne comprend déjà le fond
 
-					printf("ON EFFACE \n" );
+				
 					SDL_BlitSurface(layout->Background, &(layout->DisplayTab[i][j].position), layout->Screen, &(layout->DisplayTab[i][j].position));
 					layout->DisplayTab[i][j].cellaff=12;
 					layout->DisplayTab[i][j].cellcol=ECnone;
-				
-				
+					printf("BKG on [%d][%d]\n",i,j);
+
+						
 			}
 			else
-			{	printf("A Case [%d|%d] en [%d][%d] et cellaff = %d  et color = %d \n", player.Pboard[i][j].content,player.Pboard[i][j].piece,i,j,layout->DisplayTab[i][j].cellaff,player.Color);
+			{	
 				// Si la case ne comprend déjà la bonne pièce
 				if  ((player.Pboard[i][j].content!=player.Color)||(layout->DisplayTab[i][j].cellaff!=player.Pboard[i][j].piece)||(layout->DisplayTab[i][j].cellcol!=player.Pboard[i][j].content))
-				{ printf("B \n");
+				{
 				posPiece.line=i;
 				posPiece.col=j;
 				Display_PieceInit(player.Pboard[i][j].piece, posPiece, layout ,player.Pboard[i][j].content);
 				layout->DisplayTab[i][j].cellaff=player.Pboard[i][j].piece;
 				layout->DisplayTab[i][j].cellcol=player.Pboard[i][j].content;
+				printf("NEW PIECE [%d][%d]\n",i,j);
 				}
 
 			}
@@ -301,6 +308,10 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 
 	SDL_Flip(layout->Screen); // Rafraichissement
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//			=	AFFICHAGE PENALITE	=
 
 void Display_Penalty(BoardLayout *layout,EPlayer player)
 {
@@ -350,15 +361,27 @@ void Display_Penalty(BoardLayout *layout,EPlayer player)
 	}
 
 }
-//void Display_affPlayer(BoardLayout *layout,EPlayer player,int aff, int joueur)
-void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//			=	AFFICHAGE DES JETONS JOUEUR : AFFICHAGE DU TOUR DE CHAQUE JOUEUR	=
+
+void Display_affPlayer(BoardLayout *layout,int joueur)
 {
 	SDL_Rect rectJ;
 	rectJ.w=80;
 	rectJ.h=40;
 
-	if (aff==1)
-	{
+
+	rectJ.x=260;
+	rectJ.y=280;
+	SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
+
+	rectJ.x=800-340; // 120-80
+	rectJ.y=280;
+	SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
+	
+	SDL_Flip(layout->Screen);
 
 			switch(joueur)
 			{
@@ -377,20 +400,12 @@ void Display_affPlayer(BoardLayout *layout,int aff, int joueur)
 			}
 		
 		SDL_Flip(layout->Screen);
-	}
-	else
-	{
-
-			rectJ.x=260;
-			rectJ.y=280;
-		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
-
-			rectJ.x=800-340; // 120-80
-			rectJ.y=280;
-		SDL_BlitSurface(layout->Background, &rectJ , layout->Screen, &rectJ);
-		SDL_Flip(layout->Screen);
-		}
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//			=	AFFICHAGE LATERAL DES PIECES POUR ELIMINATION	=
 
 void Display_lateralPieces(BoardLayout layout,EColor color)
 {
@@ -431,7 +446,9 @@ int i;
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
 
+//			=	AFFICHAGE PIECES ELIMINEES	=
 
 void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate)
 {
@@ -455,6 +472,8 @@ int i;
 		rectKilled.x=0+(gamestate.redOut[i]*30);
 		SDL_BlitSurface(layout->Background, &(layout->RECTredOut[i]), layout->Screen, &(layout->RECTredOut[i]));		
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTredOut[i])); //Affichage 
+		printf(" E[%d][%d]", i, gamestate.redOut[i]);
+
 		}
 
 		else if (player.Color==ECblue)
@@ -462,7 +481,7 @@ int i;
 		rectKilled.x=0+(gamestate.blueOut[i]*30);
 		SDL_BlitSurface(layout->Background, &(layout->RECTblueOut[i]), layout->Screen, &(layout->RECTblueOut[i]));	
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
-
+		printf(" E[%d][%d]", i, gamestate.blueOut[i]);
 		}
 		/*
 		else if (color==ECnone){  // remise à vide
@@ -480,49 +499,10 @@ int i;
  	SDL_Flip(layout->Screen); // Rafraichissement
 }
 
-/*	
-} SGameState;
->>>>>>> 21e19dd1e542bb840cd355d1f25808516dddc223
 
-int i;
+//----------------------------------------------------------------------------------------------------------------------
 
-	for (i=0;i<11;i++){
-		rectKilled.h=40;
-		rectKilled.w=30;
-
-		rectKilled.y=0;
-
-		
-		if (player.Color==ECred)
-		{
-		rectKilled.x=0+(gamestate.redOut[i]*30);
-		SDL_BlitSurface(layout->Background, &(layout->RECTredOut[i]), layout->Screen, &(layout->RECTredOut[i]));		
-		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTredOut[i])); //Affichage 
-		}
-
-		else if (player.Color==ECblue)
-		{
-		rectKilled.x=0+(gamestate.blueOut[i]*30);
-		SDL_BlitSurface(layout->Background, &(layout->RECTblueOut[i]), layout->Screen, &(layout->RECTblueOut[i]));		
-		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
-
-		}
-
-		else if (color==ECnone){  // remise à vide
-			rectTuilesAPlacer[i].x=10;
-			rectTuilesAPlacer[i].y=33+45*i;
-			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
-			rectTuilesAPlacer[i].x=710;
-			SDL_BlitSurface(layout.Background, &rectTuilesAPlacer[i], layout.Screen, &rectTuilesAPlacer[i]);
-
-
-		}
-		*/
-	/*	
-	}
- 	SDL_Flip(layout->Screen); // Rafraichissement
-}
-*/
+//			=	AFFICHAGE D'UN COMBAT : AFFICHAGE DE DEUX TUILES	=
 
 void Display_fight(SMove moveaff,SGameState game, EPlayer *player, BoardLayout *layout)
 {
@@ -534,32 +514,40 @@ move= Game_TranslateMove(moveaff,*player,1);
 
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+//			=	AFFICHAGE D'UN COMBAT : AFFICHAGE DEBUT DE JEU	=
 /*
-
-void Display_CpyBg(BoardLayout *layout, SPos posPiece){
-// affichage du background sur une petite partie du plateau
-
-// On récupère les indices de la tuille à changer
-int i,j;
-i=SPos.line;
-j=SPos.col;
-
-// On défini le rectangle de découpe
-
-SDL_Rect rectCut;
-rectCut.w=50;
-rectCut.h=50;
-rectCut.x=layout->DisplayTab[i][j].position.x;
-rectCut.y=layout->DisplayTab[i][j].position.y;
-
-// On réinitialise l'affichage de cette tuile
-
-layout->DisplayTab[i][j].cellaff=NULL;
-
-// On affiche la découpe
-SDL_BlitSurface(layout->Background, rectCut, layout->Screen, layout->DisplayTab[i][j].position);
-
+void Display_NewGame(BoardLayout *layout, int ok)
+{
+	SDL_Rect rectNew;
+	rectNew.h=40;
+	rectNew.w=300;
+	rectNew.x=
+	rectNew.y=
+	Display_PieceInit(layout->New, NULL ,layout->Screen,&rectNew);
+	SDL_Delay(1000);
 
 }
 */
+//----------------------------------------------------------------------------------------------------------------------
 
+//			=	FONCTION DEBUG : AFFICHAGE DES PIECES ENREGISTRES LORS DU PLACEMENT (terminal)	=
+
+void Display_EPieceTest(EPiece Pieces[4][10]){
+
+	int i,j;
+
+	for (i=0;i<4;i++)
+	{
+		for (j=0;j<10;j++)
+		{
+				printf("[%d] ",Pieces[3-i][j] );
+				
+		}
+		printf("\n");
+	}
+}
+//----------------------------------------------------------------------------------------------------------------------

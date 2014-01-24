@@ -6,30 +6,31 @@
 #include <SDL/SDL.h>
 
 
-
+// DECLARATION D'UNE CELLULE : CASE DU PLATEAU
 typedef struct
 {
-SDL_Rect     position;  	//Position relative d'une case ainsi que sa surface "image" associé 
+SDL_Rect     position;  	//Position relative d'une case 
 EPiece  	 cellaff;
 EColor		 cellcol;		//																	
-}Cell;						// Utile pour connaître le remplissage de chaqune des cases | NULL => Background
-							//															| tuiles
+}Cell;						// Utile pour connaître le remplissage de chaqune des cases Couleurs/Pieces | NULL => Background
+							//															
 
 
 typedef struct
 {
 	SDL_Rect PiecesLayout[26];  // Position des différentes images sur le patron d'images final
-	SDL_Rect RECTredOut[11];	// Tableau de comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
-	SDL_Rect RECTblueOut[11];	// Tableau de comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10
-	SDL_Surface *Patron;			// Stockage du patron d'images
+	SDL_Rect RECTredOut[11];	// Tableau de rect . comptage des pièces rouges éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10)
+	SDL_Rect RECTblueOut[11];	// Tableau de rect . comptage des pièces bleues éliminées (indexées par la valeur de EPiece : EPbomb=0, ..., EPmarshal=10)
+	SDL_Surface *Patron;		// Stockage du patron d'images
 	SDL_Surface *Background;    // Image de fond 
-	SDL_Surface	*Placement;
-	SDL_Surface *Penalty;
-	SDL_Surface *J1;
-	SDL_Surface *J2;
-	SDL_Surface *Killed;
+	SDL_Surface	*Placement;		// Image grisée
+	SDL_Surface *Penalty;		// Image Pénalité
+	SDL_Surface *J1;			// Image jeton J1
+	SDL_Surface *J2;			// Image jeton J2
+	SDL_Surface *Killed;		// Patron des nombres ( aff nombre pièces éliminées)
 	SDL_Surface *Screen;		// Surface de l'ecran
 	SDL_Surface *Fight; 		// Stocke image affichée lors d'un combat si jamais on en met une
+	//SDL_Surface *New;			// Image Nouveau Jeu
 	Cell DisplayTab[10][10];	// Tableau contenant les positions/affichages des pions
 }BoardLayout;
 
@@ -46,51 +47,37 @@ void BoardLayout_Init(BoardLayout* layout);
 
 
 void Display_Init(BoardLayout layout,EColor color,int nbPiecesRestantes[13]); 	
-										// Affichage du départ : tuiles sur les cotes
-									 	// Il y aura un affichage de tableaux de pieces du jeu à gauche pour les rouges
-										//													   à droite pour les bleus
-										// pour permettre au joueur de placer 
-										// ses pieces : il n'y a pas besoin de creer de tableaux en mémoire je crois.
-										// color =2 : Joueur 1l,  color =3 : Joueur 2 , color=1 : Suppression Aff J1 + J2.
-
-										// on ne peut pas utiliser les tab redOut et blueOut pour le début car il faudrait pouvoir tester
-										// a quel stade du jeu on est (init ou pas) sinon le joueur peut reprendre ses pions après qu'ils
-										// aient été éliminés ! il faut donc deux fonctions
-										// Entier pour affichage du filtre noir, entier de la pièce à masquer car plus de pieces placables
+// Affichage du départ : tuiles sur les cotes
+// Il y aura un affichage de tableaux de pieces du jeu à gauche pour les rouges
+//													   à droite pour les bleues.
+// color =2 : Rouge ,  color =3 : Bleu , color=1 : Suppression Aff J1 + J2.
+// Tab : pieces restantes : pour affichage du filtre noir, car plus de pieces plaçables
  
-void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color); // affichage d'une piece
+ // affichage d'une piece
+void Display_PieceInit(EPiece Piece, SPos posPiece, BoardLayout *layout,EColor color); 
 
-void Display_fight(SMove moveaff,SGameState game,EPlayer *player, BoardLayout *layout);
+// affichage combat
+void Display_fight(SMove moveaff,SGameState game,EPlayer *player, BoardLayout *layout); 
 
+//affichage latéral des pièces durant le jeu
 void Display_lateralPieces(BoardLayout layout,EColor color);
-void Display_Penalty(BoardLayout *layout,EPlayer player); // affichage d'une pénalité
-void Display_affPlayer(BoardLayout *layout,int aff, int joueur);
 
+// affichage d'une pénalité
+void Display_Penalty(BoardLayout *layout,EPlayer player); 
 
+// affichage d'un tour de jeu
+void Display_affPlayer(BoardLayout *layout, int joueur);
+
+// affichage du nombre de pièces éliminées
 void Display_killedPieces(BoardLayout *layout,EPlayer player,SGameState gamestate);
 
-
+// réinitialisation du plateau
 void Display_ReinitDisplayBoard(BoardLayout layout); // Réinit Aff plateau
+
+// fonction affichage d'un plateau de jeu joueur
+void Display_BoardPlayer(BoardLayout *layout, EPlayer player);
 
  //fonction de test de retour EPiece
 void Display_EPieceTest(EPiece Pieces[4][10]);
- 
-void Display_BoardPlayer(BoardLayout *layout, EPlayer player);
-
-/*
-
-
-
-void Display_Fight(SDL_Surface* piece, BoardLayout layout);
-//
- * @param EPiece pice 
- *		piece à afficher
- *	Devra prendre en compte le fait que la pièce retournée est temporairement affichée pour une suivante.
- //
-
-void Display_Piece(SGameState gamestate, SPos posPiece, BoardLayout layout); // affichage d'une piece
-
-void Display_CpyBg(BoardLayout layout, SPos posPiece); // affichage du background sur une petite partie du plateau
-*/
 
 #endif
