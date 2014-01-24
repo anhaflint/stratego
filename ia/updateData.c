@@ -189,6 +189,7 @@ void updateData(const SGameState * const gameState)
 		for (j=0; j < 10; j++)
 		{
 			diff = m_board[i][j].box.content - gameState->board[i][j].content;
+			
 			/* Si une pièce n'est plus dans la case en (i,j), on stocke */
 			if (diff > 0)
 			{
@@ -204,8 +205,6 @@ void updateData(const SGameState * const gameState)
 			}
 		}
 	}
-
-	printf("[updateData] Mouvement ennemi trouvé : (%d,%d) -> (%d, %d)\n", enemyMovement.start.line, enemyMovement.start.col, enemyMovement.end.line, enemyMovement.end.col);
 
 	if (enemyHasMoved)
 	{		
