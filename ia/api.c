@@ -41,19 +41,13 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	printf("Démarrage de StartGame...\n");
 	m_color = color;
 	m_enemyColor = (m_color == ECblue) ? ECred : ECblue;
-	printf("Couleur choisie : %d\n", m_color);
 	srand(time(NULL)); // Initialisation de la graine en fonction du temps actuel
 	m_strategy = rand() % 8;
-	printf("Stratégie choisie : %d\n", m_strategy);
 	m_caution = 5;
-	printf("Taux de risque initial : %d\n", m_caution);
-	m_nbRoundTrips = 1;
-	printf("Nombre d'allers-retours initial : %d\n", m_nbRoundTrips);
-	
+	m_nbRoundTrips = 1;	
 	
 	/* Variables servant à 
-	l'initialisation de m_board */
-	
+	l'initialisation de m_board */	
 	int i, j;		
 	SPos pos;	
 	
@@ -113,7 +107,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 								   {2, 2, 7, 10, 2, 2, 9, 7, 2, 5}};
 		memcpy(boardInit, initBoard, sizeof(initBoard));
 	}
-	else if (m_strategy == bluff)
+	else
 	{
 		EPiece initBoard[4][10] = {{2, 4, 3, 5, 2, 1, 4, 0, 5, 3},
 								   {5, 4, 6, 6, 3, 3, 6, 2, 6, 5},
@@ -151,32 +145,6 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 				updateSquare(pos, EPnone, m_enemyColor, false, true);
 			}
 		}		
-	}
-
-	printf("Affichage du tableau interne :\n");
-
-	printf("  |");
-	for (i=0; i<10; i++)
-	{
-		printf(" %d  ", i);
-		printf("|");
-	}
-	printf("\n");
-	printf("-----------------------------------------------------\n");
-	for (i=0; i<10; i++)
-	{		
-		printf("%d ", 9-i);		
-		printf("|");
-
-		for (j = 0; j < 10; ++j)
-		{
-			if (m_board[9-i][j].box.piece >= 10)
-				printf(" %d", m_board[9-i][j].box.piece);		
-			else
-				printf(" %d ", m_board[9-i][j].box.piece);			
-			printf(" |");				
-		}
-		printf("\n-----------------------------------------------------\n");
 	}	
 }
 
@@ -199,17 +167,21 @@ SMove NextMove(const SGameState * const gameState)
 	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
 		saveMove(); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
 
-	printf("[decideMove] ---- PLATEAU INTERNE APRES ----\n");
+	printf("---- PLATEAU INTERNE APRES ----\n");
  	drawBoard(m_board);
+
+ 	printf("MOUVEMENT CHOISI : (%d,%d) -> (%d,%d)\n", m_decidedMove.start.line, m_decidedMove.start.col, m_decidedMove.end.line, m_decidedMove.end.col); 	
 	return m_decidedMove;
 }
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
-{	
-	int i, j;
-	printf("Démarrage de AttackResult\n");	
-	printf("Tableau avant fin de l'attaque\n");
+{
+	printf("Démarrage de AttackResult\n");
+
+	printf("Tableau avant l'attaque\n");
 	drawBoard(m_board);
+
+	int i, j;
 	printf("(%d,%d) à (%d,%d) : %d versus %d\n", armyPos.line, armyPos.col, enemyPos.line, enemyPos.col, armyPiece, enemyPiece);
 	
 	/* Si c'est nous qui avons engagé l'attaque */
@@ -222,6 +194,7 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	{
 		analyseFight(enemyPiece, armyPiece, enemyPos, armyPos);
 	}
+
 	printf("Tableau après l'attaque\n");
 	drawBoard(m_board);
 }
