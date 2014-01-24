@@ -60,7 +60,6 @@ int getInfoHighEnemy (const SGameState * const gameState, EPiece myPiece)
 int calculateHighEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[])
 {
 	int numberEnemyPiece=0;
-
 	
 	if(piece == EPspy)
 	{	
@@ -115,7 +114,6 @@ int calculateHighEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[]
 			numberEnemyPiece = 0;
 	}
 
-
 	return numberEnemyPiece + numTotal;
 }
 
@@ -137,7 +135,6 @@ int getInfoLowEnemy(const SGameState * const gameState, EPiece myPiece)
 int calculateLowEnemy(int numTotal, EPiece piece, const unsigned int pieceOut[])
 {
 	int numberEnemyPiece=0;
-
 	
 	if(piece == EPmarshal)
 	{	
