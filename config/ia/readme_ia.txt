@@ -27,12 +27,11 @@ en séparant d'abord les mouvements dits "risqués" des "non risqués"
 selon certains critères. Les mouvements dit "risqués" sont les mouvements
 où l'on attaque un ennemi, et/ou on se déplace sur une case à côté d'un ennemi
 
-Ensuite, en fonction de l'IA choisie et de l'état du jeu, 
-la prise de risque est plus ou moins élevée : c'est
-ce qui nous permet de savoir quel tableau nous devons utiliser pour
-effectuer notre choix. On sélectionne ensuite un mouvement en fonction
-de sa chance de réussite dans le cas d'une attaque, d'une nécessité
-d'un mouvement de défense ou d'attaque massif, etc...
+Enfin, en fonction de l'avancement du jeu, on choisit un tableau à utiliser
+pour effectuer notre choix : on calcule l'espérance de la force des pièces pour
+les deux camps (en omettant les bombes et les drapeaux). Si on a une espérance
+inférieure l'ennemi, on fait un mouvement pas risqué, dans le cas contraire on
+prend des risques. On prend le mouvement du tableau choisi le moins risqué.
 
 - Quatrièmement, si le mouvement qu'on a choisi est pacifique, on sauvegarde
 le nouveau plateau directement en interne. Dans le cas contraire, on
