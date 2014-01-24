@@ -27,7 +27,7 @@ bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour 
 void InitLibrary(char name[50])
 {
 	printf("InitLibrary\n");
-	strcpy(name,"Tekropariel");
+	strcpy(name,"ArielNono-ValentinPorchet");
 }
 
 void StartMatch()
