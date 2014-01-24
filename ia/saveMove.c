@@ -30,13 +30,11 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos)
 
 		if (winner == PieceA) // Si la pièce A a attaqué et gagné, on remplace la pièce B
 		{
-			printf("La pièce alliée %d gagne, la pièce ennemie %d perd\n", PieceA, PieceB);
 			/* On place la pièce A sur la case où était la pièce B */
 			updateSquare(BPos, PieceA, m_board[APos.line][APos.col].box.content, true, false);
 		}
 		else // Si la pièce A a perdu, on sauvegarde ce qu'est la pièce B
 		{	
-			printf("La pièce ennemie %d gagne, la pièce ennemie %d perd\n", PieceB, PieceA);
 			updateSquare(BPos, PieceB, m_board[BPos.line][BPos.col].box.content, true, (PieceB == EPbomb) ? true : false);
 		}		
 
@@ -45,7 +43,6 @@ void analyseFight(EPiece PieceA, EPiece PieceB, SPos APos, SPos BPos)
 	}
 	else // Si les deux pièces sont identiques, elles sont éliminées
 	{
-		printf("Les deux pièces sont identiques, elles sont éliminées\n");
 		/* Plus rien dans la case de la pièce A */
 		updateSquare(APos, EPnone, ECnone, false, false);
 
