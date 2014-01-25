@@ -143,8 +143,8 @@ void updateBoard(const SGameState * const gameState, SMove enemyMovement)
 
 	/* Cas 3 : Si l'ennemi a bougé de plus d'une case et qu'il était inconnu, alors
 	on peut aisément conclure que c'est un scout */
-	if (((enemyMovement.start.line - enemyMovement.end.line)/2 != 0)
-		||((enemyMovement.start.col - enemyMovement.end.col)/2 != 0))
+	if ((enemyMovement.start.line != 0)&&(enemyMovement.start.col != 0)&&(enemyMovement.end.line != 0)&&(enemyMovement.end.col != 0)&&(((enemyMovement.start.line - enemyMovement.end.line)/2 != 0)
+		||((enemyMovement.start.col - enemyMovement.end.col)/2 != 0)))
 	{
 		updateSquare(enemyMovement.end, EPscout, m_enemyColor, true, false);
 	}
