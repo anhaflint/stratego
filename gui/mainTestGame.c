@@ -166,9 +166,10 @@ int main(int argc, char* argv[])
 	
 	StructIA AIfunctions1, AIfunctions2;
 	SGameConfig gameconfig;
-	SGameState gamestate;
+		SGameState gamestate, *GSjoueur;
+		/*debug jeu IA*/
+		GSjoueur = malloc(sizeof(SGameState));
 	EPlayer player1, player2;
-	int i; 
 	printf("lalalaal1\n");
 
 	InitStructIA(&AIfunctions1);
@@ -277,23 +278,41 @@ printf("--------------------DEBUT DU MATCH--------------------------------------
 			{
 				//joueur 1
 				Display(&layout, player1, player2, gamestate, 1, 1);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player1.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				move=Event_IdMove(&event,player1, &continuer);
-				Game_DoMove(&gamestate, move, &player1, &player2, &layout);
-				printf("la pénalité du joueur est %d\n", player1.nbPenalty);
+				Game_DoMove(&gamestate, move, &player1, &player2, &layout, gameconfig, AIfunctions1, AIfunctions2);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player1.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
+				//printf("la pénalité du joueur est %d\n", player1.nbPenalty);
 				Display(&layout, player1, player2, gamestate, 2, 1);
 				
 
 				//joueur 2
 				Display(&layout, player2, player1, gamestate, 1, 2);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player2.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				if(gameconfig.Mode == IA_HUMAN)
 				{
-					move = AIfunctions1.NextMove(&gamestate);
+					GSjoueur = Game_SwitchGS(gamestate, player2);
+					DisplayGS(*GSjoueur);
+					move = AIfunctions1.NextMove(GSjoueur);
 				}else
 				{
 					move=Event_IdMove(&event,player2, &continuer);
 				}
 				
-				Game_DoMove(&gamestate, move, &player2, &player1, &layout);
+				Game_DoMove(&gamestate, move, &player2, &player1, &layout, gameconfig, AIfunctions1, AIfunctions2);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player2.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				printf("la pénalité du joueur est %d\n", player2.nbPenalty);
 				Display(&layout, player2, player1, gamestate, 2, 2);
 				pause();
@@ -302,23 +321,42 @@ printf("--------------------DEBUT DU MATCH--------------------------------------
 			{
 				//joueur 2
 				Display(&layout, player2, player1, gamestate, 1, 2);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player2.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				if(gameconfig.Mode == IA_HUMAN)
 				{
-					move = AIfunctions1.NextMove(&gamestate);
+					GSjoueur = Game_SwitchGS(gamestate, player2);
+					DisplayGS(*GSjoueur);
+					move = AIfunctions1.NextMove(GSjoueur);
 				}else
 				{
 					move=Event_IdMove(&event,player2, &continuer);
 				}
 				
-				Game_DoMove(&gamestate, move, &player2, &player1, &layout);
+				Game_DoMove(&gamestate, move, &player2, &player1, &layout, gameconfig, AIfunctions1, AIfunctions2);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player2.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				printf("la pénalité du joueur est %d\n", player2.nbPenalty);
 				Display(&layout, player2, player1, gamestate, 2, 2);
 				pause();
 
+				
 				//joueur 1
 				Display(&layout, player1, player2, gamestate, 1, 1);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player1.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				move=Event_IdMove(&event,player1, &continuer);
-				Game_DoMove(&gamestate, move, &player1, &player2, &layout);
+				Game_DoMove(&gamestate, move, &player1, &player2, &layout, gameconfig, AIfunctions1, AIfunctions2);
+				printf("gameState joueur----------------------------\n");
+				DisplayPlayerGS(player1.Pboard);
+				printf("gameState general============================\n");
+				DisplayGS(gamestate);
 				Display(&layout, player1, player2, gamestate, 2, 1);
 			}
 				

@@ -7,11 +7,14 @@
 // Etat d'une case du jeu
 
 typedef struct {
-	unsigned int nbPenalty;	// nombre de pénalités du joueur
 	EColor Color;		// couleur du joueur (const pour éviter la triche)
 	SBox Pboard[10][10]; // tableau qui comprend la copie du gamestate dans le bon sens pour le joueur
-	int nbCoups;
+	unsigned int nbCoups;
+	unsigned int nbMove;
+	unsigned int nbPenalty;	// nombre de pénalités du joueur
 	int winnings; 
+	int playerNo;
+	SMove previousMove;
 }EPlayer;
 
 

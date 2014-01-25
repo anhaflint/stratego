@@ -154,6 +154,14 @@ void Game_InitPlayer(EPlayer* player1, EPlayer* player2, SGameConfig* gameconfig
 	//Maj du nombre de coups
 	player2->nbCoups = nbCoups;
 	player1->nbCoups = nbCoups; 
+
+	// MaJ du nombre de mouvements en aller retour
+	player1->nbMove = 1;
+	player2->nbMove = 1;
+
+	// MaJ du numéro du joueur
+	player1->playerNo = 1;
+	player2->playerNo = 2;
 	int i, j;
 	srand(time(NULL)); // initialisation de rand
 	if(rand()%2== 0)
@@ -304,6 +312,25 @@ SMove Game_TranslateMove(SMove move, EPlayer player, int etat)
 	return move;
 }
 
+
+SGameState* Game_SwitchGS(SGameState game, EPlayer player)
+{
+	int i, j;
+	SGameState *newGame = malloc(sizeof(SGameState));
+	for(i=0; i<10; i++)
+	{
+		for(j=0; j<10; j++)
+		{
+			if(game.board[i][j].content != player.Color)
+				game.board[i][j].piece = EPnone;
+			if(player.Color == ECblue)
+				newGame->board[9-i][9-j] = game.board[i][j];
+			else
+				newGame->board[i][j] = game.board[i][j];
+		}
+	}
+	return newGame;
+}
 /* fonction pour vérifier si un mouvement est valide
  * @param : SMove move
  * 			position de début et fin du mouvement à vérifier
@@ -337,76 +364,84 @@ int Game_CheckMove(SMove move, EPlayer *player, SGameState gamestate, int positi
 		diffcol = abs(StartCol - EndCol);
 	// On stocke le mouvement précédent du joueur
 	// sera utile dans le calcul des pénalités
-	// MovingPlayer->previousMove = move; 
+	Game_AddPenalty(player, move);
+	 player->previousMove = move; 
 
-
-	// verif de la case de destination
-		// si il y a un deplacement en diagonale 
-		// ou si le joueur essaie de rester sur la mm case
-		// ou si le joueur essaie de se deplacer sur un de ses pions
-		// ou si le joueur essaie de se deplacer sur un lac
-	if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player->Color) || (gamestate.board[EndLine][EndCol].content == EClake))
-	{
-		RETOUR = -1; // deplacement invalide		
-	}
-		// Traitement des cas où on ne peut pas deplacer le pion 
-		switch (position)
+	 if(player->nbMove <=3)
+	 {
+		// verif de la case de destination
+			// si il y a un deplacement en diagonale 
+			// ou si le joueur essaie de rester sur la mm case
+			// ou si le joueur essaie de se deplacer sur un de ses pions
+			// ou si le joueur essaie de se deplacer sur un lac
+		if ((diffligne > 0 && (diffcol > 0)) || ((StartLine == EndLine)&&(StartCol == EndCol)) || (gamestate.board[EndLine][EndCol].content == player->Color) || (gamestate.board[EndLine][EndCol].content == EClake))
 		{
-			case 0 : player->nbPenalty++; // On choisi d'incrémenter le compteur de pénalités ici plutot que dans checkpos
-					RETOUR = -1; // Position de depart invalide
-					break;
-			case 1 : // cas pion général
-					 // Deplacement d'une case seulement
-					if (diffligne + diffcol != 1) 
-						RETOUR = -1;// Deplacement illégal
-					break;
-			case 2 : // cas pion scout
-					if (diffcol == 0) // deplacement en lignes
-					{
-						if ((StartLine - EndLine) < 0)
-						{
-							for(i = StartLine + 1; i<EndLine; i++) 
-							{
-								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) 
-									RETOUR = -1; // on ne peut pas déplacer le scout	
-							}
-						}
-						else
-						{
-							for(i = StartLine - 1; i>EndLine; i--) 
-							{
-								if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone))
-									RETOUR = -1; // on ne peut pas déplacer le scout	
-							}
-						}
-					}
-					if (diffligne == 0) // deplacement en colonnes
-					{
-						if((StartCol - EndCol) < 0)
-						{
-							for (i = StartCol + 1; i<EndCol; i++)
-							{
-								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone))
-									RETOUR = -1; // on ne peut pas déplacer le scout
-							}
-						}
-						else
-						{
-							for (i = StartCol -1; i>EndCol; i--)
-							{
-								if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone))
-									RETOUR = -1; // on ne peut pas déplacer le scout
-							}
-						}
-					}
-					// si on arrive ici on peut deplacer le scout
-					break;
+			RETOUR = -1; // deplacement invalide		
 		}
-		// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
-		if (gamestate.board[EndLine][EndCol].content == Enemy)
-			RETOUR = 1;
-		if(RETOUR == -1)
-			player->nbPenalty++;
+			// Traitement des cas où on ne peut pas deplacer le pion 
+			switch (position)
+			{
+				case 0 :  // On choisi d'incrémenter le compteur de pénalités ici plutot que dans checkpos
+						RETOUR = -1; // Position de depart invalide
+						break;
+				case 1 : // cas pion général
+						 // Deplacement d'une case seulement
+						if (diffligne + diffcol != 1) 
+							RETOUR = -1;// Deplacement illégal
+						break;
+				case 2 : // cas pion scout
+						if (diffcol == 0) // deplacement en lignes
+						{
+							if ((StartLine - EndLine) < 0)
+							{
+								for(i = StartLine + 1; i<EndLine; i++) 
+								{
+									if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone)) 
+										RETOUR = -1; // on ne peut pas déplacer le scout	
+								}
+							}
+							else
+							{
+								for(i = StartLine - 1; i>EndLine; i--) 
+								{
+									if ((gamestate.board[i][StartCol].piece != EPnone)||(gamestate.board[i][StartCol].content != ECnone))
+										RETOUR = -1; // on ne peut pas déplacer le scout	
+								}
+							}
+						}
+						if (diffligne == 0) // deplacement en colonnes
+						{
+							if((StartCol - EndCol) < 0)
+							{
+								for (i = StartCol + 1; i<EndCol; i++)
+								{
+									if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone))
+										RETOUR = -1; // on ne peut pas déplacer le scout
+								}
+							}
+							else
+							{
+								for (i = StartCol -1; i>EndCol; i--)
+								{
+									if ((gamestate.board[StartLine][i].piece != EPnone)||(gamestate.board[StartLine][i].content != ECnone))
+										RETOUR = -1; // on ne peut pas déplacer le scout
+								}
+							}
+						}
+						// si on arrive ici on peut deplacer le scout
+						break;
+			}
+			// Traitement du cas où, si le pion est déplaçable, le mouvement mène à un combat
+			if (gamestate.board[EndLine][EndCol].content == Enemy)
+				RETOUR = 1;
+			if(RETOUR == -1)
+				player->nbPenalty++;
+		}
+		else
+			RETOUR = -2; // Pour savoir si on a eu trois penalités
+
+
+
 
 return RETOUR;
 }
@@ -429,7 +464,7 @@ void Game_RazSBox(SBox *box)
 
 
 
-int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other, BoardLayout *layout)
+int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Other, BoardLayout *layout, SGameConfig config, StructIA IA1, StructIA IA2)
 {
 	/* @variable : move 
 	 *				mouvement tel qu'il est rentré par le joueur, dans le sens de son tableau personnel
@@ -478,6 +513,8 @@ int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Oth
 		printf("mvt retourne : %d\n", mvt);
 	switch(mvt)
 	{
+		case -2: RETOUR = -1;
+				 break;
 		case -1: printf("Mouvement invalide\n");
 				 RETOUR = 0; // Dans le jeu, le joueur passe son tour
 				 break; // On ajoute une pénalité au joueur et on sort
@@ -502,6 +539,42 @@ int Game_DoMove(SGameState* game,SMove move, EPlayer *MovingPlayer, EPlayer *Oth
 		// Combat
 				 //void Display_fight(SMove moveaff,SGameState game,EPlayer *player, BoardLayout *layout)
 		case 1 : printf("lalalalalalala\n");
+		//void (*pfAttackResult)(SPos,EPiece,SPos,EPiece);
+				if((config.Mode == IA_HUMAN)||(config.Mode == IA_IA))
+				{
+					if(MovingPlayer->playerNo == 2) // Si l'IA1 est l'attaquante
+					{
+						if(MovingPlayer->Color == ECred) // Si elle est rouge
+							IA1.AttackResult(move.start, game->board[MoveStartLine][MoveStartCol].piece, move.end, game->board[MoveEndLine][MoveEndCol].piece );
+						else // Sinon elle est bleue
+							IA1.AttackResult(GSMove.start, game->board[GSMoveStartLine][GSMoveStartCol].piece, GSMove.end, game->board[GSMoveEndLine][GSMoveEndCol].piece );
+					}
+					else // Si l'IA est celle qui est attaquée
+					{
+						if(MovingPlayer->Color == ECred) // Si l'attaquant est rouge, son mouvement est dans le bon sens
+							IA1.AttackResult(move.end, game->board[MoveEndLine][MoveEndCol].piece, move.start, game->board[MoveStartLine][MoveStartCol].piece );
+						else // Sinon l'attaquant est bleu et il faut prendre le mouvement dans l'autre sens sur le gamestate
+							IA1.AttackResult(GSMove.end, game->board[GSMoveEndLine][GSMoveEndCol].piece, GSMove.start, game->board[GSMoveStartLine][GSMoveStartCol].piece );
+					}
+						
+					if(config.Mode == IA_IA) // Si on a une deuxième IA qui joue contre la premiere 
+					{
+						if(MovingPlayer->playerNo == 1) // Si l'IA2 est l'attaquante
+						{
+							if(MovingPlayer->Color == ECred) // Si elle est rouge
+								IA2.AttackResult(move.start, game->board[MoveStartLine][MoveStartCol].piece, move.end, game->board[MoveEndLine][MoveEndCol].piece );
+							else // Sinon elle est bleue
+								IA2.AttackResult(GSMove.start, game->board[GSMoveStartLine][GSMoveStartCol].piece, GSMove.end, game->board[GSMoveEndLine][GSMoveEndCol].piece );
+						}
+						else // Si l'IA est celle qui est attaquée
+						{
+							if(MovingPlayer->Color == ECred) // Si l'attaquant est rouge, son mouvement est dans le bon sens
+								IA2.AttackResult(move.end, game->board[MoveEndLine][MoveEndCol].piece, move.start, game->board[MoveStartLine][MoveStartCol].piece );
+							else // Sinon l'attaquant est bleu et il faut prendre le mouvement dans l'autre sens sur le gamestate
+								IA2.AttackResult(GSMove.end, game->board[GSMoveEndLine][GSMoveEndCol].piece, GSMove.start, game->board[GSMoveStartLine][GSMoveStartCol].piece );
+						}
+					}						
+				}
 				 Display_fight(move, *game, MovingPlayer, layout);
 				 if((game->board[GSMoveStartLine][GSMoveStartCol].piece) == (game->board[GSMoveEndLine][GSMoveEndCol].piece)) 
 				 {
@@ -678,6 +751,7 @@ int Game_EndMatch(EPlayer player1, EPlayer player2, SGameConfig config, SGameSta
  * @return value : 
  *		0 : 
  */
+ //analyzeBoard(EPlayer player)
 int Game_GotWinner(EPlayer player1, EPlayer player2, SGameState gamestate, int nbCoups)
 {
 	int GAGNANT = 0; // par défaut pas de gagnant
@@ -688,19 +762,17 @@ int Game_GotWinner(EPlayer player1, EPlayer player2, SGameState gamestate, int n
 		// On regarde si le drapeau d'un joueur a été éliminé
 		if(player1.Color == ECred) // joueur1 rouge, joueur2 bleu
 		{
-			if((gamestate.redOut[11] == 1)||(player1.nbPenalty == 3)||(player1.nbCoups == 0)) // le drapeau rouge est éliminé, player1 a perdu
+			if((gamestate.redOut[11] == 1)||(player1.nbPenalty == 3)||(player1.nbCoups == 0)||(analyzeBoard(player1)==0)) // le drapeau rouge est éliminé, player1 a perdu
 				GAGNANT = 2; // joueur2 gagne
-			else
-				if((gamestate.blueOut[11] == 1)||(player2.nbPenalty == 3)||(player2.nbCoups == 0))// le drapeau bleu est éliminé, le player1 a perdu
+			else if((gamestate.blueOut[11] == 1)||(player2.nbPenalty == 3)||(player2.nbCoups == 0)||(analyzeBoard(player2)==0))// le drapeau bleu est éliminé, le player1 a perdu
 					GAGNANT = 1; // joueur1 gagne
 
 		}
 		else // le joueur 1 bleu, joueur2 rouge
 		{
-			if((gamestate.redOut[11] == 1)||(player2.nbPenalty == 3)||(player2.nbCoups == 0)) // le drapeau rouge est éliminé, player1 a gagné
+			if((gamestate.redOut[11] == 1)||(player2.nbPenalty == 3)||(player2.nbCoups == 0)||(analyzeBoard(player2)==0)) // le drapeau rouge est éliminé, player1 a gagné
 				GAGNANT = 1; 
-			else
-				if((gamestate.blueOut[11] == 1)||(player1.nbPenalty == 3)||(player1.nbCoups == 0)) // le drapeau bleu est éliminé, le player1 a perdu
+			else if((gamestate.blueOut[11] == 1)||(player1.nbPenalty == 3)||(player1.nbCoups == 0)||(analyzeBoard(player1)==0)) // le drapeau bleu est éliminé, le player1 a perdu
 					GAGNANT = 2; 
 		}
 	}
@@ -719,7 +791,16 @@ void Game_Start(EPlayer *player1, EPlayer *player2, SGameConfig *config)
 }
 
 
-void Game_AddPenalty(EPlayer player);	// idée : variable statique ? allouées au début du programme et libérées à la fin
+void Game_AddPenalty(EPlayer *player, SMove nextmove)	// idée : variable statique ? allouées au début du programme et libérées à la fin
+{
+	if(((player->previousMove.start.line == nextmove.end.line)&&(player->previousMove.end.line == nextmove.end.line))
+		||((player->previousMove.start.col == nextmove.end.col)&&(player->previousMove.end.col == nextmove.start.col)))
+	{
+		player->nbMove ++;
+	}
+	else
+		player->nbMove = 1;
+}
 
 /* procédure de recopie des tableaux des joueurs dans le tableau de l'arbitre à l'initialisation
  * @param SGameState gamestate
