@@ -8,17 +8,20 @@
 all: game lib clean
 
 game:
-	gcc -Wall gui/initlib.c gui/mainTestGame.c gui/game.c gui/display.c gui/event.c -lSDL -o ref -ldl
+	$(info Compilation de l'interface...)
+	@gcc -Wall gui/initlib.c gui/mainTestGame.c gui/game.c gui/display.c gui/event.c -lSDL -o ref -ldl
 
 lib:
-	gcc -fPIC -c ia/updateData.c ia/analyzeBoard.c ia/decideMove.c ia/riskProbability.c ia/saveMove.c ia/api.c
-	gcc -shared -o libValentinPorchet-ArielNono.so updateData.o analyzeBoard.o decideMove.o riskProbability.o saveMove.o api.o
-
+	$(info Compilation de la librairie de stratégie...)
+	@gcc -fPIC -c ia/updateData.c ia/analyzeBoard.c ia/decideMove.c ia/riskProbability.c ia/saveMove.c ia/api.c
+	@gcc -shared -o libValentinPorchet-ArielNono.so updateData.o analyzeBoard.o decideMove.o riskProbability.o saveMove.o api.o
 
 clean:
-	rm -rf *.o
+	$(info Nettoyage des fichiers objet)
+	@rm -rf *.o
 
 mrproper: clean
-	rm -rf main libValentinPorchet-ArielNono.so
+	$(info Nettoyage des fichiers objet et exécutable)
+	@rm -rf main libValentinPorchet-ArielNono.so
 
 

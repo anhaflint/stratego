@@ -45,6 +45,7 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 	m_strategy = rand() % 8;
 	m_caution = 5;
 	m_nbRoundTrips = 1;	
+	m_myMove = false;
 	
 	/* Variables servant à 
 	l'initialisation de m_board */	
