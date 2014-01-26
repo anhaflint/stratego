@@ -1,8 +1,6 @@
 #ifndef _STRATEGO_H
 	#define _STRATEGO_H
 
-
-
 typedef enum
 {
 	ECnone,

@@ -101,28 +101,28 @@ for (i=13;i<26;i++){
 
 // Initialisation et Chargement des images
 		//	-Patron des pièces-	
-			layout->Patron=SDL_LoadBMP("images/piecestest.bmp");
+			layout->Patron=SDL_LoadBMP("gui/images/pieces.bmp");
 
 		//	-Jeton Joueur-		
-			layout->J1=SDL_LoadBMP("images/j1.bmp");   // Charge image J1
+			layout->J1=SDL_LoadBMP("gui/images/j1.bmp");   // Charge image J1
 			SDL_SetColorKey(layout->J1, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J1->format, 0, 0, 0));
 
-			layout->J2=SDL_LoadBMP("images/j2.bmp");   // Charge image J2
+			layout->J2=SDL_LoadBMP("gui/images/j2.bmp");   // Charge image J2
 			SDL_SetColorKey(layout->J2, SDL_SRCCOLORKEY, SDL_MapRGB(layout->J2->format, 0, 0, 0));
 
 		//	-Fond/Backgound du jeu-	
-			layout->Background=SDL_LoadBMP("images/venicetest.bmp");
+			layout->Background=SDL_LoadBMP("gui/images/venice.bmp");
 
 		// 	-Image grisée- (pour phases de placement)
-			layout->Placement=SDL_LoadBMP("images/endTuile.bmp");
+			layout->Placement=SDL_LoadBMP("gui/images/endTuile.bmp");
 			SDL_SetAlpha(layout->Placement, SDL_SRCALPHA, 192);
 
 		//	-Patron des nombres- (pour pieces éliminées)	
-			layout->Killed=SDL_LoadBMP("images/piecekill.bmp");
+			layout->Killed=SDL_LoadBMP("gui/images/piecekill.bmp");
 			SDL_SetColorKey(layout->Killed, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Killed->format, 0, 0, 0));
 
 		//	-Image de pénalité-	
-			layout->Penalty=SDL_LoadBMP("images/penality.bmp");
+			layout->Penalty=SDL_LoadBMP("gui/images/penality.bmp");
 			SDL_SetColorKey(layout->Penalty, SDL_SRCCOLORKEY, SDL_MapRGB(layout->Penalty->format, 0, 0, 255));
 
 			layout->Fight=NULL; 		// Stocke image affichée lors d'un combat (inutilisé pour le moment)
@@ -283,10 +283,7 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 				
 					SDL_BlitSurface(layout->Background, &(layout->DisplayTab[i][j].position), layout->Screen, &(layout->DisplayTab[i][j].position));
 					layout->DisplayTab[i][j].cellaff=12;
-					layout->DisplayTab[i][j].cellcol=ECnone;
-					printf("BKG on [%d][%d]\n",i,j);
-
-						
+					layout->DisplayTab[i][j].cellcol=ECnone;						
 			}
 			else
 			{	
@@ -298,7 +295,6 @@ void Display_BoardPlayer(BoardLayout *layout, EPlayer player)
 				Display_PieceInit(player.Pboard[i][j].piece, posPiece, layout ,player.Pboard[i][j].content);
 				layout->DisplayTab[i][j].cellaff=player.Pboard[i][j].piece;
 				layout->DisplayTab[i][j].cellcol=player.Pboard[i][j].content;
-				printf("NEW PIECE [%d][%d]\n",i,j);
 				}
 
 			}
@@ -472,7 +468,6 @@ int i;
 		rectKilled.x=0+(gamestate.redOut[i]*30);
 		SDL_BlitSurface(layout->Background, &(layout->RECTredOut[i]), layout->Screen, &(layout->RECTredOut[i]));		
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTredOut[i])); //Affichage 
-		printf(" E[%d][%d]", i, gamestate.redOut[i]);
 
 		}
 
@@ -481,7 +476,6 @@ int i;
 		rectKilled.x=0+(gamestate.blueOut[i]*30);
 		SDL_BlitSurface(layout->Background, &(layout->RECTblueOut[i]), layout->Screen, &(layout->RECTblueOut[i]));	
 		SDL_BlitSurface(layout->Killed, &(rectKilled), layout->Screen, &(layout->RECTblueOut[i])); //Affichage
-		printf(" E[%d][%d]", i, gamestate.blueOut[i]);
 		}
 		/*
 		else if (color==ECnone){  // remise à vide
@@ -532,22 +526,3 @@ void Display_NewGame(BoardLayout *layout, int ok)
 
 }
 */
-//----------------------------------------------------------------------------------------------------------------------
-
-//			=	FONCTION DEBUG : AFFICHAGE DES PIECES ENREGISTRES LORS DU PLACEMENT (terminal)	=
-
-void Display_EPieceTest(EPiece Pieces[4][10]){
-
-	int i,j;
-
-	for (i=0;i<4;i++)
-	{
-		for (j=0;j<10;j++)
-		{
-				printf("[%d] ",Pieces[3-i][j] );
-				
-		}
-		printf("\n");
-	}
-}
-//----------------------------------------------------------------------------------------------------------------------

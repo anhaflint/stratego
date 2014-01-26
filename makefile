@@ -9,7 +9,7 @@ all: game lib clean
 
 game:
 	$(info Compilation de l'interface...)
-	@gcc -Wall gui/initlib.c gui/mainTestGame.c gui/game.c gui/display.c gui/event.c -lSDL -o ref -ldl
+	@gcc -Wall gui/initlib.c gui/main.c gui/game.c gui/display.c gui/event.c -lSDL -o stratego -ldl
 
 lib:
 	$(info Compilation de la librairie de stratégie...)
@@ -22,6 +22,6 @@ clean:
 
 mrproper: clean
 	$(info Nettoyage des fichiers objet et exécutable)
-	@rm -rf main libValentinPorchet-ArielNono.so
+	@rm -rf stratego libValentinPorchet-ArielNono.so
 
 

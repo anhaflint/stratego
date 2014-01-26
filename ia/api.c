@@ -26,19 +26,16 @@ bool m_myMove; // Variable pour connaître le mouvement que l'on a fait au tour 
 
 void InitLibrary(char name[50])
 {
-	printf("InitLibrary\n");
 	strcpy(name,"ArielNono-ValentinPorchet");
 }
 
 void StartMatch()
 {	
-	printf("StartMatch\n");
 }
 
 void StartGame(const EColor color, EPiece boardInit[4][10])
 {
 	/* Initialisation du tableau de l'IA avec positionement de pions*/
-	printf("Démarrage de StartGame...\n");
 	m_color = color;
 	m_enemyColor = (m_color == ECblue) ? ECred : ECblue;
 	srand(time(NULL)); // Initialisation de la graine en fonction du temps actuel
@@ -151,40 +148,27 @@ void StartGame(const EColor color, EPiece boardInit[4][10])
 
 void EndGame()
 {
-	printf("EndGame\n");
 }
 
 void EndMatch()
 {
-	printf("EndMatch\n");
 }
 
 SMove NextMove(const SGameState * const gameState)
 {
-	printf("NextMove\n");
 	updateData(gameState); // Première phase, mise à jour des données internes
 	analyzeBoard(gameState); // Analyse du plateau => Mise à jour des dplcmts possibles
 	decideMove(gameState); // Décision du mouvement à faire
 	if (!m_myMove) // Si on a fait un déplacement normal, on le sauvegarde 
 		saveMove(); // On sauvegarde le plateau interne avec le mouvement que l'on va faire
 
-	printf("---- PLATEAU INTERNE APRES ----\n");
- 	drawBoard(m_board);
-
- 	printf("MOUVEMENT CHOISI : (%d,%d) -> (%d,%d)\n", m_decidedMove.start.line, m_decidedMove.start.col, m_decidedMove.end.line, m_decidedMove.end.col); 	
 	return m_decidedMove;
 }
 
 void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 {
-	printf("Démarrage de AttackResult\n");
-
-	printf("Tableau avant l'attaque\n");
-	drawBoard(m_board);
-
 	int i, j;
-	printf("(%d,%d) à (%d,%d) : %d versus %d\n", armyPos.line, armyPos.col, enemyPos.line, enemyPos.col, armyPiece, enemyPiece);
-	
+
 	/* Si c'est nous qui avons engagé l'attaque */
 	if (m_myMove)
 	{
@@ -195,12 +179,8 @@ void AttackResult(SPos armyPos,EPiece armyPiece,SPos enemyPos,EPiece enemyPiece)
 	{
 		analyseFight(enemyPiece, armyPiece, enemyPos, armyPos);
 	}
-
-	printf("Tableau après l'attaque\n");
-	drawBoard(m_board);
 }
 
 void Penalty()
 {
-	printf("Penalty\n");
 }

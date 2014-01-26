@@ -2,50 +2,6 @@
 #include <time.h>
 #include "resources.h"
 #include "decideMove.h"
-#include "couleurs.h"
-
-void drawBoard(InfoPiece board[10][10])
-{
-	int i, j;
-	printf("  |");
-	for (i=0; i<10; i++)
-	{
-		couleur("33");
-		printf(" %d  ", i);
-		couleur("0");
-		printf("|");
-	}
-	printf("\n");
-	printf("-----------------------------------------------------\n");
-	for (i=0; i<10; i++)
-	{
-		couleur("33");
-		printf("%d ", 9-i);
-		couleur("0");
-		printf("|");
-
-		for (j = 0; j < 10; ++j)
-		{
-			if (board[9-i][j].box.content == ECred)
-				couleur("31");			
-			if (board[9-i][j].box.content == ECblue)
-				couleur("36");
-			if (board[9-i][j].box.content == EClake)
-				couleur("30");
-
-			if (board[9-i][j].box.piece >= 10)
-				printf(" %d", board[9-i][j].box.piece);		
-			else
-				printf(" %d ", board[9-i][j].box.piece);
-
-			couleur("0");
-			printf(" |");
-				
-		}
-		printf("\n-----------------------------------------------------\n");
-	}
-	couleur("0");
-}
 
 // Choix d'un type
 int chooseTypeOfMove(const SGameState * const gameState, int normalMoves, int priorityMoves)
@@ -116,9 +72,6 @@ void decideMove(const SGameState * const gameState)
 	evaluateMoves(gameState, &normalMoves,&riskedMoves);
  	globalEvaluation(&priorityMoves,riskedMoves, gameState);
  	normalClassication(gameState, &normalMoves);
-
-  	printf("---- PLATEAU INTERNE AVANT ----\n");
- 	drawBoard(m_board);
 
  	/* Choix du type de mouvement à faire en fonction
  	du gameState et des mouvements trouvés */

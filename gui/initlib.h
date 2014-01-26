@@ -16,8 +16,14 @@ typedef struct
 	pfPenalty Penalty;
 } StructIA;
 
+
+//procédure d'initialisation des pointeurs de fonction des librairies
 void InitStructIA(StructIA *AIfunctions);
+
+//procédure de libération de la mémoire
 void freeIA(StructIA *AIfunctions);
+
+//fonction de chargement des IA
 int LoadAI(StructIA *AIfunctions, char* path);
 
 #endif

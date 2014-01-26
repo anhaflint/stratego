@@ -1,10 +1,9 @@
-// structures
 #ifndef _STRUCTURE_H
 	#define _STRUCTURE_H
 
 #include <stdbool.h>
 #include "stratego.h"
-// Etat d'une case du jeu
+
 
 typedef struct {
 	EColor Color;		// couleur du joueur (const pour éviter la triche)
@@ -36,7 +35,7 @@ typedef struct
 }SGameConfig;
 
 
-//----------------------- Structures et énumérations ------------------------//
+//----------------------- Structures et énumérations utilisées par l'IA------------------------//
 
 /* Stockage en interne du plateau, avec
 des informations supplémentaires sur les pièces */
